@@ -34,6 +34,8 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.33</version>
 		</dependency>
+
+
 		
 		<!-- Spring Boot Starter Web (for building web applications, includes REST APIs) -->
 		<dependency>
