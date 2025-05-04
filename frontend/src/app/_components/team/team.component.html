@@ -1,0 +1,37 @@
+<div class="dashboard">
+  <div class="team-title">
+    <h2>Team Members</h2>
+    <button class="add-member-btn">Add Member</button>
+  </div>
+
+  <ul class="team-list" id="teamList">
+    <p>No team members added yet.</p>
+  </ul>
+
+  <div class="add-member-form" id="addMemberForm">
+    <input type="text" id="memberName" placeholder="Member Name" />
+    <input
+      type="number"
+      id="memberNumber"
+      placeholder="Number of People"
+      min="1"
+    />
+    <select id="memberSkill">
+      <option value="Interiors">Interiors</option>
+      <option value="Exteriors">Exteriors</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Electrical">Electrical</option>
+    </select>
+    <input
+      type="number"
+      id="memberExperience"
+      placeholder="Years of Experience"
+    />
+    <select id="memberProject">
+      <option value="Project A">Project A</option>
+      <option value="Project B">Project B</option>
+      <option value="Project C">Project C</option>
+    </select>
+    <button class="save-btn" id="saveMemberBtn">Save Member</button>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<section class="dashboard">
+  <h1>Dashboard</h1>
+  <section class="content">
+    <button (click)="addProject()">
+      <i class="fas fa-plus-circle"></i> Add Project
+    </button>
+    <div *ngIf="projects.length === 0">No projects yet.</div>
+    <div class="project-card" *ngFor="let project of projects; let i = index">
+      <strong>{{ project.name }}</strong> - Team: {{ project.team }}
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="project.progress"></div>
+        </div>
+        <span>{{ project.progress }}%</span>
+      </div>
+      <input type="range" min="0" max="100" [value]="project.progress" />
+      <button class="btn task" (click)="sendTask(i)">📩 Task</button>
+      <button class="btn edit" (click)="editProject(i)">✏ Edit</button>
+      <button class="btn delete" (click)="deleteProject(i)">🗑 Delete</button>
+    </div>
+  </section>
+</section>
+
+<section class="content">
+  <h1>Sent Tasks</h1>
+  <div *ngIf="tasks.length === 0">No tasks sent.</div>
+  <div class="task-card" *ngFor="let task of tasks">
+    {{ task.team }}: {{ task.details }}
+  </div>
+</section>

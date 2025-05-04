@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root Variables for Custom Colors */
+:root {
+  --primary: #3b82f6;
+  --secondary: #1e293b;
+  --warning: #facc15;
+  --danger: #ef4444;
+  --success: #10b981;
+  --bg: #f1f5f9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  @apply font-sans m-0 p-0 bg-gray-100 text-gray-800;
+}
+
+/* Navigation */
+nav {
+  @apply bg-slate-800 text-white p-4 flex justify-between items-center;
+}
+
+.logo-name {
+  @apply text-lg font-bold;
+}
+
+.nav-links {
+  @apply flex gap-4 list-none;
+}
+
+.nav-links li {
+  @apply inline;
+}
+
+.nav-links li a {
+  @apply text-white no-underline text-base px-4 py-2 rounded transition duration-300;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  @apply bg-sky-400;
+}
+
+/* Dashboard Content */
+.dashboard {
+  @apply p-5 text-center;
+}
+
+.stats {
+  @apply flex justify-center gap-5 mt-5;
+}
+
+.box {
+  @apply bg-white p-5 rounded-xl shadow flex-1 text-center;
+}
+
+.total-projects {
+  @apply bg-sky-400 text-white;
+}
+.ongoing-tasks {
+  @apply bg-yellow-400 text-white;
+}
+.completed-tasks {
+  @apply bg-emerald-500 text-white;
+}
+
+/* General Content Box */
+.content {
+  @apply max-w-3xl mx-auto my-8 p-8 bg-white rounded-xl shadow-xl;
+}
+
+h1 {
+  @apply mb-6 text-2xl;
+}
+
+/* Buttons */
+#addProjectBtn {
+  @apply inline-flex items-center gap-2 bg-blue-500 text-white px-5 py-3 rounded-md font-medium shadow transition hover:bg-blue-600 hover:-translate-y-1;
+}
+
+#addProjectBtn i {
+  @apply transition-transform;
+}
+#addProjectBtn:hover i {
+  @apply rotate-90;
+}
+
+.btn {
+  @apply px-4 py-2 rounded mt-2 mr-2 font-medium text-white cursor-pointer;
+}
+.btn.task {
+  @apply bg-emerald-500;
+}
+.btn.edit {
+  @apply bg-yellow-400 text-black;
+}
+.btn.delete {
+  @apply bg-red-500;
+}
+
+/* Cards and Containers */
+.project-card,
+.report-card {
+  @apply bg-white p-5 my-4 rounded-lg shadow;
+}
+
+.task-card {
+  @apply bg-sky-50 p-4 mt-2 border-l-4 border-blue-500 rounded;
+}
+
+.progress-container {
+  @apply flex items-center mt-2 gap-2;
+}
+
+.progress-bar {
+  @apply flex-1 h-2 bg-gray-200 rounded overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-blue-500 transition-all;
+}
+
+/* Forms */
+input,
+textarea,
+select {
+  @apply w-full p-3 my-2 border border-gray-300 rounded-md text-base;
+}
+
+.add-member-form input,
+.add-member-form select {
+  @apply w-full p-2 border border-gray-300 rounded;
+}
+
+.save-btn {
+  @apply bg-emerald-500 text-white p-2 rounded mt-2 text-sm hover:bg-emerald-600;
+}
+
+.container {
+  @apply max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-lg text-center mb-6;
+}
+
+button {
+  @apply px-4 py-2 m-1 rounded text-sm font-semibold transition;
+}
+
+.btn-primary {
+  @apply bg-green-600 text-white;
+}
+.btn-danger {
+  @apply bg-red-600 text-white;
+}
+.btn-logout {
+  @apply bg-gray-700 text-white;
+}
+
+img {
+  @apply max-w-full mt-3 rounded-lg shadow-md;
+}

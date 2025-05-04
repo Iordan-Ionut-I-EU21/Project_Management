@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="logo-name">Project Management</div>
+  <ul class="nav-links">
+    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a routerLink="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/projects"><i class="fas fa-project-diagram"></i> Projects</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/team"><i class="fas fa-users"></i> Team</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/reports"><i class="fas fa-file-alt"></i> Reports</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/settings"><i class="fas fa-cog"></i> Settings</a>
+    </li>
+    <li>
+      <a routerLink="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </li>
+  </ul>
+</nav>
