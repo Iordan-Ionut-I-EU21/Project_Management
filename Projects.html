@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --secondary: #1e293b;
+      --warning: #facc15;
+      --danger: #ef4444;
+      --success: #10b981;
+      --bg: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--secondary);
+    }
+
+    nav {
+      background: var(--secondary);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .content {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+
+    #addProjectBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #addProjectBtn i {
+      transition: transform 0.3s ease;
+    }
+
+    #addProjectBtn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    #addProjectBtn:hover i {
+      transform: rotate(90deg);
+    }
+
+    .project-card {
+      background: #ffffff;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      margin-top: 0.5rem;
+      gap: 10px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease-in-out;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      margin-top: 10px;
+      margin-right: 6px;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn.task { background: var(--success); }
+    .btn.edit { background: var(--warning); color: black; }
+    .btn.delete { background: var(--danger); }
+
+    .task-card {
+      padding: 10px;
+      margin-top: 10px;
+      background: #f0f9ff;
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <nav>Project Management</nav>
+
+  <section class="content">
+    <h1>Projects</h1>
+    <button id="addProjectBtn"><i class="fas fa-plus-circle"></i> Add Project</button>
+    <div id="projectsContainer"></div>
+  </section>
+
+  <section class="content">
+    <h1>Sent Tasks</h1>
+    <div id="tasksContainer"></div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const projectsContainer = document.getElementById("projectsContainer");
+      const tasksContainer = document.getElementById("tasksContainer");
+      const addProjectBtn = document.getElementById("addProjectBtn");
+
+      let projects = JSON.parse(localStorage.getItem("projects")) || [];
+      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      function renderProjects() {
+        projectsContainer.innerHTML = "";
+        projects.forEach((project, index) => {
+          const card = document.createElement("div");
+          card.classList.add("project-card");
+          card.innerHTML = `
+            <strong>${project.name}</strong> - Team: ${project.team}
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${project.progress}%"></div>
+              </div>
+              <span>${project.progress}%</span>
+            </div>
+            <input type="range" min="0" max="100" value="${project.progress}" onchange="updateProgress(${index}, this.value)">
+            <button class="btn task" onclick="sendTask(${index})">📩 Task</button>
+            <button class="btn edit" onclick="editProject(${index})">✏ Edit</button>
+            <button class="btn delete" onclick="deleteProject(${index})">🗑 Delete</button>
+          `;
+          projectsContainer.appendChild(card);
+        });
+      }
+
+      function renderTasks() {
+        tasksContainer.innerHTML = "";
+        tasks.forEach(task => {
+          const card = document.createElement("div");
+          card.classList.add("task-card");
+          card.textContent = `${task.team}: ${task.details}`;
+          tasksContainer.appendChild(card);
+        });
+      }
+
+      addProjectBtn.addEventListener("click", () => {
+        const name = prompt("Project name:");
+        const team = prompt("Team name:");
+        if (name && team) {
+          projects.push({ name, team, progress: 0 });
+          localStorage.setItem("projects", JSON.stringify(projects));
+          renderProjects();
+        }
+      });
+
+      window.sendTask = function(index) {
+        const details = prompt("Task details:");
+        if (details) {
+          tasks.push({ team: projects[index].team, details });
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+          renderTasks();
+        }
+      };
+
+      window.editProject = function(index) {
+        const newName = prompt("New project name:", projects[index].name);
+        if (newName) {
+          projects[index].name = newName;
+          localStorage.setItem("projects", JSON.stringify(projects));
+          renderProjects();
+        }
+      };
+
+      window.deleteProject = function(index) {
+        if (confirm("Delete this project?")) {
+          projects.splice(index, 1);
+          localStorage.setItem("projects", JSON.stringify(projects));
+          renderProjects();
+        }
+      };
+
+      window.updateProgress = function(index, value) {
+        projects[index].progress = value;
+        localStorage.setItem("projects", JSON.stringify(projects));
+        renderProjects();
+      };
+
+      renderProjects();
+      renderTasks();
+    });
+  </script>
+</body>
+</html>

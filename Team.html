@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Navigation */
+        nav {
+            background: #1E293B;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .menu-items ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .menu-items ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .menu-items ul li a:hover {
+            background: #38BDF8;
+        }
+
+        /* Team Section */
+        .team-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .team-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-member-btn {
+            background: #38BDF8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .add-member-btn:hover {
+            background: #0ea5e9;
+        }
+
+        .team-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .team-member {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-btn, .edit-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .edit-btn {
+            background: #4CAF50;
+        }
+
+        .remove-btn:hover {
+            background: #dc2626;
+        }
+
+        .edit-btn:hover {
+            background: #388E3C;
+        }
+
+        /* Add Member Form */
+        .add-member-form {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-member-form input, .add-member-form select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .save-btn {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">Project Management</span>
+        </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="projects.html"><i class="fas fa-project-diagram"></i> Projects</a></li>
+                <li><a href="team.html"><i class="fas fa-users"></i> Team</a></li>
+                <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="team-container">
+        <div class="team-title">
+            <h2>Team Members</h2>
+            <button class="add-member-btn">Add Member</button>
+        </div>
+
+        <ul class="team-list" id="teamList">
+            <p>No team members added yet.</p>
+        </ul>
+
+        <div class="add-member-form" id="addMemberForm">
+            <input type="text" id="memberName" placeholder="Member Name">
+            <input type="number" id="memberNumber" placeholder="Number of People" min="1">
+            <select id="memberSkill">
+                <option value="Interiors">Interiors</option>
+                <option value="Exteriors">Exteriors</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical">Electrical</option>
+            </select>
+            <input type="number" id="memberExperience" placeholder="Years of Experience">
+            <select id="memberProject">
+                <option value="Project A">Project A</option>
+                <option value="Project B">Project B</option>
+                <option value="Project C">Project C</option>
+            </select>
+            <button class="save-btn" id="saveMemberBtn">Save Member</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const addMemberBtn = document.querySelector(".add-member-btn");
+            const addMemberForm = document.getElementById("addMemberForm");
+            const saveMemberBtn = document.getElementById("saveMemberBtn");
+            const teamList = document.getElementById("teamList");
+            let isEditing = false;
+            let editIndex = null;
+
+            function loadTeamMembers() {
+                let members = JSON.parse(localStorage.getItem("teamMembers")) || [];
+                teamList.innerHTML = "";
+                
+                if (members.length === 0) {
+                    teamList.innerHTML = "<p>No team members added yet.</p>";
+                    return;
+                }
+
+                members.forEach((member, index) => {
+                    let listItem = document.createElement("li");
+                    listItem.classList.add("team-member");
+                    listItem.innerHTML = `
+                        <span>${member.name} - ${member.skill} (${member.experience} years, ${member.number} persons) assigned to ${member.project}</span>
+                        <button class="edit-btn" data-index="${index}">Edit</button>
+                        <button class="remove-btn" data-index="${index}">Remove</button>
+                    `;
+                    teamList.appendChild(listItem);
+                });
+            }
+
+            addMemberBtn.addEventListener("click", function () {
+                addMemberForm.style.display = "flex";
+                isEditing = false;
+                editIndex = null;
+                document.getElementById("memberName").value = "";
+                document.getElementById("memberNumber").value = "";
+                document.getElementById("memberExperience").value = "";
+                document.getElementById("memberProject").value = "Project A";
+            });
+
+            saveMemberBtn.addEventListener("click", function () {
+                const name = document.getElementById("memberName").value.trim();
+                const number = document.getElementById("memberNumber").value.trim();
+                const skill = document.getElementById("memberSkill").value;
+                const experience = document.getElementById("memberExperience").value.trim();
+                const project = document.getElementById("memberProject").value;
+
+                if (name === "" || number === "" || experience === "") {
+                    alert("Please fill all fields.");
+                    return;
+                }
+
+                let members = JSON.parse(localStorage.getItem("teamMembers")) || [];
+
+                if (isEditing) {
+                    members[editIndex] = { name, skill, experience, number, project };
+                } else {
+                    members.push({ name, skill, experience, number, project });
+                }
+
+                localStorage.setItem("teamMembers", JSON.stringify(members));
+                addMemberForm.style.display = "none";
+                loadTeamMembers();
+            });
+
+            teamList.addEventListener("click", function (event) {
+                if (event.target.classList.contains("remove-btn")) {
+                    let members = JSON.parse(localStorage.getItem("teamMembers"));
+                    members.splice(event.target.dataset.index, 1);
+                    localStorage.setItem("teamMembers", JSON.stringify(members));
+                    loadTeamMembers();
+                }
+
+                if (event.target.classList.contains("edit-btn")) {
+                    isEditing = true;
+                    editIndex = event.target.dataset.index;
+                    let members = JSON.parse(localStorage.getItem("teamMembers"));
+                    let member = members[editIndex];
+
+                    document.getElementById("memberName").value = member.name;
+                    document.getElementById("memberNumber").value = member.number;
+                    document.getElementById("memberSkill").value = member.skill;
+                    document.getElementById("memberExperience").value = member.experience;
+                    document.getElementById("memberProject").value = member.project;
+                    addMemberForm.style.display = "flex";
+                }
+            });
+
+            loadTeamMembers();
+        });
+    </script>
+</body>
+</html>

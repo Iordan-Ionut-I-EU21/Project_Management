@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapoarte Zilnice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        .container {
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-danger { background: #E63946; color: white; }
+        .btn-logout { background: #444; color: white; }
+
+        .report-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="authContainer" class="container">
+        <h2>Înregistrare / Autentificare</h2>
+        <input type="text" id="username" placeholder="Nume utilizator">
+        <input type="password" id="password" placeholder="Parolă">
+        <button class="btn-primary" onclick="register()">Înregistrează-te</button>
+        <button class="btn-primary" onclick="login()">Autentificare</button>
+    </div>
+    
+    <div id="reportSection" class="container hidden">
+        <h1>Rapoarte Zilnice</h1>
+        <button class="btn-logout" onclick="logout()">Deconectare</button>
+        <button class="btn-primary" onclick="showReportForm()">➕ Adaugă Raport</button>
+
+        <input type="text" id="searchReport" placeholder="Caută rapoarte..." oninput="filterReports()">
+        <input type="date" id="dateFilter" onchange="filterReports()">
+        <button class="btn-primary" onclick="sortReports()">Sortează după dată</button>
+
+        <div id="reportsContainer"></div>
+    </div>
+
+    <div id="reportForm" class="container hidden">
+        <h2>Adaugă Raport</h2>
+        <textarea id="reportDetails" placeholder="Descriere raport"></textarea>
+        <input type="file" id="imageInput" accept="image/*">
+        <button class="btn-primary" onclick="saveReport()">Salvează Raport</button>
+    </div>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+        let reports = JSON.parse(localStorage.getItem("reports")) || [];
+        let currentUser = localStorage.getItem("currentUser");
+
+        function showReports() {
+            document.getElementById("authContainer").classList.add("hidden");
+            document.getElementById("reportSection").classList.remove("hidden");
+            renderReports();
+        }
+
+        function renderReports() {
+            const reportsContainer = document.getElementById("reportsContainer");
+            reportsContainer.innerHTML = "";
+            reports.forEach((report, index) => {
+                if (report.user === currentUser) {
+                    let reportCard = document.createElement("div");
+                    reportCard.classList.add("report-card");
+                    reportCard.innerHTML = `
+                        <strong>${report.user}</strong>: ${report.details} <br>
+                        <small>${report.date}</small>
+                        ${report.image ? `<img src="${report.image}" alt="Raport">` : ""}
+                        <button class="btn-danger" onclick="deleteReport(${index})">🗑 Șterge</button>
+                    `;
+                    reportsContainer.appendChild(reportCard);
+                }
+            });
+        }
+
+        function register() {
+            let username = document.getElementById("username").value.trim();
+            let password = document.getElementById("password").value;
+            if (username && password) {
+                if (users[username]) {
+                    alert("Utilizatorul există deja. Autentifică-te.");
+                } else {
+                    users[username] = password;
+                    localStorage.setItem("users", JSON.stringify(users));
+                    alert("Înregistrare reușită! Autentifică-te.");
+                }
+            } else {
+                alert("Completează toate câmpurile.");
+            }
+        }
+
+        function login() {
+            let username = document.getElementById("username").value.trim();
+            let password = document.getElementById("password").value;
+            if (users[username] && users[username] === password) {
+                localStorage.setItem("currentUser", username);
+                currentUser = username;
+                showReports();
+            } else {
+                alert("Credențiale invalide.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("currentUser");
+            location.reload();
+        }
+
+        function showReportForm() {
+            document.getElementById("reportForm").classList.remove("hidden");
+        }
+
+        function saveReport() {
+            let reportDetails = document.getElementById("reportDetails").value;
+            let imageInput = document.getElementById("imageInput");
+            let image = imageInput.files[0] ? URL.createObjectURL(imageInput.files[0]) : null;
+
+            if (reportDetails) {
+                reports.push({
+                    user: currentUser,
+                    details: reportDetails,
+                    date: new Date().toISOString().split("T")[0],
+                    image: image
+                });
+
+                localStorage.setItem("reports", JSON.stringify(reports));
+                renderReports();
+                document.getElementById("reportForm").classList.add("hidden");
+                document.getElementById("reportDetails").value = "";
+                document.getElementById("imageInput").value = "";
+            }
+        }
+
+        if (currentUser) showReports();
+    </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Solution for Enhanced Project Management in Construction</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        /* Navigation Bar */
+        nav {
+            background: #1E293B;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .menu-items ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .menu-items ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        
+        .menu-items ul li a:hover {
+            background: #38BDF8;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            padding: 20px;
+        }
+        
+        .boxes {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            text-align: center;
+        }
+        
+        .box1 { background: #38BDF8; color: white; }
+        .box2 { background: #FACC15; color: white; }
+        .box3 { background: #10B981; color: white; }
+        
+        .activity {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .activity-data {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .data-title {
+            font-weight: bold;
+        }
+        
+        .data-list {
+            margin-top: 5px;
+        }
+
+        .overdue {
+            color: #EF4444; /* Red */
+        }
+
+        .on-time {
+            color: #10B981; /* Green */
+        }
+
+        .reminder-btn {
+            padding: 8px 15px;
+            background-color: #38BDF8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .reminder-btn:hover {
+            background-color: #3498db;
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">Project Management</span>
+        </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="projects.html"><i class="fas fa-project-diagram"></i> Projects</a></li>
+                <li><a href="team.html"><i class="fas fa-users"></i> Team</a></li>
+                <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+            <ul class="logout-mode">
+                <li><a href="#logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="dashboard">
+        <div class="top">
+            <i class="fas fa-bars sidebar-toggle"></i>
+        </div>
+        <div class="dash-content">
+            <div class="overview">
+                <div class="boxes">
+                    <div class="box box1">
+                        <span class="text">Total Projects</span>
+                        <span id="totalProjects" class="number">0</span>
+                    </div>
+                    <div class="box box2">
+                        <span class="text">Ongoing Tasks</span>
+                        <span id="ongoingTasks" class="number">0</span>
+                    </div>
+                    <div class="box box3">
+                        <span class="text">Completed Tasks</span>
+                        <span id="completedTasks" class="number">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="activity">
+                <div class="title">
+                    <i class="fas fa-history"></i>
+                    <span class="text">Recent Activities</span>
+                </div>
+                <div class="activity-data" id="recentActivities">
+                    <p>No recent activities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const recentActivitiesContainer = document.getElementById("recentActivities");
+            const totalProjects = document.getElementById("totalProjects");
+            const ongoingTasks = document.getElementById("ongoingTasks");
+            const completedTasks = document.getElementById("completedTasks");
+
+            function loadRecentActivities() {
+                let projects = JSON.parse(localStorage.getItem("projects")) || [];
+
+                // Update counters
+                totalProjects.textContent = projects.length;
+                ongoingTasks.textContent = projects.filter(p => p.status === "Ongoing").length;
+                completedTasks.textContent = projects.filter(p => p.status === "Completed").length;
+
+                // Update recent activities
+                if (projects.length === 0) {
+                    recentActivitiesContainer.innerHTML = "<p>No recent activities.</p>";
+                    return;
+                }
+
+                recentActivitiesContainer.innerHTML = "";
+                projects.slice(-3).forEach(proj => {
+                    // Verificăm data termenului limită și culoarea corespunzătoare
+                    const currentDate = new Date();
+                    const endDate = new Date(proj.endDate);
+                    const overdue = endDate < currentDate;
+
+                    let activityItem = document.createElement("div");
+                    activityItem.innerHTML = `
+                        <div class="data">
+                            <span class="data-title">Project Name</span>
+                            <span class="data-list">${proj.name}</span>
+                        </div>
+                        <div class="data">
+                            <span class="data-title">Status</span>
+                            <span class="data-list ${overdue ? 'overdue' : 'on-time'}">${proj.status}</span>
+                        </div>
+                        <div class="data">
+                            <span class="data-title">Due Date</span>
+                            <span class="data-list">${proj.endDate}</span>
+                        </div>
+                        <div class="data">
+                            <button class="reminder-btn" onclick="sendReminder('${proj.name}')">Send Reminder</button>
+                        </div>
+                    `;
+                    recentActivitiesContainer.appendChild(activityItem);
+                });
+            }
+
+            loadRecentActivities();
+        });
+
+        // Funcția pentru trimiterea reminderului (simulată pentru acest exemplu)
+        function sendReminder(projectName) {
+            alert(`Reminder sent for project: ${projectName}`);
+            // Aici poți implementa logica pentru a trimite reminderul via email sau SMS
+        }
+    </script>
+</body>
+</html>
