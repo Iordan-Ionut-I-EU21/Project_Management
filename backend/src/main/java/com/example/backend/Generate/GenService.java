@@ -1,9 +1,12 @@
-package com.example.backend.Service;
+package com.example.backend.Generate;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.*;
 import com.example.backend.Model.Enum.*;
+import com.example.backend.Service.*;
 import com.github.javafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,10 +17,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class FakerDataService {
+public class GenService {
     private static final Faker faker = new Faker();
-    private final Random random = new Random();
-
+    private static final Random random = new Random();
+    @Autowired
+    private static final Logger LOG = LoggerFactory.getLogger(GenService.class);
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -40,6 +44,10 @@ public class FakerDataService {
     private AuditLogsService auditLogsService;
     @Autowired
     private ActivitiesService activitiesService;
+
+    public String generate() {
+        return faker.name().fullName();
+    }
 
     public void generateUsers(int number) {
         Set<String> usedEmails = new HashSet<>();
@@ -132,7 +140,6 @@ public class FakerDataService {
 
             User assignedUser = users.get(faker.random().nextInt(users.size()));
             Projects project = projects.get(faker.random().nextInt(projects.size()));
-
             task.setAssignedId(assignedUser);
             task.setProjectId(project);
 
@@ -295,7 +302,6 @@ public class FakerDataService {
         }
         activitiesService.postActivities(activities);
     }
-
 
 
     private Status generateStatus() {

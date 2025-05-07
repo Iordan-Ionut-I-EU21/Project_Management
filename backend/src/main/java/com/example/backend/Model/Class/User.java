@@ -1,16 +1,18 @@
 package com.example.backend.Model.Class;
 
+
 import com.example.backend.Model.Enum.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Cacheable
+@Data
 @Table(name = "USERS")
 @Entity
 public class User {

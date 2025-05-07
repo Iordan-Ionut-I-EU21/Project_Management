@@ -1,9 +1,7 @@
 package com.example.backend.Model.Class;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 @Data
@@ -20,4 +18,5 @@ public class Categories {
     private String name;
     @Column(name = "description")
     private String description;
+
 }

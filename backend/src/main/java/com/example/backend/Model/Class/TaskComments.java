@@ -1,5 +1,6 @@
 package com.example.backend.Model.Class;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,9 +12,11 @@ import java.sql.Timestamp;
 public class TaskComments {
     @Id
     private String id;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name ="taskId")
     private  Tasks taskId;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name ="userId")
     private  User userId;
     @Column(name = "commnet")
     private  String commnet;

@@ -22,4 +22,5 @@ public class ProjectsMembers {
     private User userId;
     @Enumerated(EnumType.STRING)
     private Role role;
+
 }

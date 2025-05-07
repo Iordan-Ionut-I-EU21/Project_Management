@@ -7,7 +7,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Data
-@Table(name= "SUB_TASKS")
+@Table(name = "SUB_TASKS")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,14 +15,15 @@ import java.sql.Timestamp;
 @Setter
 public class SubTasks {
     @Id
-    private  String id;
-    @OneToOne
+    private String id;
+    @ManyToOne
+    @JoinColumn(name ="taskId")
     private Tasks taskId;
     @Column(name = "title")
-    private  String title;
+    private String title;
     @Column(name = "description")
-    private  String description;
-    @Column(name= "dueDate")
+    private String description;
+    @Column(name = "dueDate")
     private Timestamp dueDate;
     @Enumerated(EnumType.STRING)
     private Progress progress;

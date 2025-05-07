@@ -1,10 +1,10 @@
 package com.example.backend.Repository;
 
+
 import com.example.backend.Model.Class.AuditLogs;
-import com.example.backend.Model.Class.Tasks;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuditLogsRepository  extends JpaRepository<AuditLogs, String> {
+public interface AuditLogsRepository extends JpaRepository<AuditLogs, String> {
 }

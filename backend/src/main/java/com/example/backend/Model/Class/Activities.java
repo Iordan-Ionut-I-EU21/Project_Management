@@ -1,5 +1,6 @@
 package com.example.backend.Model.Class;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,13 +15,15 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class Activities {
     @Id
-    private  String id;
-    @OneToOne
+    private String id;
+    @ManyToOne
+    @JoinColumn(name = "userId")
     private User userId;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "projectId")
     private Projects projectId;
-    @Column(name = "action")
+    @Column(name = "action", length = 50000)
     private String action;
-    @Column (name = "createdAt")
+    @Column(name = "createdAt")
     private Timestamp createdAt;
 }

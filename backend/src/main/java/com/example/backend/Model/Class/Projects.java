@@ -1,5 +1,6 @@
 package com.example.backend.Model.Class;
 
+
 import com.example.backend.Model.Enum.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,14 +21,16 @@ public class Projects {
     private String name;
     @Column(name = "description")
     private String Description;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
     private Categories categoryId;
-    @Column(name="startDate")
+    @Column(name = "startDate")
     private Timestamp startDate;
-    @Column(name="endDate")
+    @Column(name = "endDate")
     private Timestamp endDate;
     @Enumerated(EnumType.STRING)
     private Status status;
-    @OneToOne
-    private  User managerId;
+    @ManyToOne
+    @JoinColumn(name ="managerId")
+    private User managerId;
 }

@@ -1,9 +1,7 @@
 package com.example.backend.Model.Class;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -17,7 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class AuditLogs {
     @Id
-    private  String id;
+    private String id;
     @Column(name = "action")
     private String action;
     @Column(name = "description")
