@@ -1,23 +1,20 @@
-<nav class="navbar">
-  <div class="logo-name">Project Management</div>
+<nav class="navbar bg-custom-dark">
+  <div class="logo-name">
+    <a [routerLink]="feet.route"> <i></i> Project Management </a>
+  </div>
   <ul class="nav-links">
-    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-      <a routerLink="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <li
+      *ngFor="let nav of routes"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <a [routerLink]="nav.route">
+        <i class="fas fa-{{ nav.icon }}"></i> {{ nav.name }}
+      </a>
     </li>
-    <li routerLinkActive="active">
-      <a routerLink="/projects"><i class="fas fa-project-diagram"></i> Projects</a>
-    </li>
-    <li routerLinkActive="active">
-      <a routerLink="/team"><i class="fas fa-users"></i> Team</a>
-    </li>
-    <li routerLinkActive="active">
-      <a routerLink="/reports"><i class="fas fa-file-alt"></i> Reports</a>
-    </li>
-    <li routerLinkActive="active">
-      <a routerLink="/settings"><i class="fas fa-cog"></i> Settings</a>
-    </li>
-    <li>
-      <a routerLink="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <li (click)="onLogout()" class="cursor-pointer">
+      <i class="fas fa-sign-out-alt"></i> Logout
     </li>
   </ul>
 </nav>

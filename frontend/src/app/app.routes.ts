@@ -1,17 +1,38 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './_components/dashboard/dashboard.component';
-import { ProjectsComponent } from './_components/projects/projects.component';
-import { TeamComponent } from './_components/team/team.component';
-import { ReportsComponent } from './_components/reports/reports.component';
-import { SettingsComponent } from './_components/settings/settings.component';
-import { LogoutComponent } from './_components/logout/logout.component';
+import { LoginComponent } from './_page/Authentication/login/login.component';
+import { OtpComponent } from './_page/Authentication/otp/otp.component';
+import { ChangePasswordComponent } from './_page/Authentication/change-password/change-password.component';
+import { DashboardComponent } from './_page/Dashboard/dashboard/dashboard.component';
+import { ProjectsComponent } from './_page/Dashboard/projects/projects.component';
+import { TeamComponent } from './_page/Dashboard/team/team.component';
+import { ReportsComponent } from './_page/Dashboard/reports/reports.component';
 
 export const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'projects', component: ProjectsComponent },
-  { path: 'team', component: TeamComponent },
-  { path: 'reports', component: ReportsComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'logout', component: LogoutComponent },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  {
+    path: 'authentication',
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+      },
+      {
+        path: 'forgot-password',
+        component: ChangePasswordComponent,
+      },
+      {
+        path: 'otp',
+        component: OtpComponent,
+      },
+    ],
+  },
+  {
+    path: 'dashboard',
+    children: [
+      { path: 'feed', component: DashboardComponent },
+      { path: 'projects', component: ProjectsComponent },
+      { path: 'team', component: TeamComponent },
+      { path: 'reports', component: ReportsComponent },
+    ],
+  },
+  { path: '', redirectTo: '/authentication/feed', pathMatch: 'full' },
 ];

@@ -1,2 +1,14 @@
-package com.example.backend.Error;public class ResponseMessage {
+package com.example.backend.Error;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ResponseMessage {
+    private String message;
 }

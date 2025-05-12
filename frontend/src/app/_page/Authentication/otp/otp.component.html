@@ -1,0 +1,114 @@
+<main
+  class="w-full max-w-md mx-auto bg-white p-10 rounded-lg shadow-lg min-h-[100dvh] flex flex-col justify-around"
+>
+  <form
+    *ngIf="!isCorrectOTP"
+    [formGroup]="formOtp"
+    class="form w-full max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg"
+  >
+    <div class="flex flex-col gap-2 mb-3">
+      <p class="text-xl flex text-custom-dark ml-4">
+        Enter last 4 digits of the number we are calling you from
+      </p>
+    </div>
+    <div class="form-card">
+      <div class="form-card-input-wrapper">
+        <input
+          class="form-card-input"
+          placeholder="______"
+          maxlength="6"
+          type="tel"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          (input)="onNumberInput($event)"
+        />
+        <div class="form-card-input-bg"></div>
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      (click)="onCheck()"
+      class="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-700 focus:outline-none"
+    >
+      Check OTP Key
+    </button>
+  </form>
+
+  <form
+    *ngIf="isCorrectOTP"
+    [formGroup]="formPassword"
+    class="form w-full max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg"
+  >
+    <div class="flex flex-col gap-2 mb-3">
+      <p class="text-2xl flex text-custom-dark ml-4">Change password</p>
+    </div>
+    <div class="mb-6">
+      <label class="block text-lg font-semibold text-gray-700 mb-2"
+        >Password</label
+      >
+      <div
+        class="flex items-center border border-gray-300 rounded-md p-2 focus-within:border-blue-500"
+      >
+        <svg
+          class="w-5 h-5 text-gray-500"
+          xmlns="http://www.w3.org/2000/svg"
+          height="20"
+          viewBox="-64 0 512 512"
+          width="20"
+        >
+          <path
+            d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"
+          ></path>
+          <path
+            d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"
+          ></path>
+        </svg>
+        <input
+          type="password"
+          formControlName="password"
+          class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+          placeholder="Enter your new Password"
+        />
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-lg font-semibold text-gray-700 mb-2"
+        >Confirmed Password</label
+      >
+      <div
+        class="flex items-center border border-gray-300 rounded-md p-2 focus-within:border-blue-500"
+      >
+        <svg
+          class="w-5 h-5 text-gray-500"
+          xmlns="http://www.w3.org/2000/svg"
+          height="20"
+          viewBox="-64 0 512 512"
+          width="20"
+        >
+          <path
+            d="m336 512h-288c-26.453125 0-48-21.523438-48-48v-224c0-26.476562 21.546875-48 48-48h288c26.453125 0 48 21.523438 48 48v224c0 26.476562-21.546875 48-48 48zm-288-288c-8.8125 0-16 7.167969-16 16v224c0 8.832031 7.1875 16 16 16h288c8.8125 0 16-7.167969 16-16v-224c0-8.832031-7.1875-16-16-16zm0 0"
+          ></path>
+          <path
+            d="m304 224c-8.832031 0-16-7.167969-16-16v-80c0-52.929688-43.070312-96-96-96s-96 43.070312-96 96v80c0 8.832031-7.167969 16-16 16s-16-7.167969-16-16v-80c0-70.59375 57.40625-128 128-128s128 57.40625 128 128v80c0 8.832031-7.167969 16-16 16zm0 0"
+          ></path>
+        </svg>
+        <input
+          type="password"
+          formControlName="pendingPassword"
+          class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+          placeholder="Enter your Confirmed Password"
+        />
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      (click)="!isCorrectOTP ? onCheck(): onSave()"
+      class="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-700 focus:outline-none"
+    >
+      {{ !isCorrectOTP ? "Check OTP Key" : "Save new Password" }}
+    </button>
+  </form>
+</main>

@@ -15,23 +15,7 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("userCache",
-                "mediaCache",
-                "storyCache",
-                "shareCache",
-                "postCache",
-                "likeCache",
-                "followerCache",
-                "commentCache",
-                "highlightCache",
-                "hashtagCache",
-                "groupMembershipCache",
-                "groupCache",
-                "messageCache",
-                "messageReadStatusCache",
-                "hobbyCache",
-                "journalCache",
-                "travelDestinationCache");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)//10
                 .maximumSize(1000));//1000
