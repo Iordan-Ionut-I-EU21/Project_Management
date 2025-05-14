@@ -1,0 +1,13 @@
+<div class="stats">
+  <div
+    class="box total-projects"
+    [ngStyle]="{ background: card.color, color: 'white' }"
+    (click)="onCardClick()"
+  >
+    <p>{{ card.name }}</p>
+    <div class="info">
+      <i [class]="card.icon" class="pr-4"></i>
+      <span>{{ card.count }}</span>
+    </div>
+  </div>
+</div>

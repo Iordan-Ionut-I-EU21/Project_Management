@@ -16,4 +16,8 @@ public class ProjectsMembersService {
     public void postProjectsMembers(final List<ProjectsMembers> projectsMembers) {
         this.projectsMembersRepository.saveAll(projectsMembers);
     }
+
+    public Long getCountOfProjectsByUserEmail(final String email){
+        return this.projectsMembersRepository.getCountOfProjectsByUserEmail(email);
+    }
 }

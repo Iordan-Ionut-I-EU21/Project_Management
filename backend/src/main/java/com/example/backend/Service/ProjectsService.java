@@ -20,4 +20,8 @@ public class ProjectsService {
     public void postProjects(List<Projects> projects) {
         this.projectsRepository.saveAll(projects);
     }
+
+    public List<Projects> getDataOfProjectsByUserEmail(final String email){
+        return this.projectsRepository.getDataOfProjectsByUserEmail(email);
+    }
 }

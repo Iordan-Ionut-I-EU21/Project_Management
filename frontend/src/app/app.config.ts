@@ -1,8 +1,4 @@
-import {
-  APP_INITIALIZER,
-  ApplicationConfig,
-  provideZoneChangeDetection,
-} from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -12,13 +8,10 @@ import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
   withFetch,
-  withInterceptorsFromDi,
 } from '@angular/common/http';
-import { LoadingInterceptor } from './_service/_spinner/loading-interceptor';
 import { JwtService } from './_service/_http/jwt.service';
 import { AuthInterceptor } from './_service/_http/auth-interception.service';
-import { provideServerRendering } from '@angular/platform-server';
-import { APP_BASE_HREF } from '@angular/common';
+import { LoadingInterceptor } from './_service/_spinner/loading-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +19,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true,
     },
     // {
@@ -38,9 +36,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideAnimationsAsync(),
-    provideServerRendering(),
     provideHttpClient(withFetch()),
-    { provide: APP_BASE_HREF, useValue: '/' },
-    provideHttpClient(withInterceptorsFromDi()),
   ],
 };

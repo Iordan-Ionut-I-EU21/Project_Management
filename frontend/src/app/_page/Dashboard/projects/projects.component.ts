@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-interface Project {
-  name: string;
-  team: string;
-  progress: number;
-}
+import { Component, ViewChild } from '@angular/core';
+import { ProjectsService } from '../../../_service/_model/projects.service';
+import { HttpClientModule } from '@angular/common/http';
+import { JwtService } from '../../../_service/_http/jwt.service';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { Projects } from '../../../_model/_interface/projects';
+import { NamePageComponent } from '../../../_components/name-page/name-page.component';
+import { NamePage } from '../../../_model/_common/name-page';
 
 interface Task {
   team: string;
@@ -13,71 +20,48 @@ interface Task {
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatIconModule,
+    NamePageComponent,
+  ],
+  providers: [ProjectsService],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',
 })
 export class ProjectsComponent {
-  projects: Project[] = [];
-  tasks: Task[] = [];
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = new MatTableDataSource<Projects>([]);
 
-  ngOnInit(): void {
-    this.loadProjects();
-    this.loadTasks();
-  }
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  loadProjects(): void {
-    const data = localStorage.getItem('projects');
-    this.projects = data ? JSON.parse(data) : [];
-  }
-
-  loadTasks(): void {
-    const data = localStorage.getItem('tasks');
-    this.tasks = data ? JSON.parse(data) : [];
-  }
-
-  saveProjects(): void {
-    localStorage.setItem('projects', JSON.stringify(this.projects));
-  }
-
-  saveTasks(): void {
-    localStorage.setItem('tasks', JSON.stringify(this.tasks));
-  }
-
-  addProject(): void {
-    const name = prompt('Project name:');
-    const team = prompt('Team name:');
-    if (name && team) {
-      this.projects.push({ name, team, progress: 0 });
-      this.saveProjects();
-    }
-  }
-
-  updateProgress(index: number, value: number): void {
-    this.projects[index].progress = Number(value);
-    this.saveProjects();
-  }
-
-  editProject(index: number): void {
-    const newName = prompt('New project name:', this.projects[index].name);
-    if (newName) {
-      this.projects[index].name = newName;
-      this.saveProjects();
-    }
-  }
-
-  deleteProject(index: number): void {
-    if (confirm('Delete this project?')) {
-      this.projects.splice(index, 1);
-      this.saveProjects();
-    }
-  }
-
-  sendTask(index: number): void {
-    const details = prompt('Task details:');
-    if (details) {
-      this.tasks.push({ team: this.projects[index].team, details });
-      this.saveTasks();
-    }
+  page: NamePage = {
+    name: 'Projects Overview',
+    icon: 'folder_open',
+  };
+  constructor(
+    private _projectsService: ProjectsService,
+    private _jwtService: JwtService
+  ) {
+    this._projectsService
+      .getDataOfProjectsByUserEmail(this._jwtService.getEmail())
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+          this.dataSource.data = response;
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
 }

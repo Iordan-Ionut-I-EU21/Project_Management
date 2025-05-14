@@ -93,4 +93,8 @@ export class JwtService {
   logout(name: string): void {
     this._cookieService.delete(name, '/');
   }
+
+  getEmail(): string {
+    return this.decodeToken(Environment.jwtToken)?.sub;
+  }
 }

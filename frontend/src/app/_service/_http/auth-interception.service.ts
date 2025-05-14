@@ -8,7 +8,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Environment } from '../../../environments/environment';
 import { JwtService } from './jwt.service';
-
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private _jwt: JwtService) {}
