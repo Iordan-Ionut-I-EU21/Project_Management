@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { Card } from '../../../_model/_common/card';
 import { TasksService } from '../../../_service/_model/tasks.service';
-import { JwtService } from '../../../_service/_http/jwt.service';
-import { Environment } from '../../../../environments/environment';
-import { response } from 'express';
 import { HttpClientModule } from '@angular/common/http';
 import { ProjectsMembersService } from '../../../_service/_model/projects-members.service';
 import { CardComponent } from '../../../_components/card/card.component';
@@ -14,6 +11,8 @@ import { Router } from '@angular/router';
 import { NamePage } from '../../../_model/_common/name-page';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { MatCardModule } from '@angular/material/card';
+import { JwtService } from '../../../_service/_http/jwt.service';
+import { Status } from '../../../_model/_enum/status';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,7 +44,8 @@ export class DashboardComponent {
   ) {
     forkJoin({
       taskCount: this._tasksService.getCountOfTasksByUserEmail(
-        this._jwtService.getEmail()
+        this._jwtService.getEmail(),
+        Status.PENDING
       ),
       projectCount: this._projectsMembersService.getCountOfProjectsByUserEmail(
         this._jwtService.getEmail()

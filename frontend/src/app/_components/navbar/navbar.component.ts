@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { JwtService } from '../../_service/_http/jwt.service';
 import { Environment } from '../../../environments/environment';
 import { on } from 'events';
+import { JwtService } from '../../_service/_http/jwt.service';
 
 @Component({
   selector: 'app-navbar',
@@ -22,11 +22,9 @@ export class NavbarComponent {
 
   feet: NavItem = this.routes[0];
 
-  constructor(private _jwtService: JwtService, private _router: Router) {
-    if (this._jwtService.isTokenExpired(Environment.jwtToken)) {
-      this.onLogout();
-    }
-  }
+  constructor(private _jwtService: JwtService, private _router: Router) {}
+
+  ngAfterViewInit(): void {}
 
   onLogout() {
     this._jwtService.logout(Environment.jwtToken);

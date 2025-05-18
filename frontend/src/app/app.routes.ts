@@ -6,6 +6,8 @@ import { DashboardComponent } from './_page/Dashboard/dashboard/dashboard.compon
 import { ProjectsComponent } from './_page/Dashboard/projects/projects.component';
 import { TeamComponent } from './_page/Dashboard/team/team.component';
 import { ReportsComponent } from './_page/Dashboard/reports/reports.component';
+import { TasksComponent } from './_page/Dashboard/tasks/tasks.component';
+import { UserComponent } from './_page/Dashboard/user/user.component';
 
 export const routes: Routes = [
   {
@@ -32,7 +34,10 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectsComponent },
       { path: 'team', component: TeamComponent },
       { path: 'reports', component: ReportsComponent },
+      { path: 'tasks', component: TasksComponent },
+      { path: 'user/:id', component: UserComponent },
     ],
   },
-  { path: '', redirectTo: '/authentication/feed', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard/feed', pathMatch: 'full' },
+  { path: '**', redirectTo: 'dashboard/feed' },
 ];

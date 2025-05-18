@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -9,13 +13,17 @@ import {
   provideHttpClient,
   withFetch,
 } from '@angular/common/http';
-import { JwtService } from './_service/_http/jwt.service';
-import { AuthInterceptor } from './_service/_http/auth-interception.service';
 import { LoadingInterceptor } from './_service/_spinner/loading-interceptor';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { CustomMatPaginatorIntl } from './_service/_http/custom-mat-paginator-interception';
+import { AuthInterceptor } from './_service/_http/auth-interception.service';
+import { JwtService } from './_service/_http/jwt.service';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     JwtService,
+    provideCharts(withDefaultRegisterables()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
@@ -26,16 +34,12 @@ export const appConfig: ApplicationConfig = {
       useClass: LoadingInterceptor,
       multi: true,
     },
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: (appInit: AppInitService) => () => appInit.initApp(),
-    //   deps: [AppInitService],
-    //   multi: true,
-    // },
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(),
     provideAnimationsAsync(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(),
   ],
 };
+

@@ -4,4 +4,5 @@ export const Environment = {
   jwtToken: 'jwtToken',
   jwtOtp: 'jwtOtp',
   appConfig: 'local',
+  pageSize: 10,
 };

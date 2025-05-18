@@ -57,5 +57,31 @@ public class GenController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/need")
+    public ResponseEntity<Void> postNeedData(@RequestParam(value = "num", defaultValue = "1") final int number) {
+        LOG.info("runnn1");
+        try {
+            LOG.info("------------START------------");
+            long startTime = System.currentTimeMillis();
+
+            genService.generateTasks(number);
+            genService.generateTaskComments(number);
+            genService.generateProjectsMembers(number);
+
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            long hours = duration / (1000 * 60 * 60);
+            long minutes = (duration % (1000 * 60 * 60)) / (1000 * 60);
+            long seconds = (duration % (1000 * 60)) / 1000;
+
+            String formattedDuration = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            LOG.info("postNeedData() - Successful....." + formattedDuration);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            System.out.println("Error posting all: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
 

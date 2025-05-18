@@ -1,0 +1,31 @@
+button {
+    margin-right: 10px;
+  }
+  
+  table {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  th.mat-header-cell {
+    background: #e0e7ff;
+    color: rgb(17, 24, 39);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  td.mat-cell {
+    font-size: 1rem;
+    padding: 1rem 0.5rem;
+  }
+  
+  tr.mat-row:hover {
+    background: #dbeafe !important;
+    transition: background 0.2s;
+  }
+  
+  mat-paginator {
+    border-radius: 0.75rem;
+    border: 1px solid #e0e7ff;
+    margin-top: 1.5rem;
+  }

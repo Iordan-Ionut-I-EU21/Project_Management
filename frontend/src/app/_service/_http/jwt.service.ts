@@ -3,6 +3,7 @@ import { Environment } from '../../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { jwtDecode } from 'jwt-decode';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class JwtService {
   constructor(
     private _cookieService: CookieService,
+    private _router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
@@ -92,6 +94,7 @@ export class JwtService {
 
   logout(name: string): void {
     this._cookieService.delete(name, '/');
+    this._router.navigate(['/authentication/login']);
   }
 
   getEmail(): string {

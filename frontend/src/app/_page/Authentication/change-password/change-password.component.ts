@@ -9,9 +9,9 @@ import {
 } from '@angular/forms';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { AlertEnum } from '../../../_model/_common/alert';
+import { Environment } from '../../../../environments/environment';
 import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
-import { Environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-change-password',

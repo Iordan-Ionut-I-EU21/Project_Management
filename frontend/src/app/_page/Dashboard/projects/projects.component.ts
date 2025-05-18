@@ -2,62 +2,139 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { ProjectsService } from '../../../_service/_model/projects.service';
 import { HttpClientModule } from '@angular/common/http';
-import { JwtService } from '../../../_service/_http/jwt.service';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { Projects } from '../../../_model/_interface/projects';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { NamePage } from '../../../_model/_common/name-page';
+import { TableComponent } from '../../../_components/table/table.component';
+import { TableColumn } from '../../../_model/_common/table-column';
+import { JwtService } from '../../../_service/_http/jwt.service';
+import { dir, table } from 'console';
+import { SortPage } from '../../../_model/_common/sort-page';
+import { ChangePage } from '../../../_model/_common/change-page';
+import { Environment } from '../../../../environments/environment';
+import { GroupResult } from '../../../_model/_common/group-result';
+import { DialogService } from '../../../_service/_dialog/dialog.service';
+import { TasksService } from '../../../_service/_model/tasks.service';
 
-interface Task {
-  team: string;
-  details: string;
-}
 @Component({
   selector: 'app-projects',
   standalone: true,
   imports: [
     CommonModule,
     HttpClientModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatProgressSpinnerModule,
-    MatCardModule,
-    MatIconModule,
     NamePageComponent,
+    TableComponent,
+    MatCardModule,
   ],
-  providers: [ProjectsService],
+  providers: [ProjectsService, DialogService],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',
 })
 export class ProjectsComponent {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource<Projects>([]);
+  columns: TableColumn[] = [
+    { key: 'name', code: 'pm.projectId.name', label: 'Name', type: 'text' },
+    {
+      key: 'categoryId.name',
+      code: 'pm.projectId.categoryId.name',
+      label: 'Category',
+      type: 'text',
+    },
+    {
+      key: 'status',
+      code: 'pm.projectId.status',
+      label: 'Status',
+      type: 'text',
+    },
+    {
+      key: 'startDate',
+      code: 'pm.projectId.startDate',
+      label: 'Start Date',
+      pipe: 'date',
+    },
+    {
+      key: 'endDate',
+      code: 'pm.projectId.endDate',
+      label: 'End Date',
+      pipe: 'date',
+    },
+    {
+      key: 'managerId.name',
+      code: 'pm.projectId.managerId.name',
+      label: 'Manager',
+      type: 'link',
+      link: {
+        url: '/dashboard/user',
+        code: 'managerId.id',
+      },
+    },
+    {
+      key: 'edit',
+      code: 'pm.edit',
+      label: 'Edit',
+      type: 'button',
+      buttons: [
+        {
+          icon: 'pie_chart',
+          onClick: (row) => this.onViewChart(row),
+        },
+      ],
+    },
+  ];
+  sortPage: SortPage = {
+    column: this.columns[0].key,
+    direction: '',
+  };
+  changePage: ChangePage = {
+    pageIndex: 0,
+    pageSize: Environment.pageSize,
+  };
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  data!: Projects[];
+  count!: number;
   page: NamePage = {
     name: 'Projects Overview',
     icon: 'folder_open',
   };
   constructor(
     private _projectsService: ProjectsService,
-    private _jwtService: JwtService
+    private _jwtService: JwtService,
+    private _dialogService: DialogService
   ) {
+    this.fetchData();
+  }
+
+  onViewChart(row: Projects) {
+    this._dialogService.openDialogViewChart(row.id, 'PROJECT');
+  }
+
+  onPageChanged(event: ChangePage) {
+    this.changePage = event;
+    this.fetchData();
+  }
+
+  onSortChanged(event: SortPage) {
+    this.sortPage = event;
+    this.fetchData();
+  }
+
+  private fetchData() {
     this._projectsService
-      .getDataOfProjectsByUserEmail(this._jwtService.getEmail())
+      .postDataOfProjectsByUserEmail(
+        this._jwtService.getEmail(),
+        this.sortPage,
+        this.changePage
+      )
       .subscribe({
-        next: (response) => {
-          console.log(response);
-          this.dataSource.data = response;
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
+        next: (response: GroupResult<Projects>) => {
+          this.data = response.items;
+          this.count = response.count;
         },
         error: (err) => {
           console.error(err);

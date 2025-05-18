@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { Environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { Projects } from '../../_model/_interface/projects';
+import { SortPage } from '../../_model/_common/sort-page';
+import { ChangePage } from '../../_model/_common/change-page';
+import { GroupResult } from '../../_model/_common/group-result';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +15,18 @@ export class ProjectsService {
 
   constructor(private _http: HttpClient) {}
 
-  getDataOfProjectsByUserEmail(email: string): Observable<Projects[]> {
-    return this._http.get<Projects[]>(
-      `${this.authUrl}/get/data?email=${email}`
+  postDataOfProjectsByUserEmail(
+    email: string,
+    sortPage: SortPage,
+    changePage: ChangePage
+  ): Observable<GroupResult<Projects>> {
+    const tableRequest = {
+      sortPage,
+      changePage,
+    };
+    return this._http.post<GroupResult<Projects>>(
+      `${this.authUrl}/post/data?email=${email}`,
+      tableRequest
     );
   }
 }

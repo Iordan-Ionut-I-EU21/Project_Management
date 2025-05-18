@@ -10,11 +10,10 @@ import {
 import { AlertEnum } from '../../../_model/_common/alert';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JwtService } from '../../../_service/_http/jwt.service';
 import { Environment } from '../../../../environments/environment';
-import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { PasswordRequest } from '../../../_model/_interface/password-request';
-import { response } from 'express';
+import { AuthenticationService } from '../../../_service/_http/authentication.service';
+import { JwtService } from '../../../_service/_http/jwt.service';
 
 @Component({
   selector: 'app-otp',

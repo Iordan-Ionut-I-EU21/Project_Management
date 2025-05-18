@@ -12,8 +12,10 @@ export class ProjectsMembersService {
   constructor(private _http: HttpClient) {}
 
   getCountOfProjectsByUserEmail(email: string): Observable<number> {
-    return this._http.get<number>(
-      `${this.authUrl}/get/count?email=${email}`
-    );
+    return this._http.get<number>(`${this.authUrl}/get/count?email=${email}`);
+  }
+
+  getCountByRole(userId: string): Observable<any> {
+    return this._http.get<any>(`${this.authUrl}/count/by-role?id=${userId}`);
   }
 }

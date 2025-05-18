@@ -1,5 +1,10 @@
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import {
+  NavigationEnd,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { NavbarComponent } from './_components/navbar/navbar.component';
 import { filter } from 'rxjs';
 import {
@@ -24,16 +29,18 @@ import { SpinnerComponent } from './_service/_spinner/spinner/spinner.component'
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  showNavbar = true;
+  showNavbar = false;
+  isAppReady = false;
 
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
         this.showNavbar = !event.url.includes('authentication');
-      });
+        this.isAppReady = true; 
+      }
+    });
   }
 }
