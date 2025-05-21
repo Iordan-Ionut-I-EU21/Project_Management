@@ -15,6 +15,7 @@ import { JwtService } from '../../_service/_http/jwt.service';
 import { TasksService } from '../../_service/_model/tasks.service';
 import { Environment } from '../../../environments/environment';
 import { ChartsPieComponent } from '../../_components/charts-pie/charts-pie.component';
+import { ProjectsService } from '../../_service/_model/projects.service';
 
 @Component({
   selector: 'app-view-chart',
@@ -48,6 +49,7 @@ export class ViewChartComponent {
 
   constructor(
     private _taskService: TasksService,
+    private _projectService: ProjectsService,
     @Inject(MAT_DIALOG_DATA)
     protected data: { projectId: string; type: 'PROJECT' }
   ) {}
@@ -55,7 +57,7 @@ export class ViewChartComponent {
   ngAfterViewInit(): void {
     switch (this.data.type) {
       case 'PROJECT': {
-        this._taskService.getStatusCounts(this.data.projectId).subscribe({
+        this._projectService.getStatusCounts(this.data.projectId).subscribe({
           next: (response) => {
             Object.entries(response).forEach(([key, value]) => {
               if (value !== 0) {

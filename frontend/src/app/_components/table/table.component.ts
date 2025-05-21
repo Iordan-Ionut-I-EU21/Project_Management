@@ -45,8 +45,10 @@ export class TableComponent {
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
   @Input() count: number = 0;
+  @Input() enableDblClickForRow: boolean = false;
   @Output() pageChanged = new EventEmitter<ChangePage>();
   @Output() sortChanged = new EventEmitter<SortPage>();
+  @Output() onDblClickRow = new EventEmitter<any>();
 
   dataSource = new MatTableDataSource<any>();
   displayedColumnKeys: string[] = [];
@@ -84,6 +86,14 @@ export class TableComponent {
         direction: sortEvent.direction,
       });
     });
+  }
+
+  onRowDoubleClick(event: any) {
+    this.onDblClickRow.emit(event);
+  }
+
+  canDoubleClick(row: any): boolean {
+    return row.id === true;
   }
 
   getNestedValue(row: any, key: string): any {

@@ -16,4 +16,8 @@ public class TasksCommentsService {
     public void postTasksComments(final List<TaskComments> taskComments) {
         this.tasksCommentsRepository.saveAll(taskComments);
     }
+
+    public List<TaskComments> getListByTaskId(final String taskId) {
+        return this.tasksCommentsRepository.getListByTaskId(taskId);
+    }
 }

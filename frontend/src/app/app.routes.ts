@@ -8,6 +8,8 @@ import { TeamComponent } from './_page/Dashboard/team/team.component';
 import { ReportsComponent } from './_page/Dashboard/reports/reports.component';
 import { TasksComponent } from './_page/Dashboard/tasks/tasks.component';
 import { UserComponent } from './_page/Dashboard/user/user.component';
+import { TaskComponent } from './_page/Dashboard/task/task.component';
+import { ProjectComponent } from './_page/Dashboard/project/project.component';
 
 export const routes: Routes = [
   {
@@ -34,7 +36,9 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectsComponent },
       { path: 'team', component: TeamComponent },
       { path: 'reports', component: ReportsComponent },
+      { path: 'project/:id', component: ProjectComponent },
       { path: 'tasks', component: TasksComponent },
+      { path: 'task/:id', component: TaskComponent },
       { path: 'user/:id', component: UserComponent },
     ],
   },

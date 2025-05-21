@@ -16,6 +16,7 @@ import { JwtService } from '../../../_service/_http/jwt.service';
 import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { Tasks } from '../../../_model/_interface/tasks';
 import { Status } from '../../../_model/_enum/status';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tasks',
@@ -98,7 +99,8 @@ export class TasksComponent {
   constructor(
     private _tasksService: TasksService,
     private _jwtService: JwtService,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
+    private _router: Router
   ) {
     this.fetchData();
   }
@@ -115,6 +117,11 @@ export class TasksComponent {
   onPageChanged(page: ChangePage) {
     this.changePage = page;
     this.fetchData();
+  }
+
+  onDblClickRow(event: any) {
+    console.log(event);
+    this._router.navigateByUrl(`/dashboard/task/${event.id}`);
   }
 
   fetchData() {

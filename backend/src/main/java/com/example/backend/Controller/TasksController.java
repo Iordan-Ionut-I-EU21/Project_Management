@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Model.Enum.Priority;
 import com.example.backend.Model.Enum.Status;
 import com.example.backend.Service.TasksService;
@@ -33,17 +34,6 @@ public class TasksController {
         }
     }
 
-    @GetMapping("/count/status")
-    public ResponseEntity<Map<Status, Long>> getStatusCounts(@RequestParam("projectId") final String projectId) {
-        try {
-            log.info("getStatusCounts() - Successful.");
-            return ResponseEntity.ok(this.tasksService.getStatusCounts(projectId));
-        } catch (Exception e) {
-            log.error("Failed to retrieve getStatusCounts(): {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
     @GetMapping("/count/by-id-status-priority")
     public ResponseEntity<Map<Priority, Map<Status, Long>>> countByUserIdAndStatusAndPriority(@RequestParam("id") final String id) {
         try {
@@ -62,6 +52,17 @@ public class TasksController {
             return ResponseEntity.ok(new GroupedResult(this.tasksService.postDataOfProjectsByUserEmailAndStatus(email, status, tableRequest), this.tasksService.getCountOfTasksByUserEmail(email, status)));
         } catch (Exception e) {
             log.error("Failed to retrieve postDataOfProjectsByUserEmail(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/get/by-id")
+    public ResponseEntity<Tasks> getById(@RequestParam("id") final String id) {
+        try {
+            log.info("getById() - Successful.");
+            return ResponseEntity.ok(this.tasksService.getById(id));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getById(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

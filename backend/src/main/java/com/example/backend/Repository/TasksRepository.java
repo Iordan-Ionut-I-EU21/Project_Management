@@ -20,12 +20,12 @@ public interface TasksRepository extends JpaRepository<Tasks, String> {
     @Query("select count(t.id) from Tasks t where t.assignedId.email = :email and t.status = :status")
     Long getCountOfTasksByUserEmail(@Param("email") final String email, @Param("status") final Status status);
 
-    @Query("select count(t.id) from Tasks t where t.status = :status and t.projectId.id = :projectId")
-    Long countByStatus(@Param("status") Status status, @Param("projectId") String projectId);
-
     @Query("SELECT count(t.id)  FROM Tasks t WHERE t.assignedId.id = :userId and t.priority = :priority and t.status = :status GROUP BY t.status, t.priority ")
     Long countByUserIdAndStatusAndPriority(@Param("userId") final String userId, @Param("priority") final Priority priority, @Param("status") final Status status);
 
     @Query("select t from Tasks t  where t.assignedId.email = :email and t.status = :status")
     List<Tasks> postDataOfProjectsByUserEmailAndStatus(@Param("email") final String email, @Param("status") final Status status, Pageable pageable);
+
+    @Query("select t from Tasks t where t.id = :id")
+    Tasks getById(@Param("id") final String id);
 }

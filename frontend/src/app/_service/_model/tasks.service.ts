@@ -25,12 +25,6 @@ export class TasksService {
     );
   }
 
-  getStatusCounts(projectId: string): Observable<any> {
-    return this._http.get<any>(
-      `${this.authUrl}/count/status?projectId=${projectId}`
-    );
-  }
-
   postDataOfProjectsByUserEmailAndStatus(
     email: string,
     status: Status,
@@ -51,5 +45,9 @@ export class TasksService {
     return this._http.get<any>(
       `${this.authUrl}/count/by-id-status-priority?id=${userId}`
     );
+  }
+
+  getById(id: string): Observable<Tasks> {
+    return this._http.get<Tasks>(`${this.authUrl}/get/by-id?id=${id}`);
   }
 }

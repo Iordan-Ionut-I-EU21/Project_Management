@@ -3,6 +3,7 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.Projects;
+import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Model.Enum.Status;
 import com.example.backend.Repository.ProjectsRepository;
 import com.example.backend.Utility.TableRequest;
@@ -34,5 +35,22 @@ public class ProjectsService {
     public List<Projects> postDataOfProjectsByUserEmail(final String email, final TableRequest tableRequest) {
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return projectsRepository.postDataOfProjectsByUserEmail(email, pageable);
+    }
+
+    public Map<Status, Long> getStatusCounts(final String projectId) {
+        Map<Status, Long> counts = new EnumMap<>(Status.class);
+        for (Status status : Status.values()) {
+            counts.put(status, projectsRepository.countByStatus(status, projectId));
+        }
+        return counts;
+    }
+
+    public List<Tasks> getListByProjectId(final String projectId, final TableRequest tableRequest){
+        Pageable pageable = BackendApplication.generateTablePage(tableRequest);
+        return this.projectsRepository.getListByProjectId(projectId,pageable);
+    }
+
+    public Long getCountByProjectId(final String projectId){
+        return this.projectsRepository.getCountByProjectId(projectId);
     }
 }

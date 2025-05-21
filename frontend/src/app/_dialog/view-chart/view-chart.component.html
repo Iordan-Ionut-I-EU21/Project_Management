@@ -1,23 +1,4 @@
 <mat-dialog-content>
-  <!-- <div
-    class="flex justify-center items-center"
-    *ngIf="hasValue; else noDataTemplate"
-  >
-    <canvas
-      baseChart
-      [data]="pieChartData"
-      [type]="'pie'"
-      [options]="pieChartOptions"
-      class="max-h-max max-w-max block"
-    >
-    </canvas>
-  </div>
-
-  <ng-template #noDataTemplate>
-    <p class="text-center text-lg font-semibold mt-5">
-      No data available to display in the pie chart.
-    </p>
-  </ng-template> -->
   <app-charts-pie
     [pieChartData]="pieChartData"
     [pieChartOptions]="pieChartOptions"

@@ -174,3 +174,37 @@ mat-card{
 .mat-sort-header-container {
   justify-content: center !important;
 }
+
+.important-text {
+  padding: 0.25rem 0.75rem;
+  background-color: #dbeafe; 
+  color: #1e293b; 
+  border-radius: 9999px; 
+  font-size: 1rem; 
+  font-weight: 500; 
+}
+
+.important-medium-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem; 
+}
+
+.important-small-text {
+  font-size: 1rem; 
+  color: #4b5563; 
+  margin-bottom: 0.5rem; 
+}
+
+.link-like {
+  cursor: pointer;
+  color: #2563eb; 
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+  }
+}

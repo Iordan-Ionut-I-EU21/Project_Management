@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Model.Enum.Status;
 import com.example.backend.Service.ProjectsService;
 import com.example.backend.Utility.GroupedResult;
@@ -27,6 +28,29 @@ public class ProjectsController {
             return ResponseEntity.ok(new GroupedResult(this.projectsService.postDataOfProjectsByUserEmail(email, tableRequest), this.projectsService.getCountProjectsByUserEmail(email)));
         } catch (Exception e) {
             log.error("Failed to retrieve postDataOfProjectsByUserEmailAndStatus(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/count/status")
+    public ResponseEntity<Map<Status, Long>> getStatusCounts(@RequestParam("projectId") final String projectId) {
+        try {
+            log.info("getStatusCounts() - Successful.");
+            return ResponseEntity.ok(this.projectsService.getStatusCounts(projectId));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getStatusCounts(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    @PostMapping("/post/list/by-projectId")
+    public ResponseEntity<GroupedResult> getListByProjectId(@RequestParam("projectId") final String projectId, @RequestBody final TableRequest tableRequest) {
+        try {
+            log.info("getListByProjectId() - Successful.");
+            return ResponseEntity.ok(new GroupedResult(this.projectsService.getListByProjectId(projectId, tableRequest), this.projectsService.getCountByProjectId(projectId)));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getListByProjectId(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

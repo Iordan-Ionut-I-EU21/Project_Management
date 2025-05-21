@@ -1,6 +1,7 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.Projects;
+import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Model.Enum.Status;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,13 @@ public interface ProjectsRepository  extends JpaRepository<Projects, String> {
 
     @Query("select count(pm.projectId) from ProjectsMembers pm  where pm.userId.email = :email")
     Long getCountProjectsByUserEmail(@Param("email") String email);
+
+    @Query("select count(t.id) from Tasks t where t.status = :status and t.projectId.id = :projectId")
+    Long countByStatus(@Param("status") Status status, @Param("projectId") String projectId);
+
+    @Query("select t from Tasks t where t.projectId.id = :projectId")
+    List<Tasks> getListByProjectId(@Param("projectId") final String projectId, Pageable pageable);
+
+    @Query("select count(t.id) from Tasks t WHERE t.projectId.id = :projectId")
+    Long getCountByProjectId(@Param("projectId") final String projectId);
 }

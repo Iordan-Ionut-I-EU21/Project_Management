@@ -6,6 +6,7 @@ import { Projects } from '../../_model/_interface/projects';
 import { SortPage } from '../../_model/_common/sort-page';
 import { ChangePage } from '../../_model/_common/change-page';
 import { GroupResult } from '../../_model/_common/group-result';
+import { Tasks } from '../../_model/_interface/tasks';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,27 @@ export class ProjectsService {
     };
     return this._http.post<GroupResult<Projects>>(
       `${this.authUrl}/post/data?email=${email}`,
+      tableRequest
+    );
+  }
+
+  getStatusCounts(projectId: string): Observable<any> {
+    return this._http.get<any>(
+      `${this.authUrl}/count/status?projectId=${projectId}`
+    );
+  }
+
+  getListByProjectId(
+    projectId: string,
+    sortPage: SortPage,
+    changePage: ChangePage
+  ): Observable<GroupResult<Tasks>> {
+    const tableRequest = {
+      sortPage,
+      changePage,
+    };
+    return this._http.post<GroupResult<Tasks>>(
+      `${this.authUrl}/post/list/by-projectId?projectId=${projectId}`,
       tableRequest
     );
   }

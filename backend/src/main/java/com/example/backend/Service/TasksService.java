@@ -37,14 +37,6 @@ public class TasksService {
         return this.tasksRepository.getCountOfTasksByUserEmail(email, status);
     }
 
-    public Map<Status, Long> getStatusCounts(final String projectId) {
-        Map<Status, Long> counts = new EnumMap<>(Status.class);
-        for (Status status : Status.values()) {
-            counts.put(status, tasksRepository.countByStatus(status, projectId));
-        }
-        return counts;
-    }
-
     public Map<Priority, Map<Status, Long>> countByUserIdAndStatusAndPriority(final String id) {
         Map<Priority, Map<Status, Long>> result = new EnumMap<>(Priority.class);
         for (Priority priority : Priority.values()) {
@@ -60,5 +52,9 @@ public class TasksService {
     public List<Tasks> postDataOfProjectsByUserEmailAndStatus(final String email, final Status status, final TableRequest tableRequest) {
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return this.tasksRepository.postDataOfProjectsByUserEmailAndStatus(email, status, pageable);
+    }
+
+    public Tasks getById(final String id){
+        return this.tasksRepository.getById(id);
     }
 }

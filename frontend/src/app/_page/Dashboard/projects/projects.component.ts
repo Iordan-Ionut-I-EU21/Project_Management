@@ -19,6 +19,7 @@ import { Environment } from '../../../../environments/environment';
 import { GroupResult } from '../../../_model/_common/group-result';
 import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { TasksService } from '../../../_service/_model/tasks.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-projects',
@@ -103,6 +104,7 @@ export class ProjectsComponent {
     icon: 'folder_open',
   };
   constructor(
+    private _router: Router,
     private _projectsService: ProjectsService,
     private _jwtService: JwtService,
     private _dialogService: DialogService
@@ -140,5 +142,9 @@ export class ProjectsComponent {
           console.error(err);
         },
       });
+  }
+
+  onDblClickRow(event: any) {
+    this._router.navigateByUrl(`/dashboard/project/${event.id}`);
   }
 }

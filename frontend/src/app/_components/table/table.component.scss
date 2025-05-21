@@ -29,3 +29,15 @@ button {
     border: 1px solid #e0e7ff;
     margin-top: 1.5rem;
   }
+
+  .mat-mdc-raised-button:not(:disabled){
+    @apply bg-custom-dark;
+  }
+
+  .mat-mdc-raised-button>.mat-icon{
+    margin-right: 0px !important;
+  }
+
+  .dblclick-enabled {
+    cursor: pointer;
+  }

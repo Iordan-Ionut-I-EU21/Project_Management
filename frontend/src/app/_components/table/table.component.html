@@ -22,6 +22,7 @@
           >
           <a
             *ngSwitchCase="'link'"
+            class="link-like"
             (click)="onGoToLink(row, col.link?.url, col.link?.code)"
           >
             {{ getNestedValue(row, col.key) }}
@@ -49,7 +50,12 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumnKeys"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumnKeys"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumnKeys"
+      (dblclick)="enableDblClickForRow && onRowDoubleClick(row)"
+      [class.dblclick-enabled]="enableDblClickForRow"
+    ></tr>
   </table>
 </div>
 <mat-paginator
