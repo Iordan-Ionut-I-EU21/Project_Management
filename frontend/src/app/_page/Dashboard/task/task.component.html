@@ -96,7 +96,7 @@
     </div>
     <div class="flex flex-row justify-center gap-2">
       <div class="important-small-text italic mb-1">Change status</div>
-      <form [formGroup]="form" class="important-small-text link-like">
+      <form *ngIf="form" [formGroup]="form" class="important-small-text link-like">
         <mat-select
           formControlName="status"
           (selectionChange)="onStatusChange($event.value)"

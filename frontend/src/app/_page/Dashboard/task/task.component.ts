@@ -158,7 +158,7 @@ export class TaskComponent {
 
   ngAfterViewInit(): void {
     this.form = this._fb.group({
-      status: [this.task.status],
+      status: [this.task.status || ''],
     });
   }
 
