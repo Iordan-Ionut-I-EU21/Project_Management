@@ -6,8 +6,10 @@
   >
     <p>{{ card.name }}</p>
     <div class="info">
-      <i [class]="card.icon" class="pr-4"></i>
-      <span>{{ card.count }}</span>
+      <div class="flex flex-row justify-center items-center">
+        <mat-icon class="mr-5">{{ card.icon }}</mat-icon>
+        <span>{{ card.count }}</span>
+      </div>
     </div>
   </div>
 </div>

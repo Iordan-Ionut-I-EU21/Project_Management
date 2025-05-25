@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ProjectsService } from '../../../_service/_model/projects.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SortPage } from '../../../_model/_common/sort-page';
 import { TableColumn } from '../../../_model/_common/table-column';
 import { ChangePage } from '../../../_model/_common/change-page';
@@ -81,14 +81,13 @@ export class ProjectComponent {
   constructor(
     private _projectService: ProjectsService,
     private _route: ActivatedRoute,
+    private _router: Router,
     private _dialogService: DialogService
   ) {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
     });
-  }
 
-  ngOnInit(): void {
     this.fetchData();
   }
 
@@ -104,6 +103,10 @@ export class ProjectComponent {
 
   onViewChart() {
     this._dialogService.openDialogViewChart(this.id, 'PROJECT');
+  }
+
+  onDblClickRow(event: any) {
+    this._router.navigateByUrl(`/dashboard/task/${event.id}`);
   }
 
   private fetchData() {

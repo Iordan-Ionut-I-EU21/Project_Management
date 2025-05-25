@@ -17,4 +17,11 @@ export class TasksCommentsService {
       `${this.authUrl}/get/list/by-taskId?taskId=${taskId}`
     );
   }
+
+  postTaskComment(taskComment: TasksComments, email: string): Observable<any> {
+    return this._http.post<any>(
+      `${this.authUrl}/post?email=${email}`,
+      taskComment
+    );
+  }
 }

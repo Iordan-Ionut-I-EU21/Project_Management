@@ -1,4 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  NgModule,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../../../_service/_model/tasks.service';
 import { MatCardModule } from '@angular/material/card';
@@ -21,6 +26,16 @@ import { TableColumn } from '../../../_model/_common/table-column';
 import { TableComponent } from '../../../_components/table/table.component';
 import { TasksCommentsService } from '../../../_service/_model/task-commnet.service';
 import { TasksComments } from '../../../_model/_interface/task-comment';
+import { DialogService } from '../../../_service/_dialog/dialog.service';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { Status } from '../../../_model/_enum/status';
 
 @Component({
   selector: 'app-task',
@@ -32,8 +47,13 @@ import { TasksComments } from '../../../_model/_interface/task-comment';
     ChartsPieComponent,
     TableComponent,
     CommonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   templateUrl: './task.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './task.component.scss',
 })
 export class TaskComponent {
@@ -96,20 +116,23 @@ export class TaskComponent {
   data!: SubTasks[];
   count!: number;
   comments!: TasksComments[];
+
+  options = [...Object.keys(Status)];
+  form!: FormGroup;
   constructor(
     private _route: ActivatedRoute,
     private _taskService: TasksService,
     private _router: Router,
     private _projectService: ProjectsService,
     private _subTasksService: SubTasksService,
-    private _taskComments: TasksCommentsService
+    private _taskComments: TasksCommentsService,
+    private _dialogService: DialogService,
+    private _fb: FormBuilder
   ) {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
     });
-  }
 
-  ngOnInit(): void {
     this._taskService.getById(this.id).subscribe({
       next: (response) => {
         this.task = response;
@@ -119,34 +142,7 @@ export class TaskComponent {
       },
     });
 
-    this._projectService.getStatusCounts(this.task.projectId.id).subscribe({
-      next: (response) => {
-        Object.entries(response).forEach(([key, value]) => {
-          if (value !== 0) {
-            this.hasValue = true;
-          }
-        });
-
-        const labels = Object.keys(response);
-        const data = Object.values(response);
-
-        this.pieChartData.labels = labels;
-        this.pieChartData.datasets[0].data = data as number[];
-        this.pieChartData.datasets[0].backgroundColor = [
-          'rgba(54, 162, 235, 0.7)',
-          'rgba(75, 192, 192, 0.7)',
-          'rgba(255, 206, 86, 0.7)',
-        ];
-        this.pieChartData.datasets[0].borderColor = [
-          'rgba(54, 162, 235, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 206, 86, 1)',
-        ];
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+    this.fetchTaskComments();
 
     this._taskComments.getListByTaskId(this.id).subscribe({
       next: (response) => {
@@ -158,6 +154,12 @@ export class TaskComponent {
     });
 
     this.fetchTable();
+  }
+
+  ngAfterViewInit(): void {
+    this.form = this._fb.group({
+      status: [this.task.status],
+    });
   }
 
   onSortChanged(sortPage: any) {
@@ -184,8 +186,23 @@ export class TaskComponent {
       });
   }
 
+  private fetchTaskComments() {
+    this._taskComments.getListByTaskId(this.id).subscribe({
+      next: (response) => {
+        this.comments = response;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
   onAddComment() {
-    console.log('add a new comment');
+    this._dialogService.openDialogCommentTask(this.id).subscribe((result) => {
+      if (result !== undefined) {
+        this.fetchTaskComments();
+      }
+    });
   }
 
   onSendToUser(data: TasksComments | null) {
@@ -198,5 +215,9 @@ export class TaskComponent {
     }
 
     this._router.navigateByUrl(`/dashboard/user/${send}`);
+  }
+
+  onStatusChange(event: any) {
+    console.log(event);
   }
 }

@@ -56,14 +56,14 @@ export class DashboardComponent {
           {
             name: 'Number of Tasks',
             count: taskCount,
-            icon: 'fa-solid fa-tasks',
+            icon: 'task',
             color: '#38bdf8',
             route: 'tasks',
           },
           {
             name: 'Number of Projects',
             count: projectCount,
-            icon: 'fa-solid fa-project-diagram',
+            icon: 'workspaces',
             color: '#facc15',
             route: 'projects',
           }

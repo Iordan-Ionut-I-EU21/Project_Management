@@ -130,9 +130,7 @@ export class UserComponent {
         console.log(error);
       },
     });
-  }
 
-  ngOnInit(): void {
     this._tasksService.countByUserIdAndStatusAndPriority(this.id).subscribe({
       next: (response) => {
         Object.entries(response).forEach(([key, value]) => {

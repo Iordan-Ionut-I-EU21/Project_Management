@@ -16,5 +16,7 @@
     [columns]="columns"
     (pageChanged)="onPageChanged($event)"
     (sortChanged)="onSortChanged($event)"
+    [enableDblClickForRow]="true"
+    (onDblClickRow)="onDblClickRow($event)"
   ></app-table>
 </mat-card>
