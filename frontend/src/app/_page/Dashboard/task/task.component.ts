@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   NgModule,
   ViewChild,
@@ -8,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TasksService } from '../../../_service/_model/tasks.service';
 import { MatCardModule } from '@angular/material/card';
 import { Tasks } from '../../../_model/_interface/tasks';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectsService } from '../../../_service/_model/projects.service';
 import { error } from 'console';
@@ -47,13 +48,20 @@ import { Status } from '../../../_model/_enum/status';
     ChartsPieComponent,
     TableComponent,
     CommonModule,
+    NgIf,
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
     FormsModule,
   ],
   templateUrl: './task.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    TasksService,
+    SubTasksService,
+    ProjectsService,
+    TasksCommentsService,
+    DialogService,
+  ],
   styleUrl: './task.component.scss',
 })
 export class TaskComponent {
@@ -123,41 +131,33 @@ export class TaskComponent {
     private _route: ActivatedRoute,
     private _taskService: TasksService,
     private _router: Router,
-    private _projectService: ProjectsService,
     private _subTasksService: SubTasksService,
+    private _projectService: ProjectsService,
     private _taskComments: TasksCommentsService,
     private _dialogService: DialogService,
-    private _fb: FormBuilder
+    private _fb: FormBuilder,
+    private _changeDetection: ChangeDetectorRef
   ) {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
-    });
 
       this._taskService.getById(this.id).subscribe({
         next: (response) => {
           this.task = response;
-          this.initForm(); 
+          this.initForm();
+          this.fetchChartPie();
         },
         error: (error) => {
           console.error('Error fetching task:', error);
         },
       });
 
-    this.fetchTaskComments();
-
-    this._taskComments.getListByTaskId(this.id).subscribe({
-      next: (response) => {
-        this.comments = response;
-      },
-      error: (error) => {
-        console.log(error);
-      },
+      this.fetchTaskComments();
+      this.fetchTable();
     });
-
-    this.fetchTable();
   }
 
-  ngAfterViewInit(): void {
+  private initForm() {
     this.form = this._fb.group({
       status: [this.task.status || ''],
     });
@@ -182,15 +182,36 @@ export class TaskComponent {
           this.count = response.count;
         },
         error: (error) => {
-          console.log(error);
+          console.error('Error fetching sub-tasks:', error);
         },
       });
   }
 
-  private fetchTaskComments() {
-    this._taskComments.getListByTaskId(this.id).subscribe({
+  private fetchChartPie() {
+    this._projectService.getStatusCounts(this.task?.projectId?.id).subscribe({
       next: (response) => {
-        this.comments = response;
+        Object.entries(response).forEach(([key, value]) => {
+          if (value !== 0) {
+            this.hasValue = true;
+          }
+        });
+
+        const labels = Object.keys(response);
+        const data = Object.values(response);
+
+        this.pieChartData.labels = labels;
+        this.pieChartData.datasets[0].data = data as number[];
+        this.pieChartData.datasets[0].backgroundColor = [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+        ];
+        this.pieChartData.datasets[0].borderColor = [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 206, 86, 1)',
+        ];
+        this._changeDetection.detectChanges();
       },
       error: (error) => {
         console.log(error);
@@ -198,9 +219,21 @@ export class TaskComponent {
     });
   }
 
+  private fetchTaskComments() {
+    this._taskComments.getListByTaskId(this.id).subscribe({
+      next: (response) => {
+        this.comments = [...response];
+        this._changeDetection.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching comments:', error);
+      },
+    });
+  }
+
   onAddComment() {
     this._dialogService.openDialogCommentTask(this.id).subscribe((result) => {
-      if (result !== undefined) {
+      if (result) {
         this.fetchTaskComments();
       }
     });
@@ -215,10 +248,30 @@ export class TaskComponent {
       send = this.task.assignedId.id;
     }
 
-    this._router.navigateByUrl(`/dashboard/user/${send}`);
+    if (send) {
+      this._router.navigateByUrl(`/dashboard/user/${send}`);
+    }
   }
 
   onStatusChange(event: any) {
     console.log(event);
+    this._dialogService
+      .openDialogValidateChange(
+        `Changing "${this.task.status}" to "${event}" is something you would like to do.`
+      )
+      .subscribe((result) => {
+        if (result === true) {
+          this.task.status = event;
+          this._taskService.putTaskById(this.task.id, this.task).subscribe({
+            next: (response) => {
+              this.task = response;
+              this._changeDetection.detectChanges();
+            },
+            error: (error) => {
+              console.log(error);
+            },
+          });
+        }
+      });
   }
 }

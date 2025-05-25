@@ -50,4 +50,8 @@ export class TasksService {
   getById(id: string): Observable<Tasks> {
     return this._http.get<Tasks>(`${this.authUrl}/get/by-id?id=${id}`);
   }
+
+  putTaskById(id: string, task: Tasks): Observable<Tasks> {
+    return this._http.put<Tasks>(`${this.authUrl}/${id}`, task);
+  }
 }

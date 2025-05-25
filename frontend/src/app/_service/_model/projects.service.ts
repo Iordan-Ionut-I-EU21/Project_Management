@@ -51,4 +51,25 @@ export class ProjectsService {
       tableRequest
     );
   }
+
+  getDataForSuggestion(name: string): Observable<Projects[]> {
+    return this._http.get<Projects[]>(
+      `${this.authUrl}/get/suggestion?name=${name}`
+    );
+  }
+
+  postDataOfProjectsBySuggestion(
+    name: string,
+    sortPage: SortPage,
+    changePage: ChangePage
+  ): Observable<GroupResult<Projects>> {
+    const tableRequest = {
+      sortPage,
+      changePage,
+    };
+    return this._http.post<GroupResult<Projects>>(
+      `${this.authUrl}/post/data/suggestion?name=${name}`,
+      tableRequest
+    );
+  }
 }

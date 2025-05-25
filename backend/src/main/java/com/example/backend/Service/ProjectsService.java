@@ -53,4 +53,17 @@ public class ProjectsService {
     public Long getCountByProjectId(final String projectId){
         return this.projectsRepository.getCountByProjectId(projectId);
     }
+
+    public List<Projects> getDataForSuggestion(final String name){
+        return this.projectsRepository.getDataForSuggestion(name);
+    }
+
+    public Long postCountOfProjectsBySuggestion(final String name){
+        return this.projectsRepository.postCountOfProjectsBySuggestion(name);
+    }
+
+    public List<Projects> postDataOfProjectsBySuggestion(final String name, final TableRequest tableRequest){
+        Pageable pageable = BackendApplication.generateTablePage(tableRequest);
+        return this.projectsRepository.postDataOfProjectsBySuggestion(name,pageable);
+    }
 }

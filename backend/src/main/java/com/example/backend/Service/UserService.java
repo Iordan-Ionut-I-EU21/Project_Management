@@ -42,4 +42,8 @@ public class UserService {
     public User getUserById(final String id){
         return this.userRepository.getUserById(id);
     }
+
+    public User getUserByNameAndEmail(final String name, final String email){
+        return this.userRepository.getUserByNameAndEmail(name, email);
+    }
 }

@@ -57,4 +57,21 @@ public class TasksService {
     public Tasks getById(final String id){
         return this.tasksRepository.getById(id);
     }
+
+    public Tasks putTaskById(final String id, final Tasks tasks){
+        return tasksRepository.findById(id)
+                .map(task -> {
+                    task.setProjectId(tasks.getProjectId());
+                    task.setDescription(tasks.getDescription());
+                    task.setStatus(tasks.getStatus());
+                    task.setTitle(tasks.getTitle());
+                    task.setPriority(tasks.getPriority());
+                    task.setDueDate(tasks.getDueDate());
+                    task.setCreatedAt(tasks.getCreatedAt());
+                    task.setAssignedId(tasks.getAssignedId());
+                    return tasksRepository.save(task);
+                })
+                .orElseThrow(() -> new RuntimeException("Tasks not found with id " + id));
+    }
+
 }

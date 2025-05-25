@@ -1,5 +1,5 @@
 <mat-card class="flex !flex-row">
-  <div class="flex flex-col w-max mr-4">
+  <div *ngIf="task" class="flex flex-col w-max mr-4">
     <div class="flex flex-col gap-4">
       <div class="important-text w-fit mb-5">{{ task!.title! }}</div>
       <div class="important-small-text italic mb-1">Description</div>
@@ -53,7 +53,7 @@
       </div>
     </div>
   </div>
-  <div class="flex flex-col w-8/12 mf-3 gap-4">
+  <div *ngIf="task" class="flex flex-col w-8/12 mf-3 gap-4">
     <div class="flex flex-row justify-around gap-2">
       <div class="task-data">
         <mat-icon class="icon">today</mat-icon>
@@ -96,7 +96,7 @@
     </div>
     <div class="flex flex-row justify-center gap-2">
       <div class="important-small-text italic mb-1">Change status</div>
-      <form *ngIf="form" [formGroup]="form" class="important-small-text link-like">
+      <form [formGroup]="form" class="important-small-text link-like">
         <mat-select
           formControlName="status"
           (selectionChange)="onStatusChange($event.value)"

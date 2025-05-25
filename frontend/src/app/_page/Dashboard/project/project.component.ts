@@ -19,6 +19,7 @@ import { MatCard } from '@angular/material/card';
   selector: 'app-project',
   standalone: true,
   imports: [TableComponent, NamePageComponent, MatCard],
+  providers: [ProjectsService, DialogService],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss',
 })

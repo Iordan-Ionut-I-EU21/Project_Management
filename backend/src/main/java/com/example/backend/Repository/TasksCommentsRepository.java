@@ -12,6 +12,6 @@ import java.util.List;
 
 @Repository
 public interface TasksCommentsRepository extends JpaRepository<TaskComments, String> {
-    @Query("select tc from TaskComments tc where tc.taskId.id = :taskId")
+    @Query("select tc from TaskComments tc where tc.taskId.id = :taskId order by tc.createdAt desc")
     List<TaskComments> getListByTaskId(@Param("taskId") final String taskId);
 }

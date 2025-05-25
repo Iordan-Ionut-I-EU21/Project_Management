@@ -28,6 +28,7 @@ import { Router } from '@angular/router';
     TableComponent,
     MatCardModule,
   ],
+  providers: [DialogService, TasksService],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.scss',
 })

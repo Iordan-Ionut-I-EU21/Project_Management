@@ -23,10 +23,21 @@ public class UserController {
     @GetMapping("/get/by-id")
     public ResponseEntity<User> getUserById(@RequestParam("id") final String id) {
         try {
-            log.info("findByEmail()- follower - Successful.");
+            log.info("findByEmail() - Successful.");
             return ResponseEntity.ok(this.userService.getUserById(id));
         } catch (Exception e) {
             log.error("Failed to retrieve findByEmail(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/get/by-name-email")
+    public ResponseEntity<User> getUserByNameAndEmail(@RequestParam("name") final String name, @RequestParam("email") final String email) {
+        try {
+            log.info("getUserByNameAndEmail() - Successful.");
+            return ResponseEntity.ok(this.userService.getUserByNameAndEmail(name, email));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getUserByNameAndEmail(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

@@ -66,4 +66,15 @@ public class TasksController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Tasks> putTaskById(@PathVariable String id, @RequestBody Tasks tasks) {
+        try {
+            log.info("putTaskById() - Successful.");
+            return ResponseEntity.ok(this.tasksService.putTaskById(id, tasks));
+        } catch (Exception e) {
+            log.error("Failed to retrieve putTaskById(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

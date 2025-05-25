@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { ProjectsService } from '../../../_service/_model/projects.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,14 +12,15 @@ import { NamePage } from '../../../_model/_common/name-page';
 import { TableComponent } from '../../../_components/table/table.component';
 import { TableColumn } from '../../../_model/_common/table-column';
 import { JwtService } from '../../../_service/_http/jwt.service';
-import { dir, table } from 'console';
+import { dir, error, table } from 'console';
 import { SortPage } from '../../../_model/_common/sort-page';
 import { ChangePage } from '../../../_model/_common/change-page';
 import { Environment } from '../../../../environments/environment';
 import { GroupResult } from '../../../_model/_common/group-result';
 import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { TasksService } from '../../../_service/_model/tasks.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { response } from 'express';
 
 @Component({
   selector: 'app-projects',
@@ -103,12 +104,20 @@ export class ProjectsComponent {
     name: 'Projects Overview',
     icon: 'folder_open',
   };
+
+  suggestion!: string;
   constructor(
     private _router: Router,
     private _projectsService: ProjectsService,
     private _jwtService: JwtService,
-    private _dialogService: DialogService
-  ) {
+    private _dialogService: DialogService,
+    private _route: ActivatedRoute,
+  ) {}
+
+  ngOnInit(): void {
+    this._route.params.subscribe((params) => {
+      this.suggestion = params['suggestion'];
+    });
     this.fetchData();
   }
 
@@ -127,21 +136,39 @@ export class ProjectsComponent {
   }
 
   private fetchData() {
-    this._projectsService
-      .postDataOfProjectsByUserEmail(
-        this._jwtService.getEmail(),
-        this.sortPage,
-        this.changePage
-      )
-      .subscribe({
-        next: (response: GroupResult<Projects>) => {
-          this.data = response.items;
-          this.count = response.count;
-        },
-        error: (err) => {
-          console.error(err);
-        },
-      });
+    if (this.suggestion === undefined) {
+      this._projectsService
+        .postDataOfProjectsByUserEmail(
+          this._jwtService.getEmail(),
+          this.sortPage,
+          this.changePage
+        )
+        .subscribe({
+          next: (response: GroupResult<Projects>) => {
+            this.data = response.items;
+            this.count = response.count;
+          },
+          error: (err) => {
+            console.error(err);
+          },
+        });
+    } else {
+      this._projectsService
+        .postDataOfProjectsBySuggestion(
+          this.suggestion,
+          this.sortPage,
+          this.changePage
+        )
+        .subscribe({
+          next: (response) => {
+            this.data = response.items;
+            this.count = response.count;
+          },
+          error: (error) => {
+            console.log(error);
+          },
+        });
+    }
   }
 
   onDblClickRow(event: any) {

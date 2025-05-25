@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ViewChartComponent } from '../../_dialog/view-chart/view-chart.component';
 import { CommentComponent } from '../../_dialog/comment/comment.component';
 import { Observable } from 'rxjs';
+import { ValidateChangeComponent } from '../../_dialog/validate-change/validate-change.component';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,14 @@ export class DialogService {
       restoreFocus: false,
     });
 
+    return dialogRef.afterClosed();
+  }
+
+  openDialogValidateChange(message: string): Observable<any> {
+    const dialogRef = this.dialog.open(ValidateChangeComponent, {
+      data: { message: message },
+      restoreFocus: false,
+    });
     return dialogRef.afterClosed();
   }
 }

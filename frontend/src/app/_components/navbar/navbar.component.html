@@ -1,8 +1,10 @@
 <nav class="navbar bg-custom-dark">
   <div class="logo-name">
-    <a [routerLink]="feet.route"> <i></i> Project Management </a>
+    <a [routerLink]="feet.route" class="text-xl">
+      <i></i> Project Management
+    </a>
   </div>
-  <ul class="nav-links">
+  <ul class="!flex gap-10">
     <li
       *ngFor="let nav of routes"
       routerLinkActive="active"
@@ -13,7 +15,60 @@
       </a>
     </li>
 
-    <li (click)="onLogout()" class="cursor-pointer">
+    <li>
+      <div class="ui-input-container">
+        <input
+          type="text"
+          class="ui-input custom-dark"
+          placeholder="Search project..."
+          [formControl]="searchControl"
+          [matAutocomplete]="auto"
+          (keydown.enter)="onSelect(searchControl.value)"
+        />
+        <div class="ui-input-underline"></div>
+        <div class="ui-input-highlight"></div>
+        <div class="ui-input-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              stroke-width="2"
+              stroke="currentColor"
+              d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onSelect($event.option.value)"
+        class="custom-autocomplete"
+      >
+        <mat-option
+          *ngFor="let option of filteredOptions | async"
+          [value]="option.name"
+        >
+          <span class="flex items-center gap-2">
+            <mat-icon class="text-blue-500">folder</mat-icon>
+            <span>{{ option.name }}</span>
+          </span>
+        </mat-option>
+      </mat-autocomplete>
+    </li>
+
+    <li class="!flex items-center justify-center" (click)="onViewUser()">
+      <mat-icon>account_circle</mat-icon> {{ name }}
+    </li>
+
+    <li
+      class="!flex items-center justify-center cursor-pointer"
+      (click)="onLogout()"
+    >
       <i class="fas fa-sign-out-alt"></i> Logout
     </li>
   </ul>

@@ -34,6 +34,7 @@ export const routes: Routes = [
     children: [
       { path: 'feed', component: DashboardComponent },
       { path: 'projects', component: ProjectsComponent },
+      { path: 'projects/:suggestion', component: ProjectsComponent },
       { path: 'team', component: TeamComponent },
       { path: 'reports', component: ReportsComponent },
       { path: 'project/:id', component: ProjectComponent },

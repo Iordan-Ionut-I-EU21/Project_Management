@@ -15,4 +15,10 @@ export class UserService {
   getUserById(id: string): Observable<User> {
     return this._http.get<User>(`${this.authUrl}/get/by-id?id=${id}`);
   }
+
+  getUserByNameAndEmail(name: string, email: string): Observable<User> {
+    return this._http.get<User>(
+      `${this.authUrl}/get/by-name-email?name=${name}&email=${email}`
+    );
+  }
 }

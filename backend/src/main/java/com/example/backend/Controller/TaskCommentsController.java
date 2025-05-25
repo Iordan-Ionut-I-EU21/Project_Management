@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Model.Class.TaskComments;
+import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Service.TasksCommentsService;
 import com.example.backend.Utility.GroupedResult;
 import jakarta.transaction.Status;

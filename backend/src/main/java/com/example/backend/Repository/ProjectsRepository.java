@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,4 +28,13 @@ public interface ProjectsRepository  extends JpaRepository<Projects, String> {
 
     @Query("select count(t.id) from Tasks t WHERE t.projectId.id = :projectId")
     Long getCountByProjectId(@Param("projectId") final String projectId);
+
+    @Query(value = "SELECT * FROM projects p WHERE LOWER(p.name) LIKE LOWER(CONCAT(:name, '%')) LIMIT 7", nativeQuery = true)
+     List<Projects> getDataForSuggestion(@Param("name") final String name);
+
+    @Query("select p from Projects p where  LOWER(p.name) LIKE LOWER(CONCAT(:name, '%'))")
+    List<Projects> postDataOfProjectsBySuggestion(@Param("name") final String name, Pageable pageable);
+
+    @Query("select count(p.id) from Projects p WHERE LOWER(p.name) LIKE LOWER(CONCAT(:name, '%'))")
+    Long postCountOfProjectsBySuggestion(@Param("name") final String name);
 }
