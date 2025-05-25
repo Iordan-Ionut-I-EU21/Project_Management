@@ -133,14 +133,15 @@ export class TaskComponent {
       this.id = params['id'];
     });
 
-    this._taskService.getById(this.id).subscribe({
-      next: (response) => {
-        this.task = response;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    });
+      this._taskService.getById(this.id).subscribe({
+        next: (response) => {
+          this.task = response;
+          this.initForm(); 
+        },
+        error: (error) => {
+          console.error('Error fetching task:', error);
+        },
+      });
 
     this.fetchTaskComments();
 
