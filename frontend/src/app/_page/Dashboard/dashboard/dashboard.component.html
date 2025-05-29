@@ -1,8 +1,13 @@
 <mat-card>
   <app-name-page [page]="page"></app-name-page>
-  <app-card
-    *ngFor="let card of cards"
-    [card]="card"
-    (cardClicked)="onCardBoxClicked($event)"
-  ></app-card>
+  <div
+    [ngClass]="{ 'flex flex-row gap-5 justify-between': showAddPossibility }"
+  >
+    <app-card
+      class="w-3/12"
+      *ngFor="let card of cards"
+      [card]="card"
+      (cardClicked)="onCardBoxClicked($event)"
+    ></app-card>
+  </div>
 </mat-card>

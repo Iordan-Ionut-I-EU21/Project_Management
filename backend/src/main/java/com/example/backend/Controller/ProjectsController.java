@@ -77,4 +77,25 @@ public class ProjectsController {
         }
     }
 
+    @GetMapping("/get/all")
+    public ResponseEntity<List<Projects>> getAllProjects() {
+        try {
+            log.info("getAllProjects() - Successful.");
+            return ResponseEntity.ok(this.projectsService.getAllProjects());
+        } catch (Exception e) {
+            log.error("Failed to retrieve getAllProjects(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/post/new")
+    public ResponseEntity<Projects> postNewProjects(@RequestBody final Projects projects) {
+        try {
+            log.info("postNewProjects()- follower - Successful.");
+            return ResponseEntity.ok(this.projectsService.postNewProjects(projects));
+        } catch (Exception e) {
+            log.error("Failed to retrieve postNewProjects(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import com.example.backend.Service.TasksService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
 import lombok.extern.jbosslog.JBossLog;
+import okhttp3.internal.concurrent.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class TasksController {
     @PostMapping("/post/data")
     public ResponseEntity<GroupedResult> postDataOfProjectsByUserEmailAndStatus(@RequestParam("email") final String email, @RequestParam("status") final Status status, @RequestBody final TableRequest tableRequest) {
         try {
-            log.info("postDataOfProjectsByUserEmail()- follower - Successful.");
+            log.info("postDataOfProjectsByUserEmail() - Successful.");
             return ResponseEntity.ok(new GroupedResult(this.tasksService.postDataOfProjectsByUserEmailAndStatus(email, status, tableRequest), this.tasksService.getCountOfTasksByUserEmail(email, status)));
         } catch (Exception e) {
             log.error("Failed to retrieve postDataOfProjectsByUserEmail(): {}", e.getMessage(), e);
@@ -74,6 +75,17 @@ public class TasksController {
             return ResponseEntity.ok(this.tasksService.putTaskById(id, tasks));
         } catch (Exception e) {
             log.error("Failed to retrieve putTaskById(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/post/new")
+    public ResponseEntity<Tasks> postNewTask(@RequestBody Tasks tasks) {
+        try {
+            log.info("postNewTask() - Successful.");
+            return ResponseEntity.ok(this.tasksService.postNewTask(tasks));
+        } catch (Exception e) {
+            log.error("Failed to retrieve postNewTask(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

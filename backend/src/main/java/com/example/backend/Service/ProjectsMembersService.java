@@ -1,10 +1,15 @@
 package com.example.backend.Service;
 
 
+import com.example.backend.BackendApplication;
+import com.example.backend.Model.Class.Projects;
 import com.example.backend.Model.Class.ProjectsMembers;
+import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Enum.Role;
 import com.example.backend.Repository.ProjectsMembersRepository;
+import com.example.backend.Utility.TableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
@@ -30,5 +35,19 @@ public class ProjectsMembersService {
             result.put(role, this.projectsMembersRepository.getCountByRole(userId, role));
         }
         return result;
+    }
+
+    public ProjectsMembers postNewProjectMembers(final ProjectsMembers projectsMembers){
+        projectsMembers.setId(BackendApplication.generateId());
+        return this.projectsMembersRepository.save(projectsMembers);
+    }
+
+    public List<User> getDataUsersByProjectId(final String projectId, final TableRequest tableRequest){
+        Pageable pageable = BackendApplication.generateTablePage(tableRequest);
+        return this.projectsMembersRepository.getDataUsersByProjectId(projectId, pageable);
+    }
+
+    public Long getCountUsersByProjectId(final String projectId){
+        return this.projectsMembersRepository.getCountUsersByProjectId(projectId);
     }
 }

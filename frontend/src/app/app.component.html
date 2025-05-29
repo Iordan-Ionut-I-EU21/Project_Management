@@ -1,13 +1,6 @@
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading$ | async"></app-spinner>
 <ng-container *ngIf="isAppReady">
   <app-navbar *ngIf="showNavbar"></app-navbar>
   <router-outlet></router-outlet>
   <app-alert></app-alert>
-</ng-container>
-<ng-container *ngIf="!isAppReady">
-  <div class="flex items-center justify-center min-h-screen">
-    <div
-      class="spinner-border animate-spin w-12 h-12 border-4 border-blue-500 rounded-full"
-    ></div>
-  </div>
 </ng-container>

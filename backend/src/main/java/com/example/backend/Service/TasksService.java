@@ -8,6 +8,7 @@ import com.example.backend.Model.Enum.Priority;
 import com.example.backend.Model.Enum.Status;
 import com.example.backend.Repository.TasksRepository;
 import com.example.backend.Utility.TableRequest;
+import okhttp3.internal.concurrent.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,10 @@ public class TasksService {
     public List<Tasks> postDataOfProjectsByUserEmailAndStatus(final String email, final Status status, final TableRequest tableRequest) {
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return this.tasksRepository.postDataOfProjectsByUserEmailAndStatus(email, status, pageable);
+    }
+    public Tasks postNewTask(final Tasks tasks){
+        tasks.setId(BackendApplication.generateId());
+        return this.tasksRepository.save(tasks);
     }
 
     public Tasks getById(final String id){

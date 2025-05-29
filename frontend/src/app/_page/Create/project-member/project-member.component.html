@@ -1,0 +1,26 @@
+<mat-card>
+  <app-name-page [page]="page"></app-name-page>
+  <form class="pr-5 pl-5" [formGroup]="form">
+    <app-input
+      [config]="configProject"
+      [formGroup]="form"
+      (selectChange)="selectChange($event)"
+    ></app-input>
+    <app-input [config]="configUser" [formGroup]="form"></app-input>
+    <app-input [config]="configRole" [formGroup]="form"></app-input>
+    <button
+      mat-button
+      (click)="onClick()"
+      class="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-700 focus:outline-none"
+    >
+      Save PRoject Members
+    </button>
+  </form>
+  <app-table
+    [data]="data"
+    [count]="count"
+    [columns]="columns"
+    (pageChanged)="onPageChanged($event)"
+    (sortChanged)="onSortChanged($event)"
+  ></app-table>
+</mat-card>

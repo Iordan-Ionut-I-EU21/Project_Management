@@ -20,8 +20,13 @@ import { ProjectsService } from '../../_service/_model/projects.service';
 @Component({
   selector: 'app-view-chart',
   standalone: true,
-  imports: [ChartsPieComponent, MatDialogContent, CommonModule],
-  providers: [TasksService, JwtService],
+  imports: [
+    ChartsPieComponent,
+    HttpClientModule,
+    MatDialogContent,
+    CommonModule,
+  ],
+  providers: [TasksService, JwtService, ProjectsService],
   templateUrl: './view-chart.component.html',
   styleUrl: './view-chart.component.scss',
 })

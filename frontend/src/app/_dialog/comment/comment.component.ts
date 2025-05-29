@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
   selector: 'app-comment',
   standalone: true,
   imports: [MatDialogContent, MatIconModule, CommonModule, ReactiveFormsModule],
+  providers: [TasksCommentsService],
   templateUrl: './comment.component.html',
   styleUrl: './comment.component.scss',
 })

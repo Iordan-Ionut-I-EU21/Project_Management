@@ -7,10 +7,12 @@ export class SpinnerService {
   loading$ = this.loading.asObservable();
 
   show() {
+    // console.log('true');
     this.loading.next(true);
   }
 
   hide() {
+    // console.log('false');
     this.loading.next(false);
   }
 }

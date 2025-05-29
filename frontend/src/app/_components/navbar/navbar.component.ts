@@ -23,6 +23,7 @@ import { response } from 'express';
 import { error } from 'console';
 import { ProjectsService } from '../../_service/_model/projects.service';
 import { Projects } from '../../_model/_interface/projects';
+import { RolesLogicallyService } from '../../_shared/roles-logically.service';
 
 @Component({
   selector: 'app-navbar',
@@ -37,6 +38,7 @@ import { Projects } from '../../_model/_interface/projects';
     MatInputModule,
     ReactiveFormsModule,
   ],
+  providers: [UserService, ProjectsService, RolesLogicallyService],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -55,13 +57,16 @@ export class NavbarComponent {
   options!: Projects[];
   filteredOptions!: Observable<Projects[]>;
 
+  showSearchFeature!: boolean;
   constructor(
     private _jwtService: JwtService,
     private _router: Router,
     private _userService: UserService,
-    private _projectsService: ProjectsService
+    private _projectsService: ProjectsService,
+    private _roleLogically: RolesLogicallyService
   ) {
     this.name = this._jwtService.getUserInfo()?.name!;
+    this.showSearchFeature = this._roleLogically.isSearchPossibility();
   }
 
   ngAfterViewInit(): void {}
@@ -108,7 +113,7 @@ export class NavbarComponent {
 
   onLogout() {
     this._jwtService.logout(Environment.jwtToken);
-    this._router.navigate(['/authentication/login']);
+    window.location.href = '/authentication/login';
   }
 }
 

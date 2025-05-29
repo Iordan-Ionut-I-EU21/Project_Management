@@ -1,0 +1,36 @@
+<div class="mb-6" [formGroup]="formGroup">
+  <label class="block text-lg font-semibold text-gray-700 mb-2">
+    {{ config.label }}
+  </label>
+  <div
+    class="flex items-center border border-gray-300 rounded-md p-2 focus-within:border-blue-500"
+    [ngClass]="{
+      'border-red-300':
+        formGroup.get(config.formControlName)?.hasError('required') &&
+        formGroup.get(config.formControlName)?.touched,
+      'border-gray-300':
+        !formGroup.get(config.formControlName)?.hasError('required') ||
+        !formGroup.get(config.formControlName)?.touched
+    }"
+  >
+    <mat-icon>{{ config.icon }}</mat-icon>
+    <select
+      *ngIf="config.type === 'select'; else textInput"
+      [formControlName]="config.formControlName"
+      class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+      (change)="onSelectChange($event)"
+    >
+      <option *ngFor="let option of config.options" [ngValue]="option">
+        {{ option?.[config.labelKey!] }}
+      </option>
+    </select>
+    <ng-template #textInput>
+      <input
+        [type]="config.type"
+        [formControlName]="config.formControlName"
+        class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+        [placeholder]="config.placeholder"
+      />
+    </ng-template>
+  </div>
+</div>

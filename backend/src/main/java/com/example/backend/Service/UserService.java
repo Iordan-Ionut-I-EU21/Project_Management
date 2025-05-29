@@ -1,5 +1,6 @@
 package com.example.backend.Service;
 
+import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Enum.UserRole;
 import com.example.backend.Repository.UserRepository;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,5 +45,18 @@ public class UserService {
 
     public User getUserByNameAndEmail(final String name, final String email){
         return this.userRepository.getUserByNameAndEmail(name, email);
+    }
+
+    public List<User> getAllUserDifferentOnRole(final UserRole role) {
+        return this.userRepository.getAllUserDifferentOnRole(role);
+    }
+
+    public Boolean getUserByEmail(final String email) {
+        return this.userRepository.findByEmail(email).isPresent();
+    }
+
+    public User postNewUser(final User user){
+        user.setId(BackendApplication.generateId());
+        return this.userRepository.save(user);
     }
 }

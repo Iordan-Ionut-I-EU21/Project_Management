@@ -1,6 +1,6 @@
 import { Priority } from '../_enum/priority';
 import { Status } from '../_enum/status';
-import { Category } from './category';
+import { Categories } from './category';
 import { Projects } from './projects';
 import { User } from './user';
 

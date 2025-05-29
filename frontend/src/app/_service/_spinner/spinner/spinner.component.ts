@@ -13,6 +13,8 @@ export class SpinnerComponent {
   loading$: any;
 
   constructor(private spinner: SpinnerService) {
+    // console.log('------------');
+    // console.log(this.spinner.loading$);
     this.loading$ = this.spinner.loading$;
   }
 }

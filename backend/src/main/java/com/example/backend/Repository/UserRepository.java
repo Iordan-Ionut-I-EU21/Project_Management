@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("select u from User u where u.name = :name and u.email = :email" )
     User getUserByNameAndEmail(@Param("name") final String name, @Param("email") final String email);
+
+    @Query("select u from User u where u.role <> :role")
+    List<User> getAllUserDifferentOnRole(@Param("role")final UserRole role);
 }

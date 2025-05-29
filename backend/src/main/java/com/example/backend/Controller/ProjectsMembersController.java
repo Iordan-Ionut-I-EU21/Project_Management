@@ -1,7 +1,12 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.Projects;
+import com.example.backend.Model.Class.ProjectsMembers;
 import com.example.backend.Model.Enum.Role;
+import com.example.backend.Model.Enum.Status;
 import com.example.backend.Service.ProjectsMembersService;
+import com.example.backend.Utility.GroupedResult;
+import com.example.backend.Utility.TableRequest;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +26,7 @@ public class ProjectsMembersController {
     @GetMapping("/get/count")
     public ResponseEntity<Long> getCountOfProjectsByUserEmail(@RequestParam("email") final String email) {
         try {
-            log.info("getCountOfProjectsByUserEmail()- follower - Successful.");
+            log.info("getCountOfProjectsByUserEmail() - Successful.");
             return ResponseEntity.ok(this.projectsMembersService.getCountOfProjectsByUserEmail(email));
         } catch (Exception e) {
             log.error("Failed to retrieve getCountOfProjectsByUserEmail(): {}", e.getMessage(), e);
@@ -37,6 +42,28 @@ public class ProjectsMembersController {
             return ResponseEntity.ok(this.projectsMembersService.getCountByRole(id));
         } catch (Exception e) {
             log.error("Failed to retrieve getCountByRole(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/post/new")
+    public ResponseEntity<ProjectsMembers> postNewProjectMembers(@RequestBody final ProjectsMembers projectsMembers) {
+        try {
+            log.info("postNewProjectMembers() - Successful.");
+            return ResponseEntity.ok(this.projectsMembersService.postNewProjectMembers(projectsMembers));
+        } catch (Exception e) {
+            log.error("Failed to retrieve postNewProjectMembers(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/post/data")
+    public ResponseEntity<GroupedResult> postDataUsersByProjectId(@RequestParam("projectId") final String projectId, @RequestBody final TableRequest tableRequest) {
+        try {
+            log.info("postDataUsersByProjectId() - Successful.");
+            return ResponseEntity.ok(new GroupedResult(this.projectsMembersService.getDataUsersByProjectId(projectId, tableRequest), this.projectsMembersService.getCountUsersByProjectId(projectId)));
+        } catch (Exception e) {
+            log.error("Failed to retrieve postDataUsersByProjectId(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

@@ -14,12 +14,13 @@ import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { TableComponent } from '../../../_components/table/table.component';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { MatCard } from '@angular/material/card';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-project',
   standalone: true,
-  imports: [TableComponent, NamePageComponent, MatCard],
-  providers: [ProjectsService, DialogService],
+  imports: [TableComponent, NamePageComponent, MatCard, HttpClientModule],
+  providers: [ProjectsService],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss',
 })

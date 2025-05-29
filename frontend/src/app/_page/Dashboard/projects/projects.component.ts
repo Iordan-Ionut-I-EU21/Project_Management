@@ -31,8 +31,9 @@ import { response } from 'express';
     NamePageComponent,
     TableComponent,
     MatCardModule,
+    HttpClientModule,
   ],
-  providers: [ProjectsService, DialogService],
+  providers: [ProjectsService],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss',
 })
@@ -111,7 +112,7 @@ export class ProjectsComponent {
     private _projectsService: ProjectsService,
     private _jwtService: JwtService,
     private _dialogService: DialogService,
-    private _route: ActivatedRoute,
+    private _route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {

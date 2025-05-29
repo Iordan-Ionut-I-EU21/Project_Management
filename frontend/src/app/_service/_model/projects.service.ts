@@ -7,6 +7,7 @@ import { SortPage } from '../../_model/_common/sort-page';
 import { ChangePage } from '../../_model/_common/change-page';
 import { GroupResult } from '../../_model/_common/group-result';
 import { Tasks } from '../../_model/_interface/tasks';
+import { Portal } from '@angular/cdk/portal';
 
 @Injectable({
   providedIn: 'root',
@@ -71,5 +72,13 @@ export class ProjectsService {
       `${this.authUrl}/post/data/suggestion?name=${name}`,
       tableRequest
     );
+  }
+
+  getAllProjects(): Observable<Projects[]> {
+    return this._http.get<Projects[]>(`${this.authUrl}/get/all`);
+  }
+
+  postNewProjects(project: Projects): Observable<Projects> {
+    return this._http.post<Projects>(`${this.authUrl}/post/new`, project);
   }
 }

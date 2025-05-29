@@ -1,6 +1,6 @@
 export interface Card {
   name: string;
-  count: number;
+  count?: number;
   icon: string;
   color: string;
   route: string;

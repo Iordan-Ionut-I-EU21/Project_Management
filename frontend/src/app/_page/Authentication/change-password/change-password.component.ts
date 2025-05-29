@@ -17,6 +17,7 @@ import { JwtService } from '../../../_service/_http/jwt.service';
   selector: 'app-change-password',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, CommonModule],
+  providers: [AuthenticationService],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.scss',
 })

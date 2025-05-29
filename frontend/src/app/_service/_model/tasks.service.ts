@@ -54,4 +54,8 @@ export class TasksService {
   putTaskById(id: string, task: Tasks): Observable<Tasks> {
     return this._http.put<Tasks>(`${this.authUrl}/${id}`, task);
   }
+
+  postNewTask(tasks: Tasks): Observable<Tasks> {
+    return this._http.post<Tasks>(`${this.authUrl}/post/new`, tasks);
+  }
 }

@@ -8,6 +8,7 @@ import com.example.backend.Model.Enum.Status;
 import com.example.backend.Repository.ProjectsRepository;
 import com.example.backend.Utility.TableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class ProjectsService {
     private ProjectsRepository projectsRepository;
 
     public List<Projects> getAllProjects() {
-        return this.projectsRepository.findAll();
+        Pageable firstTen = PageRequest.of(0, 40);
+        return this.projectsRepository.findAll(firstTen).getContent();
     }
 
     public void postProjects(List<Projects> projects) {
@@ -65,5 +67,10 @@ public class ProjectsService {
     public List<Projects> postDataOfProjectsBySuggestion(final String name, final TableRequest tableRequest){
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return this.projectsRepository.postDataOfProjectsBySuggestion(name,pageable);
+    }
+
+    public Projects postNewProjects(final Projects projects){
+        projects.setId(BackendApplication.generateId());
+        return this.projectsRepository.save(projects);
     }
 }
