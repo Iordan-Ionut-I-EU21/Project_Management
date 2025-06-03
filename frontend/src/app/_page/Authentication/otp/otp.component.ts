@@ -14,11 +14,12 @@ import { Environment } from '../../../../environments/environment';
 import { PasswordRequest } from '../../../_model/_interface/password-request';
 import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-otp',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, HttpClientModule],
   providers: [AuthenticationService],
   templateUrl: './otp.component.html',
   styleUrl: './otp.component.scss',

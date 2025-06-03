@@ -20,6 +20,7 @@ import { error } from 'console';
 import { AlertEnum } from '../../../_model/_common/alert';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-user',
@@ -29,6 +30,7 @@ import { JwtService } from '../../../_service/_http/jwt.service';
     ReactiveFormsModule,
     NamePageComponent,
     MatCardModule,
+    HttpClientModule,
   ],
   providers: [provideNativeDateAdapter(), UserService],
   templateUrl: './user.component.html',
@@ -69,7 +71,7 @@ export class UserComponent {
     private _userService: UserService,
     private _router: Router,
     private _alertService: AlertService,
-    private _jwtSerivce: JwtService
+    private _jwtService: JwtService
   ) {
     this.form = this._fb.group({
       name: [null, Validators.required],
@@ -82,8 +84,6 @@ export class UserComponent {
       ],
       role: [null, Validators.required],
     });
-
-    console.log(this._jwtSerivce.getEmail());
   }
 
   onClick() {

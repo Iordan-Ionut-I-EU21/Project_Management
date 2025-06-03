@@ -8,11 +8,12 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { Status } from '../../../_model/_enum/status';
 import { ChartsPieComponent } from '../../../_components/charts-pie/charts-pie.component';
 import { ProjectsMembersService } from '../../../_service/_model/projects-members.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [MatCardModule, ChartsPieComponent],
+  imports: [MatCardModule, ChartsPieComponent, HttpClientModule],
   providers: [UserService, TasksService, ProjectsMembersService],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss',

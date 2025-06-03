@@ -32,6 +32,7 @@ import { MatSort } from '@angular/material/sort';
 import { Projects } from '../../../_model/_interface/projects';
 import { TableComponent } from '../../../_components/table/table.component';
 import { User } from '../../../_model/_interface/user';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-project-member',
@@ -42,6 +43,7 @@ import { User } from '../../../_model/_interface/user';
     NamePageComponent,
     MatCardModule,
     TableComponent,
+    HttpClientModule,
   ],
   providers: [
     provideNativeDateAdapter(),

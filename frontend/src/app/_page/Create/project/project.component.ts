@@ -24,6 +24,7 @@ import { TasksService } from '../../../_service/_model/tasks.service';
 import { ProjectsService } from '../../../_service/_model/projects.service';
 import { Router } from '@angular/router';
 import { AlertEnum } from '../../../_model/_common/alert';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-project',
@@ -33,6 +34,7 @@ import { AlertEnum } from '../../../_model/_common/alert';
     ReactiveFormsModule,
     NamePageComponent,
     MatCardModule,
+    HttpClientModule,
   ],
   providers: [
     provideNativeDateAdapter(),

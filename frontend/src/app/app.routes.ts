@@ -52,6 +52,6 @@ export const routes: Routes = [
       { path: 'project-member', component: ProjectMemberComponent },
     ],
   },
-  { path: '', redirectTo: 'dashboard/feed', pathMatch: 'full' },
-  { path: '**', redirectTo: 'dashboard/feed' },
+  // { path: '', redirectTo: 'dashboard/feed', pathMatch: 'full' },
+  // { path: '**', redirectTo: 'dashboard/feed' },
 ];

@@ -37,6 +37,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Status } from '../../../_model/_enum/status';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-task',
@@ -53,6 +54,7 @@ import { Status } from '../../../_model/_enum/status';
     MatSelectModule,
     ReactiveFormsModule,
     FormsModule,
+    HttpClientModule,
   ],
   templateUrl: './task.component.html',
   providers: [

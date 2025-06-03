@@ -12,11 +12,12 @@ import { AlertEnum } from '../../../_model/_common/alert';
 import { Environment } from '../../../../environments/environment';
 import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, HttpClientModule],
   providers: [AuthenticationService],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.scss',
