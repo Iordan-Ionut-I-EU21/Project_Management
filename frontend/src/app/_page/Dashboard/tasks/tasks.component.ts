@@ -43,7 +43,7 @@ export class TasksComponent {
     },
     {
       key: 'status',
-      code: 'pm.projectId.status',
+      code: 't.projectId.status',
       label: 'Status',
       type: 'text',
     },

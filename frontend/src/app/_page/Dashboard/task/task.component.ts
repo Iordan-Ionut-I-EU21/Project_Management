@@ -256,7 +256,7 @@ export class TaskComponent {
   }
 
   onStatusChange(event: any) {
-    console.log(event);
+    // console.log(event);
     this._dialogService
       .openDialogValidateChange(
         `Changing "${this.task.status}" to "${event}" is something you would like to do.`
