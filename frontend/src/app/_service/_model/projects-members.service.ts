@@ -47,4 +47,13 @@ export class ProjectsMembersService {
       tableRequest
     );
   }
+
+  getExcelUsersByProjectId(
+    excel: string,
+    projectId: string
+  ): Observable<string[]> {
+    return this._http.get<string[]>(
+      `${this.authUrl}/get/excel?excel=${excel}&projectId=${projectId}`
+    );
+  }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -53,6 +54,18 @@ public class TasksController {
             return ResponseEntity.ok(new GroupedResult(this.tasksService.postDataOfProjectsByUserEmailAndStatus(email, status, tableRequest), this.tasksService.getCountOfTasksByUserEmail(email, status)));
         } catch (Exception e) {
             log.error("Failed to retrieve postDataOfProjectsByUserEmail(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/get/excel")
+    public ResponseEntity<List<Object[]>> getExcelDataOfProjectsByUserEmailAndStatus(@RequestParam("excel") final  String excel
+            ,@RequestParam("email") final String email, @RequestParam("status") final Status status) {
+        try {
+            log.info("getExcelDataOfProjectsByUserEmailAndStatus() - Successful.");
+            return ResponseEntity.ok(this.tasksService.getExcelDataOfProjectsByUserEmailAndStatus(excel,email, status));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getExcelDataOfProjectsByUserEmailAndStatus(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

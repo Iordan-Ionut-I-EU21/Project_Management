@@ -17,6 +17,9 @@ import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { Tasks } from '../../../_model/_interface/tasks';
 import { Status } from '../../../_model/_enum/status';
 import { Router } from '@angular/router';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
+import { response } from 'express';
+import { error } from 'console';
 
 @Component({
   selector: 'app-tasks',
@@ -101,7 +104,8 @@ export class TasksComponent {
     private _tasksService: TasksService,
     private _jwtService: JwtService,
     private _dialogService: DialogService,
-    private _router: Router
+    private _router: Router,
+    private _excelService: ExcelExportService
   ) {
     this.fetchData();
   }
@@ -140,6 +144,30 @@ export class TasksComponent {
         },
         error: (error) => {
           console.error(error);
+        },
+      });
+  }
+
+  onExport() {
+    this._tasksService
+      .getExcelDataOfProjectsByUserEmailAndStatus(
+        this.columns
+          .filter((c) => c.type !== 'button')
+          .map((c) => c.code)
+          .join(', '),
+        this._jwtService.getEmail(),
+        Status.PENDING
+      )
+      .subscribe({
+        next: (response) => {
+          this._excelService.exportToExcel(
+            this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
+            response,
+            'Tasks'
+          );
+        },
+        error: (error) => {
+          console.log(error);
         },
       });
   }

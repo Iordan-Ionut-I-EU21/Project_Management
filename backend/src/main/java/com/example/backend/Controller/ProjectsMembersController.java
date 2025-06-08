@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -64,6 +65,17 @@ public class ProjectsMembersController {
             return ResponseEntity.ok(new GroupedResult(this.projectsMembersService.getDataUsersByProjectId(projectId, tableRequest), this.projectsMembersService.getCountUsersByProjectId(projectId)));
         } catch (Exception e) {
             log.error("Failed to retrieve postDataUsersByProjectId(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/get/excel")
+    public ResponseEntity<List<Object[]>> getExcelUsersByProjectId(@RequestParam("excel") final String excel, @RequestParam("projectId") final String projectId) {
+        try {
+            log.info("getExcelUsersByProjectId() - Successful.");
+            return ResponseEntity.ok(this.projectsMembersService.getExcelUsersByProjectId(excel, projectId));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getExcelUsersByProjectId(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

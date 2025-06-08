@@ -38,6 +38,7 @@ import {
 } from '@angular/forms';
 import { Status } from '../../../_model/_enum/status';
 import { HttpClientModule } from '@angular/common/http';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
 
 @Component({
   selector: 'app-task',
@@ -138,7 +139,8 @@ export class TaskComponent {
     private _taskComments: TasksCommentsService,
     private _dialogService: DialogService,
     private _fb: FormBuilder,
-    private _changeDetection: ChangeDetectorRef
+    private _changeDetection: ChangeDetectorRef,
+    private _excelService: ExcelExportService
   ) {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
@@ -253,6 +255,29 @@ export class TaskComponent {
     if (send) {
       this._router.navigateByUrl(`/dashboard/user/${send}`);
     }
+  }
+
+  onExport() {
+    this._subTasksService
+      .getExcelListById(
+        this.columns
+          .filter((c) => c.type !== 'button')
+          .map((c) => c.key)
+          .join(', '),
+        this.id
+      )
+      .subscribe({
+        next: (response) => {
+          this._excelService.exportToExcel(
+            this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
+            response,
+            'SubTasks'
+          );
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
 
   onStatusChange(event: any) {

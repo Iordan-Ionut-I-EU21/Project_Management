@@ -33,6 +33,17 @@ public class ProjectsController {
         }
     }
 
+    @GetMapping("/get/excel")
+    public ResponseEntity<List<Object[]>> getExcelDataOfProjectsByUserEmailAndStatus(@RequestParam("excel") final String excel, @RequestParam("email") final String email, @RequestParam("suggestion") final String suggestion) {
+        try {
+            log.info("getExcelDataOfProjectsByUserEmailAndStatus() - Successful.");
+            return ResponseEntity.ok(this.projectsService.getExcelDataOfProjectsByUserEmailAndStatus(excel, email, suggestion));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getExcelDataOfProjectsByUserEmailAndStatus(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @GetMapping("/count/status")
     public ResponseEntity<Map<Status, Long>> getStatusCounts(@RequestParam("projectId") final String projectId) {
         try {
@@ -51,6 +62,17 @@ public class ProjectsController {
             return ResponseEntity.ok(new GroupedResult(this.projectsService.getListByProjectId(projectId, tableRequest), this.projectsService.getCountByProjectId(projectId)));
         } catch (Exception e) {
             log.error("Failed to retrieve getListByProjectId(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/get/excel/by-projectId")
+    public ResponseEntity<List<Object[]>> getExcelListByProjectId(@RequestParam("excel") final String excel, @RequestParam("projectId") final String projectId) {
+        try {
+            log.info("getExcelListByProjectId() - Successful.");
+            return ResponseEntity.ok(this.projectsService.getExcelListByProjectId(excel, projectId));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getExcelListByProjectId(): {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

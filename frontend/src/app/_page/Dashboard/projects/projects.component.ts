@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { ProjectsService } from '../../../_service/_model/projects.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
@@ -21,6 +26,7 @@ import { DialogService } from '../../../_service/_dialog/dialog.service';
 import { TasksService } from '../../../_service/_model/tasks.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { response } from 'express';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
 
 @Component({
   selector: 'app-projects',
@@ -112,12 +118,14 @@ export class ProjectsComponent {
     private _projectsService: ProjectsService,
     private _jwtService: JwtService,
     private _dialogService: DialogService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _excelService: ExcelExportService
   ) {}
 
   ngOnInit(): void {
-    this._route.params.subscribe((params) => {
-      this.suggestion = params['suggestion'];
+    this._route.paramMap.subscribe((params) => {
+      this.suggestion = params.get('suggestion')!;
+      this.fetchData();
     });
     this.fetchData();
   }
@@ -137,7 +145,7 @@ export class ProjectsComponent {
   }
 
   private fetchData() {
-    if (this.suggestion === undefined) {
+    if (this.suggestion === undefined || this.suggestion === null) {
       this._projectsService
         .postDataOfProjectsByUserEmail(
           this._jwtService.getEmail(),
@@ -174,5 +182,29 @@ export class ProjectsComponent {
 
   onDblClickRow(event: any) {
     this._router.navigateByUrl(`/dashboard/project/${event.id}`);
+  }
+
+  onExport() {
+    this._projectsService
+      .getExcelDataOfProjectsByUserEmailAndStatus(
+        this.columns
+          .filter((c) => c.type !== 'button')
+          .map((c) => c.code)
+          .join(', '),
+        this._jwtService.getEmail(),
+        this.suggestion
+      )
+      .subscribe({
+        next: (response) => {
+          this._excelService.exportToExcel(
+            this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
+            response,
+            'Projects'
+          );
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
   }
 }

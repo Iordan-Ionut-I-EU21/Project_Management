@@ -41,6 +41,16 @@ export class TasksService {
     );
   }
 
+  getExcelDataOfProjectsByUserEmailAndStatus(
+    excel: string,
+    email: string,
+    status: string
+  ): Observable<string[]> {
+    return this._http.get<string[]>(
+      `${this.authUrl}/get/excel?excel=${excel}&email=${email}&status=${status}`
+    );
+  }
+
   countByUserIdAndStatusAndPriority(userId: string): Observable<any> {
     return this._http.get<any>(
       `${this.authUrl}/count/by-id-status-priority?id=${userId}`

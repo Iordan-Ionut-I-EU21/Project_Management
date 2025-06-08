@@ -33,6 +33,7 @@ import { Projects } from '../../../_model/_interface/projects';
 import { TableComponent } from '../../../_components/table/table.component';
 import { User } from '../../../_model/_interface/user';
 import { HttpClientModule } from '@angular/common/http';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
 
 @Component({
   selector: 'app-project-member',
@@ -133,7 +134,8 @@ export class ProjectMemberComponent {
     private _projectService: ProjectsService,
     private _alertService: AlertService,
     private _projectMemberService: ProjectsMembersService,
-    private _userService: UserService
+    private _userService: UserService,
+    private _excelService: ExcelExportService
   ) {
     this.form = this._fb.group({
       projectName: [null, Validators.required],
@@ -190,6 +192,30 @@ export class ProjectMemberComponent {
         },
         error: (error) => {
           console.error(error);
+        },
+      });
+  }
+
+  onExport() {
+    this._projectMemberService
+      .getExcelUsersByProjectId(
+        this.columns
+          .filter((c) => c.type !== 'button')
+          .map((c) => c.code)
+          .join(', '),
+        this.saveLocalProject.id
+      )
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+          this._excelService.exportToExcel(
+            this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
+            response,
+            'Project Members'
+          );
+        },
+        error: (error) => {
+          console.log(error);
         },
       });
   }

@@ -5,6 +5,18 @@
       <div class="important-small-text italic mb-1">Description</div>
       <div class="important-small-text">{{ task!.description! }}</div>
 
+      <div *ngIf="data?.length! > 0">
+        <div class="important-small-text italic mb-1">Sub Tasks</div>
+        <app-table
+          [data]="data"
+          [count]="count"
+          [columns]="columns"
+          (pageChanged)="onPageChanged($event)"
+          (sortChanged)="onSortChanged($event)"
+          (onExport)="onExport()"
+        ></app-table>
+      </div>
+
       <div>
         <div class="flex flex-row items-center justify-between">
           <div class="important-small-text italic mb-1">Comments</div>
@@ -39,17 +51,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div *ngIf="data?.length! > 0">
-        <div class="important-small-text italic mb-1">Sub Tasks</div>
-        <app-table
-          [data]="data"
-          [count]="count"
-          [columns]="columns"
-          (pageChanged)="onPageChanged($event)"
-          (sortChanged)="onSortChanged($event)"
-        ></app-table>
       </div>
     </div>
   </div>

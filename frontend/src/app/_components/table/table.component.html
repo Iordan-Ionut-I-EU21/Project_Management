@@ -58,8 +58,21 @@
     ></tr>
   </table>
 </div>
-<mat-paginator
-  [length]="count"
-  [pageSize]="pageSize"
-  class="mt-6 rounded-lg border border-blue-100"
-></mat-paginator>
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="export()"
+    class="!absolute m-10 mt-16 flex items-center space-x-2 rounded-lg"
+  >
+    Export excel
+  </button>
+  <mat-paginator
+    style="width: -webkit-fill-available"
+    [length]="count"
+    [pageSize]="pageSize"
+    class="rounded-lg border border-blue-100"
+  >
+  </mat-paginator>
+</div>

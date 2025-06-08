@@ -15,6 +15,8 @@ import { TableComponent } from '../../../_components/table/table.component';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { MatCard } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-project',
@@ -84,7 +86,8 @@ export class ProjectComponent {
     private _projectService: ProjectsService,
     private _route: ActivatedRoute,
     private _router: Router,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
+    private _excelService: ExcelExportService
   ) {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
@@ -121,6 +124,29 @@ export class ProjectComponent {
         },
         error(err) {
           console.log(err);
+        },
+      });
+  }
+
+  onExport() {
+    this._projectService
+      .getExcelListByProjectId(
+        this.columns
+          .filter((c) => c.type !== 'button')
+          .map((c) => c.key)
+          .join(', '),
+        this.id
+      )
+      .subscribe({
+        next: (response) => {
+          this._excelService.exportToExcel(
+            this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
+            response,
+            'Project'
+          );
+        },
+        error: (error) => {
+          console.log(error);
         },
       });
   }

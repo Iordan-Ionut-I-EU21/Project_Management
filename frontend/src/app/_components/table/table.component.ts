@@ -49,6 +49,7 @@ export class TableComponent {
   @Output() pageChanged = new EventEmitter<ChangePage>();
   @Output() sortChanged = new EventEmitter<SortPage>();
   @Output() onDblClickRow = new EventEmitter<any>();
+  @Output() onExport = new EventEmitter();
 
   dataSource = new MatTableDataSource<any>();
   displayedColumnKeys: string[] = [];
@@ -108,5 +109,9 @@ export class TableComponent {
     const targetUrl = `${link}/${this.getNestedValue(row, code!)}`;
     console.log('Navigating to:', targetUrl);
     this._router.navigateByUrl(targetUrl);
+  }
+
+  export() {
+    this.onExport.emit();
   }
 }

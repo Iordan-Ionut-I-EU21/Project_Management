@@ -8,6 +8,8 @@ import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Enum.Role;
 import com.example.backend.Repository.ProjectsMembersRepository;
 import com.example.backend.Utility.TableRequest;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import java.util.Map;
 public class ProjectsMembersService {
     @Autowired
     private ProjectsMembersRepository projectsMembersRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     public void postProjectsMembers(final List<ProjectsMembers> projectsMembers) {
         this.projectsMembersRepository.saveAll(projectsMembers);
@@ -45,6 +49,12 @@ public class ProjectsMembersService {
     public List<User> getDataUsersByProjectId(final String projectId, final TableRequest tableRequest){
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return this.projectsMembersRepository.getDataUsersByProjectId(projectId, pageable);
+    }
+
+    public List<Object[]> getExcelUsersByProjectId(final String excel, final String projectId){
+        TypedQuery<Object[]> query = this.entityManager.createQuery("select "+excel+" from "+ProjectsMembers.class.getSimpleName() + " pm where pm.projectId.id = :projectId", Object[].class);
+        query.setParameter("projectId",projectId);
+        return  query.getResultList();
     }
 
     public Long getCountUsersByProjectId(final String projectId){

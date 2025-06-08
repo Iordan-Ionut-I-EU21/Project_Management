@@ -29,4 +29,10 @@ export class SubTasksService {
       tableRequest
     );
   }
+
+  getExcelListById(excel: string, taskId: string): Observable<string[]> {
+    return this._http.get<string[]>(
+      `${this.authUrl}/get/list/by-id?excel=${excel}&taskId=${taskId}`
+    );
+  }
 }

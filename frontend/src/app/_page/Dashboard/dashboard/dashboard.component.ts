@@ -15,6 +15,7 @@ import { Status } from '../../../_model/_enum/status';
 import { RolesLogicallyService } from '../../../_shared/roles-logically.service';
 import { SpinnerComponent } from '../../../_service/_spinner/spinner/spinner.component';
 import { SpinnerService } from '../../../_service/_spinner/spinner.service';
+import { ExcelExportService } from '../../../_service/_excel/excel.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,6 +52,7 @@ export class DashboardComponent {
     private _jwtService: JwtService,
     private _router: Router,
     private _rolesLogically: RolesLogicallyService,
+    private _excelService: ExcelExportService
   ) {
     this.showAddPossibility = this._rolesLogically.isAdminPossibility();
     this.onCardsAdmin();

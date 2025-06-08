@@ -32,9 +32,28 @@ export class ProjectsService {
     );
   }
 
+  getExcelDataOfProjectsByUserEmailAndStatus(
+    excel: string,
+    email: string,
+    suggestion: string
+  ): Observable<string[]> {
+    return this._http.get<string[]>(
+      `${this.authUrl}/get/excel?excel=${excel}&email=${email}&suggestion=${suggestion}`
+    );
+  }
+
   getStatusCounts(projectId: string): Observable<any> {
     return this._http.get<any>(
       `${this.authUrl}/count/status?projectId=${projectId}`
+    );
+  }
+
+  getExcelListByProjectId(
+    excel: string,
+    projectId: string
+  ): Observable<string[]> {
+    return this._http.get<string[]>(
+      `${this.authUrl}/get/excel/by-projectId?excel=${excel}&projectId=${projectId}`
     );
   }
 

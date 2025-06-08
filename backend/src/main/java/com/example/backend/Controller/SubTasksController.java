@@ -30,4 +30,15 @@ public class SubTasksController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping ("/get/list/by-id")
+    public ResponseEntity<List<Object[]>> getExcelListById(@RequestParam("excel") final String excel,@RequestParam("taskId") final String taskId) {
+        try {
+            log.info("getExcelListById() - Successful.");
+            return ResponseEntity.ok(this.subTasksService.getExcelListById(excel,taskId));
+        } catch (Exception e) {
+            log.error("Failed to retrieve getExcelListById(): {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }
