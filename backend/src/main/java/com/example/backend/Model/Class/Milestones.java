@@ -20,6 +20,7 @@ public class Milestones {
     private Projects projectId;
     @Column(name = "title")
     private String title;
+    @Lob
     @Column(name = "description")
     private String description;
     @Column(name = "dueDate")

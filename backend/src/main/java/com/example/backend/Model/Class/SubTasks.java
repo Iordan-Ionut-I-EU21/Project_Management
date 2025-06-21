@@ -21,6 +21,7 @@ public class SubTasks {
     private Tasks taskId;
     @Column(name = "title")
     private String title;
+    @Lob
     @Column(name = "description")
     private String description;
     @Column(name = "dueDate")

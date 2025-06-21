@@ -14,4 +14,5 @@ export interface TableColumn {
     icon?: string;
     onClick?: (row: any) => void;
   }[];
+  isActive?: boolean;
 }

@@ -48,12 +48,14 @@ export class ProjectComponent {
       code: 't.createdAt',
       label: 'Start Date',
       pipe: 'date',
+      isActive: false,
     },
     {
       key: 'dueDate',
       code: 't.dueDate',
       label: 'End Date',
       pipe: 'date',
+      isActive: true,
     },
     {
       key: 'assignedId.name',

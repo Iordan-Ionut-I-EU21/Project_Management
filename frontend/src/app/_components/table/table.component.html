@@ -42,7 +42,10 @@
           </ng-container>
         </ng-container>
         <ng-container [ngSwitch]="col.pipe">
-          <span *ngSwitchCase="'date'">
+          <span
+            *ngSwitchCase="'date'"
+            [ngClass]="col.isActive ? (row[col.key] | isNearEndDate) : ''"
+          >
             {{ row[col.key] | date : "dd MMM yyyy" }}
           </span>
         </ng-container>

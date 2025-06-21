@@ -19,6 +19,7 @@ public class Projects {
     private String id;
     @Column(name = "name")
     private String name;
+    @Lob
     @Column(name = "description")
     private String Description;
     @ManyToOne

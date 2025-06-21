@@ -20,7 +20,7 @@ import { SortPage } from '../../_model/_common/sort-page';
 import { ChangePage } from '../../_model/_common/change-page';
 import { Environment } from '../../../environments/environment';
 import { Router, RouterModule } from '@angular/router';
-import { get } from 'http';
+import { IsNearEndDatePipe } from '../../_model/_pipe/isNearEndDate.pipe';
 
 @Component({
   selector: 'app-table',
@@ -36,6 +36,7 @@ import { get } from 'http';
     CommonModule,
     DatePipe,
     RouterModule,
+    IsNearEndDatePipe,
   ],
   providers: [DatePipe],
   templateUrl: './table.component.html',

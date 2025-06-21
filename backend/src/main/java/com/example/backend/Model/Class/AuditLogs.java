@@ -18,6 +18,7 @@ public class AuditLogs {
     private String id;
     @Column(name = "action")
     private String action;
+    @Lob
     @Column(name = "description")
     private String description;
     @Column(name = "createdAt")

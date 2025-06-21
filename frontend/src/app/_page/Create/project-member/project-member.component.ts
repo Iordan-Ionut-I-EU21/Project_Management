@@ -114,6 +114,7 @@ export class ProjectMemberComponent {
       code: 'pm.userId.createdAt',
       label: 'Created Date',
       pipe: 'date',
+      isActive: false,
     },
   ];
   sortPage: SortPage = {

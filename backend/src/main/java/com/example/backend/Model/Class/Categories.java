@@ -16,6 +16,7 @@ public class Categories {
     private String id;
     @Column(name = "name")
     private String name;
+    @Lob
     @Column(name = "description")
     private String description;
 

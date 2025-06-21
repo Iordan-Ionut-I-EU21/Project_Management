@@ -63,12 +63,14 @@ export class ProjectsComponent {
       code: 'pm.projectId.startDate',
       label: 'Start Date',
       pipe: 'date',
+      isActive: false,
     },
     {
       key: 'endDate',
       code: 'pm.projectId.endDate',
       label: 'End Date',
       pipe: 'date',
+      isActive: true,
     },
     {
       key: 'managerId.name',

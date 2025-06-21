@@ -81,7 +81,7 @@ public class GenService {
         while (categories.size() < number) {
             Categories category = new Categories();
             category.setId(BackendApplication.generateId());
-            category.setName(faker.commerce().department());
+            category.setName(faker.business().toString());
             category.setDescription(this.shortDescription());
             categories.add(category);
         }
@@ -364,16 +364,20 @@ public class GenService {
     }
 
     private Timestamp generateEndDate() {
-        LocalDateTime futureDate = LocalDateTime.now().plusYears(1).plusDays(faker.number().numberBetween(0, 100)).plusHours(faker.number().numberBetween(0, 2400));
+        LocalDateTime futureDate = LocalDateTime.now()
+                                           .plusMonths(2)
+                                           .plusDays(faker.number().numberBetween(0, 10))
+                                           .plusHours(faker.number().numberBetween(0, 48));
         return Timestamp.valueOf(futureDate);
     }
+
 
     private Timestamp generateDateDueDate() {
         return Timestamp.valueOf(LocalDateTime.now().plusDays(faker.number().numberBetween(0, 1000)).plusHours(faker.number().numberBetween(0, 2400)));
     }
 
     private String shortDescription() {
-        String paragraph = faker.lorem().paragraph();
-        return paragraph.length() > 100 ? paragraph.substring(0, 97) + "..." : paragraph;
+        String paragraph = faker.lorem().paragraph(5);
+        return paragraph.length() > 200 ? paragraph.substring(0, 198) + "..." : paragraph;
     }
 }

@@ -22,6 +22,7 @@ public class Tasks {
     private User assignedId;
     @Column(name = "title")
     private String title;
+    @Lob
     @Column(name = "description")
     private  String description;
     @Column(name = "dueDate")

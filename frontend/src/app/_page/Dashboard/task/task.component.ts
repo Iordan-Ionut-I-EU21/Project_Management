@@ -104,6 +104,7 @@ export class TaskComponent {
       code: 'st.dueDate',
       label: 'End Date',
       pipe: 'date',
+      isActive: true,
     },
     {
       key: 'progress',
