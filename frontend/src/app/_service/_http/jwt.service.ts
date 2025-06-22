@@ -94,7 +94,9 @@ export class JwtService {
 
   logout(name: string): void {
     this._cookieService.delete(name, '/');
-    this._router.navigate(['/authentication/login']);
+    if (this._cookieService.get(name)) {
+      this._router.navigate(['/authentication/login']);
+    }
   }
 
   getEmail(): string {
