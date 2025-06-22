@@ -158,5 +158,6 @@ export class OtpComponent {
   onNumberInput(event: any): void {
     const input = event.target;
     input.value = input.value.replace(/\D/g, '');
+    this.formOtp.get('otp')?.setValue(input.value);
   }
 }

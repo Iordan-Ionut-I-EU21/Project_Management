@@ -21,13 +21,16 @@ export class JwtService {
   }
 
   saveToken(name: string, token: string): void {
+    const isBrowser = isPlatformBrowser(this.platformId);
+
     this._cookieService.set(name, token, {
       expires: 7,
       secure: location.protocol === 'https:',
       sameSite: 'Lax',
       path: '/',
     });
-    if (isPlatformBrowser(this.platformId)) {
+
+    if (isBrowser) {
       this.checkTokenExpiration(Environment.jwtToken);
     }
   }
