@@ -28,4 +28,10 @@ public interface TasksRepository extends JpaRepository<Tasks, String> {
 
     @Query("select t from Tasks t where t.id = :id")
     Tasks getById(@Param("id") final String id);
+
+    @Query("select count(t.id) from Tasks t where t.projectId.id = :projectId")
+    Long findNumberOfTaskOnProject(@Param("projectId") final String projectId);
+
+    @Query("select count(t.id) from Tasks t where t.projectId.id = :projectId and t.status = :status")
+    Long findNumberOfTaskOnProjectByStatus(@Param("projectId") final String projectId,@Param("status") final Status status);
 }

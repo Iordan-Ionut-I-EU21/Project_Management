@@ -2,12 +2,15 @@ package com.example.backend.Service;
 
 
 import com.example.backend.BackendApplication;
+import com.example.backend.Mail.EmailService;
 import com.example.backend.Model.Class.Tasks;
 import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Enum.Priority;
 import com.example.backend.Model.Enum.Status;
+import com.example.backend.Repository.ProjectsRepository;
 import com.example.backend.Repository.TasksRepository;
 import com.example.backend.Utility.TableRequest;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import okhttp3.internal.concurrent.Task;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,8 @@ public class TasksService {
     private TasksRepository tasksRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private EmailService emailService;
 
     public List<Tasks> findAllTasks() {
         return this.tasksRepository.findAll();
@@ -75,18 +81,35 @@ public class TasksService {
         return this.tasksRepository.getById(id);
     }
 
-    public Tasks putTaskById(final String id, final Tasks tasks) {
-        return tasksRepository.findById(id).map(task -> {
-            task.setProjectId(tasks.getProjectId());
-            task.setDescription(tasks.getDescription());
-            task.setStatus(tasks.getStatus());
-            task.setTitle(tasks.getTitle());
-            task.setPriority(tasks.getPriority());
-            task.setDueDate(tasks.getDueDate());
-            task.setCreatedAt(tasks.getCreatedAt());
-            task.setAssignedId(tasks.getAssignedId());
-            return tasksRepository.save(task);
-        }).orElseThrow(() -> new RuntimeException("Tasks not found with id " + id));
+    public Tasks putTaskById(final String id, final Tasks tasks) throws MessagingException, IOException {
+        return tasksRepository.findById(id).map(existingTask -> {
+            // Update the task fields
+            existingTask.setProjectId(tasks.getProjectId());
+            existingTask.setDescription(tasks.getDescription());
+            existingTask.setStatus(tasks.getStatus());
+            existingTask.setTitle(tasks.getTitle());
+            existingTask.setPriority(tasks.getPriority());
+            existingTask.setDueDate(tasks.getDueDate());
+            existingTask.setCreatedAt(tasks.getCreatedAt());
+            existingTask.setAssignedId(tasks.getAssignedId());
+            Tasks updatedTask = tasksRepository.save(existingTask);
+            Long totalTasks = tasksRepository.findNumberOfTaskOnProject(tasks.getProjectId().getId());
+            Long completedTasks = tasksRepository.findNumberOfTaskOnProjectByStatus(tasks.getProjectId().getId(), Status.COMPLETED);
+
+            System.out.println("Total Tasks: " + totalTasks);
+            System.out.println("Completed Tasks: " + completedTasks);
+
+            if (totalTasks.equals(completedTasks)) {
+                try {
+                    emailService.sendEmailToManagerOfProject(tasks.getProjectId());
+                } catch (MessagingException | IOException e) {
+                    throw new RuntimeException("Failed to send email", e);
+                }
+            }
+
+            return updatedTask;
+        }).orElseThrow(() -> new RuntimeException("Task not found with id " + id));
     }
+
 
 }
