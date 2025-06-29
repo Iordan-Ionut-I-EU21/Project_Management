@@ -7,4 +7,5 @@ export interface ProjectMembers {
   projectId: Projects;
   userId: User;
   role: Role;
+  startDate: Date;
 }

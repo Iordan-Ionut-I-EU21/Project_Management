@@ -46,7 +46,7 @@ public class ProjectsMembersService {
         return this.projectsMembersRepository.save(projectsMembers);
     }
 
-    public List<User> getDataUsersByProjectId(final String projectId, final TableRequest tableRequest){
+    public List<ProjectsMembers> getDataUsersByProjectId(final String projectId, final TableRequest tableRequest){
         Pageable pageable = BackendApplication.generateTablePage(tableRequest);
         return this.projectsMembersRepository.getDataUsersByProjectId(projectId, pageable);
     }

@@ -204,6 +204,7 @@ public class GenService {
             projectsMember.setUserId(user);
             projectsMember.setProjectId(project);
             projectsMember.setRole(generateRole());
+            projectsMember.setStartDate(generateNowDate());
 
             projectsMembers.add(projectsMember);
             existingAssignments.add(assignmentKey);

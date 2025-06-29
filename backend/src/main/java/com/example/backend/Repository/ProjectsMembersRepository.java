@@ -19,9 +19,9 @@ public interface ProjectsMembersRepository extends JpaRepository<ProjectsMembers
     @Query("select count(pm.id) from ProjectsMembers pm where pm.userId.id = :userId and pm.role = :role")
     Long getCountByRole(@Param("userId") final String userId, @Param("role") final Role role);
 
-    @Query("select pm.userId from ProjectsMembers pm where pm.projectId.id = :projectId")
-    List<User> getDataUsersByProjectId(@Param("projectId") final String projectId, Pageable pageable);
+    @Query("select pm from ProjectsMembers pm where pm.projectId.id = :projectId")
+    List<ProjectsMembers> getDataUsersByProjectId(@Param("projectId") final String projectId, Pageable pageable);
 
-    @Query("select count(pm.userId) from ProjectsMembers pm where pm.projectId.id = :projectId")
+    @Query("select count(pm.id) from ProjectsMembers pm where pm.projectId.id = :projectId")
     Long getCountUsersByProjectId(@Param("projectId") final String projectId);
 }

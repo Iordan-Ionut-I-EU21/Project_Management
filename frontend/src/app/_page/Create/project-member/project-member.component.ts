@@ -58,7 +58,7 @@ import { ExcelExportService } from '../../../_service/_excel/excel.service';
 export class ProjectMemberComponent {
   form!: FormGroup;
   page: NamePage = {
-    name: 'Create Task',
+    name: 'Add Project Members',
     icon: 'add',
   };
 
@@ -96,9 +96,9 @@ export class ProjectMemberComponent {
   };
 
   columns: TableColumn[] = [
-    { key: 'name', code: 'pm.userId.name', label: 'Name', type: 'text' },
+    { key: 'userId.name', code: 'pm.userId.name', label: 'Name', type: 'text' },
     {
-      key: 'email',
+      key: 'userId.email',
       code: 'pm.userId.email',
       label: 'Email',
       type: 'text',
@@ -110,8 +110,8 @@ export class ProjectMemberComponent {
       type: 'text',
     },
     {
-      key: 'createdAt',
-      code: 'pm.userId.createdAt',
+      key: 'startDate',
+      code: 'pm.startDate',
       label: 'Created Date',
       pipe: 'date',
       isActive: false,
@@ -208,7 +208,7 @@ export class ProjectMemberComponent {
       )
       .subscribe({
         next: (response) => {
-          console.log(response);
+          // console.log(response);
           this._excelService.exportToExcel(
             this.columns.filter((c) => c.type !== 'button').map((c) => c.label),
             response,
@@ -242,18 +242,23 @@ export class ProjectMemberComponent {
       this._alertService.show('Role is required.', AlertEnum.ERROR);
     }
     if (this.form.valid) {
+      console.log(this.form.value);
       const projectMember: ProjectMembers = {
         id: '',
         projectId: this.form.value.projectName,
         userId: this.form.value.userName,
         role: this.form.value.role.key,
+        startDate: new Date(),
       };
 
       this._projectMemberService
         .postNewProjectMembers(projectMember)
         .subscribe({
           next: (response) => {
-            console.log(response);
+            // console.log(response);
+            this.form.get('userName')?.setValue(null);
+            this.form.get('role')?.setValue(null);
+            this.fetchData();
           },
           error: (error) => {
             console.log(error);

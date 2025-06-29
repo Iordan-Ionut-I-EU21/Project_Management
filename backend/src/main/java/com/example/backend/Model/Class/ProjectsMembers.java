@@ -4,6 +4,8 @@ import com.example.backend.Model.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Data
 @Getter
 @Setter
@@ -22,4 +24,6 @@ public class ProjectsMembers {
     private User userId;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "startDate")
+    private Timestamp startDate;
 }
