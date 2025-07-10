@@ -1,35 +1,17 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.User;
-import com.example.backend.Model.Enum.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    @Query("select u from User u where u.role = :role")
-    List<User> getUserByRole(@Param("role") final UserRole role);
-
-    @Query("select p.managerId from Projects p where p.id = :projectsId")
-    List<User> getUserByProjects(@Param("projectsId") final String projectsId);
-
-    @Query("select u from User u where u.email = :email")
+    @Query("SELECT u FROM User u WHERE u.email = :email ")
     Optional<User> findByEmail(@Param("email") String email);
-
-    List<User> findAllByEmailIn(Collection<String> emails);
-
-    @Query("select u from User u where u.id = :id")
-    User getUserById(@Param("id") final String id);
-
-    @Query("select u from User u where u.name = :name and u.email = :email" )
-    User getUserByNameAndEmail(@Param("name") final String name, @Param("email") final String email);
-
-    @Query("select u from User u where u.role <> :role")
-    List<User> getAllUserDifferentOnRole(@Param("role")final UserRole role);
 }

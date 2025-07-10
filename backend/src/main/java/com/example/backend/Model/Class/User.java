@@ -18,14 +18,16 @@ import java.sql.Timestamp;
 public class User {
     @Id
     private String id;
-    @Column(name = "name")
-    private String name;
-    @Column(unique = true, name = "email")
-    private String email;
+    @Column(name= "username")
+    private String username;
     @Column(name = "password")
     private String password;
+    @Column(name ="email", unique = true)
+    private String email;
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    @Column(name = "created_at")
-    private Timestamp createdAt;
+    @OneToOne
+    @JoinColumn(name = "employees_id", referencedColumnName = "id")
+    private Employees employees_id;
 }

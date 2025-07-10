@@ -12,16 +12,21 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Cacheable
-@Table(name = "PARTS")
-public class Parts {
+@Table(name = "CAR_PARTS")
+public class CarParts {
     @Id
     private String id;
     @Column(name = "quantity")
     private Integer quantity;
     @Column(name = "installed_at")
     private LocalDateTime installed_at;
-
-    private Cars cars_id;
-    private Parts parts_id;
+    @ManyToOne
+    @JoinColumn(name = "car_id",referencedColumnName = "id")
+    private Cars car_id;
+    @ManyToOne
+    @JoinColumn(name= "part_id", referencedColumnName = "id")
+    private Parts part_id;
+    @ManyToOne
+    @JoinColumn(name ="installed_by", referencedColumnName = "id")
     private Employees installed_by;
 }

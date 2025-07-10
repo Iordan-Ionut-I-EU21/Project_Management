@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/faker")
@@ -19,12 +22,6 @@ public class GenController {
         this.genService = genService;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<String> getAll(@RequestParam(defaultValue = "10") int num) {
-
-        return ResponseEntity.ok(genService.generate());
-    }
-
     @PostMapping("/all")
     public ResponseEntity<Void> postAll(@RequestParam(value = "num", defaultValue = "1") final int number) {
         LOG.info("runnn1");
@@ -32,16 +29,30 @@ public class GenController {
             LOG.info("------------START------------");
             long startTime = System.currentTimeMillis();
 
-            genService.generateUsers(number / 50);
-            genService.generateCategories(number);
-            genService.generateProjects(number);
-            genService.generateTasks(number);
-            genService.generateTaskComments(number);
-            genService.generateProjectsMembers(number);
-            genService.generateSubTasks(number);
-            genService.generateMilestones(number);
-            genService.generateAuditLogs(number);
-            genService.generateActivities(number);
+            this.genService.generateUserAndEmployee(40);
+            LOG.info("------------UserAndEmployee------------");
+            this.genService.generateSuppliers(100);
+            LOG.info("------------Suppliers------------");
+            this.genService.generateProcess(number);
+            LOG.info("------------Process------------");
+            this.genService.generateCarModel(number);
+            LOG.info("------------CarModel------------");
+            this.genService.generateParts(number);
+            LOG.info("------------Parts------------");
+            this.genService.generateMachines(number);
+            LOG.info("------------Machines------------");
+            this.genService.generateCars(100);
+            LOG.info("------------Cars------------");
+            this.genService.generateCarParts(number);
+            LOG.info("------------CarParts------------");
+            this.genService.generatePartProduction(number);
+            LOG.info("------------PartProduction------------");
+            this.genService.generatePartSuppliers(number);
+            LOG.info("------------PartSuppliers------------");
+            this.genService.generateProcessLog(number);
+            LOG.info("------------ProcessLog------------");
+            this.genService.generateQualityChecks(number);
+            LOG.info("------------QualityChecks------------");
 
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
@@ -53,7 +64,7 @@ public class GenController {
             LOG.info("All() - Successful....." + formattedDuration);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
-            System.out.println("Error posting all: " + e.getMessage());
+            LOG.info("Error posting all: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -65,9 +76,9 @@ public class GenController {
             LOG.info("------------START------------");
             long startTime = System.currentTimeMillis();
 
-            genService.generateTasks(number);
-            genService.generateTaskComments(number);
-            genService.generateProjectsMembers(number);
+            this.genService.generateUserAndEmployee(number);
+            this.genService.generateSuppliers(number);
+            this.genService.generateProcess(number);
 
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
@@ -79,7 +90,7 @@ public class GenController {
             LOG.info("postNeedData() - Successful....." + formattedDuration);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
-            System.out.println("Error posting all: " + e.getMessage());
+            LOG.info("Error posting all: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

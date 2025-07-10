@@ -44,10 +44,10 @@ import { RolesLogicallyService } from '../../_shared/roles-logically.service';
 })
 export class NavbarComponent {
   routes: NavItem[] = [
-    //   { name: 'Dashboard', route: '/dashboard/feed', icon: 'home' },
-    //   { name: 'Team', route: '/dashboard/team', icon: 'people' },
-    //   { name: 'Settings', route: '/dashboard/settings', icon: 'settings' },
-    //   { name: 'Reports', route: '/dashboard/reports', icon: 'assessment' },
+      { name: 'Dashboard', route: '/dashboard/feed', icon: 'home' },
+      { name: 'Team', route: '/dashboard/team', icon: 'people' },
+      { name: 'Settings', route: '/dashboard/settings', icon: 'settings' },
+      { name: 'Reports', route: '/dashboard/reports', icon: 'assessment' },
   ];
 
   feet: NavItem = { name: 'Dashboard', route: '/dashboard/feed', icon: 'home' };

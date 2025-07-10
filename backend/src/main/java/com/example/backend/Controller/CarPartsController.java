@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/car/parts")
 @JBossLog
-public class CarsPartsController {
+public class CarPartsController {
     @Autowired
     private CarsPartsService carsPartsService;
 }

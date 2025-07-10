@@ -1,2 +1,17 @@
-package com.example.backend.Controller;public class QualityChecksController {
+package com.example.backend.Controller;
+
+import com.example.backend.Service.QualityChecksService;
+import lombok.extern.jbosslog.JBossLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/api/quality/checks")
+@JBossLog
+public class QualityChecksController {
+    @Autowired
+    private QualityChecksService qualityChecksService;
 }

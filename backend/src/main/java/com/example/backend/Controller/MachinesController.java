@@ -1,2 +1,17 @@
-package com.example.backend.Controller;public class MachinesController {
+package com.example.backend.Controller;
+
+import com.example.backend.Service.MachinesService;
+import lombok.extern.jbosslog.JBossLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/api/machines")
+@JBossLog
+public class MachinesController {
+    @Autowired
+    private MachinesService machinesService;
 }

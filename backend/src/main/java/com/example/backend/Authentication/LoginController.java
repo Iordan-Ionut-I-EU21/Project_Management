@@ -40,7 +40,7 @@ public class LoginController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setId(BackendApplication.generateId());
         userRepository.save(user);
-        String token = jwtUtil.generateToken(user.getEmail(), user.getName(), user.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getUsername(), user.getRole());
 
         return ResponseEntity.ok(Map.of("token", token));
     }

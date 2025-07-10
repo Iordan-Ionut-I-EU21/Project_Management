@@ -1,2 +1,17 @@
-package com.example.backend.Controller;public class PartProductionController {
+package com.example.backend.Controller;
+
+import com.example.backend.Service.PartProductionService;
+import lombok.extern.jbosslog.JBossLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/api/part/production")
+@JBossLog
+public class PartProductionController {
+    @Autowired
+    private PartProductionService partProductionService;
 }
