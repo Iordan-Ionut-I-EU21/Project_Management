@@ -83,10 +83,13 @@ export class TableComponent {
     });
 
     this.sort.sortChange.subscribe((sortEvent) => {
-      this.sortChanged.emit({
-        column: sortEvent.active,
-        direction: sortEvent.direction,
-      });
+      console.log('Sort changed:', sortEvent);
+      if (sortEvent.active !== 'view') {
+        this.sortChanged.emit({
+          column: sortEvent.active,
+          direction: sortEvent.direction,
+        });
+      }
     });
   }
 

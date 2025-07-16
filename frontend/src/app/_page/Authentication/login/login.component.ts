@@ -10,10 +10,10 @@ import { AlertService } from '../../../_service/_alert/alert.service';
 import { AlertEnum } from '../../../_model/_common/alert';
 import { HttpClientModule } from '@angular/common/http';
 import { Environment } from '../../../../environments/environment';
-import { LoginRequest } from '../../../_model/_interface/login-request';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
+import { LoginRequest } from '../../../_model/_common/login-request';
 
 @Component({
   selector: 'app-login',

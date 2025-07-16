@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Environment } from '../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LoginRequest } from '../../_model/_interface/login-request';
-import { PasswordRequest } from '../../_model/_interface/password-request';
+import { PasswordRequest } from '../../_model/_common/password-request';
+import { LoginRequest } from '../../_model/_common/login-request';
 
 @Injectable({
   providedIn: 'root',

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Root Variables for Custom Colors */
 :root {
   --primary: #3b82f6;
   --secondary: #1e293b;
@@ -164,7 +163,7 @@ img {
 }
 
 mat-card{
-  @apply p-8 shadow-2xl rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100;
+  @apply px-8 pb-8 pt-2 shadow-2xl rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
   border-radius: 1.5rem;
   border: 1px solid #e0e7ff;

@@ -11,7 +11,7 @@ import { AlertEnum } from '../../../_model/_common/alert';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Environment } from '../../../../environments/environment';
-import { PasswordRequest } from '../../../_model/_interface/password-request';
+import { PasswordRequest } from '../../../_model/_common/password-request';
 import { AuthenticationService } from '../../../_service/_http/authentication.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
 import { HttpClientModule } from '@angular/common/http';

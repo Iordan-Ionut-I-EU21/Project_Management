@@ -1,13 +1,12 @@
 <mat-card>
   <app-name-page [page]="page"></app-name-page>
-  <div
-    [ngClass]="{ 'flex flex-row gap-5 justify-between': showAddPossibility }"
-  >
-    <app-card
-      class="w-3/12"
-      *ngFor="let card of cards"
-      [card]="card"
-      (cardClicked)="onCardBoxClicked($event)"
-    ></app-card>
-  </div>
+  <app-table
+    [data]="data"
+    [count]="count"
+    [columns]="columns"
+    (pageChanged)="onPageChanged($event)"
+    (sortChanged)="onSortChanged($event)"
+    [enableDblClickForRow]="true"
+    (onExport)="onExport()"
+  ></app-table>
 </mat-card>

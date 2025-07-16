@@ -1,5 +1,7 @@
 package com.example.backend.Model.Class;
 
+import com.example.backend.Configuration.BlobSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +23,9 @@ public class QualityChecks {
     private LocalDateTime check_date;
     @Column(name = "passed")
     private Boolean passed;
+    @Lob
     @Column(name = "notes")
+    @JsonSerialize(using = BlobSerializer.class)
     private Blob notes;
     @ManyToOne
     @JoinColumn(name = "car_id", referencedColumnName = "id")
