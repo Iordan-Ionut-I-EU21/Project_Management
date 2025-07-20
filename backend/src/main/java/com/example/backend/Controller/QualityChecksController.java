@@ -19,7 +19,7 @@ public class QualityChecksController {
     @Autowired
     private QualityChecksService qualityChecksService;
 
-    @PostMapping("find/by")
+    @PostMapping("/find/by")
     public ResponseEntity<GroupedResult> getDataByUserName(@RequestParam("name") final String name, @RequestBody TableRequest tableRequest) {
         try {
             log.info("getDataByUserName() - Successful.....");
@@ -30,7 +30,18 @@ public class QualityChecksController {
         }
     }
 
-    @GetMapping("excel/find/by")
+    @GetMapping("/count/by")
+    public ResponseEntity<Long> countByUserName(@RequestParam("name") final String name) {
+        try {
+            log.info("countByUserName() - Successful.....");
+            return ResponseEntity.ok(this.qualityChecksService.countByUserName(name));
+        } catch (Exception e) {
+            log.error("Error in countByUserName: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/excel/find/by")
     public ResponseEntity<List<Object[]>> getExcelByUserName(@RequestParam("name") final String name, @RequestParam("columns") final String columns) {
         try {
             log.info("getExcelByUserName() - Successful.....");

@@ -21,6 +21,12 @@ import { MatSort } from '@angular/material/sort';
 import { ProcessLog } from '../../../_model/_interface/process-log';
 import { TableComponent } from '../../../_components/table/table.component';
 import { QualityChecksService } from '../../../_service/_model/quality-checks.service';
+import { ICONS } from '../../../_shared/icons';
+import { User } from '../../../_model/_interface/user';
+import { UserInformationDTO } from '../../../_model/_dto/user-information-dto';
+import { UserService } from '../../../_service/_model/user.service';
+import { CarsService } from '../../../_service/_model/cars.service';
+import { ProcessLogStatus } from '../../../_model/_enum/process-log-status';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,6 +45,8 @@ import { QualityChecksService } from '../../../_service/_model/quality-checks.se
     RolesLogicallyService,
     ProcessLogService,
     QualityChecksService,
+    UserService,
+    CarsService,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -48,7 +56,27 @@ export class DashboardComponent {
   @ViewChild(MatSort) sort!: MatSort;
   data!: ProcessLog[];
   count!: number;
-  cards: Card[] = [];
+  cards: Card[] = [
+    {
+      name: 'Process Logs',
+      count: 0,
+      icon: ICONS.PROCESS,
+      color: 'green',
+    },
+    { name: 'Cars', count: 0, icon: ICONS.CAR, color: 'blue' },
+    {
+      name: 'Process Log In Progress',
+      count: 0,
+      icon: ICONS.PROCESS,
+      color: 'orange',
+    },
+    {
+      name: 'Quality Checks',
+      count: 0,
+      icon: ICONS.QUALITY_CHECKS,
+      color: 'purple',
+    },
+  ];
 
   page: NamePage = {
     name: 'Dashboard Overview',
@@ -117,19 +145,20 @@ export class DashboardComponent {
     private _JwtService: JwtService,
     private _processLogService: ProcessLogService,
     private _qualityChecksService: QualityChecksService,
+    private _carsService: CarsService,
+    private _userService: UserService,
     private _router: Router
   ) {
-    this._qualityChecksService
-      .getDataByUserNameAndStatus(
-        this._JwtService.getUserInfo()?.name!,
-        this.changePage,
-        this.sortPage
-      )
+    this._userService
+      .countInformationByUserName(this._JwtService.getUserInfo()?.name!)
       .subscribe({
-        next: (response) => {
-          console.log(response);
+        next: (response: UserInformationDTO) => {
+          this.cards[0].count = response.countProcessLog;
+          this.cards[1].count = response.countCars;
+          this.cards[2].count = response.countProcessLogStatus;
+          this.cards[3].count = response.countQualityChecks;
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error(error);
         },
       });
@@ -190,5 +219,48 @@ export class DashboardComponent {
           console.log(error);
         },
       });
+  }
+
+  onCardClick(card: Card) {
+    console.log(card);
+    switch (card.name) {
+      case 'Process Logs': {
+        this._processLogService.getDataByUserNameAndStatus(
+          this._JwtService.getUserInfo()?.name!,
+          null,
+          this.changePage,
+          this.sortPage
+        );
+        break;
+      }
+      case 'Cars': {
+        this._carsService.getDataByUserNameAndStatus(
+          this._JwtService.getUserInfo()?.name!,
+          this.changePage,
+          this.sortPage
+        );
+        break;
+      }
+      case 'Process Log Status': {
+        this._processLogService.getDataByUserNameAndStatus(
+          this._JwtService.getUserInfo()?.name!,
+          ProcessLogStatus.IN_PROGRESS,
+          this.changePage,
+          this.sortPage
+        );
+        break;
+      }
+      case 'Quality Checks': {
+        this._qualityChecksService.getDataByUserNameAndStatus(
+          this._JwtService.getUserInfo()?.name!,
+          this.changePage,
+          this.sortPage
+        );
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 }

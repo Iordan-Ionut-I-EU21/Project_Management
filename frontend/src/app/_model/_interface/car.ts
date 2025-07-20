@@ -1,6 +1,6 @@
-import { Model } from "./model";
+import { Model } from './model';
 
-export interface Car {
+export interface Cars {
   id: string;
   vin: string;
   assembly_date: string;

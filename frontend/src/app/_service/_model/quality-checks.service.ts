@@ -23,10 +23,18 @@ export class QualityChecksService {
     const tableBody = { changePage, sortPage };
     const params = new URLSearchParams();
     params.append('name', name);
-    
+
     return this._http.post<GroupResult<QualityChecks>>(
       `${this.authUrl}/find/by?${params.toString()}`,
       tableBody
+    );
+  }
+
+  countByUserName(name: string): Observable<number> {
+    const params = new URLSearchParams();
+    params.append('name', name);
+    return this._http.get<number>(
+      `${this.authUrl}/count/by?${params.toString()}`
     );
   }
 

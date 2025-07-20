@@ -13,6 +13,7 @@ import { UserService } from '../../_service/_model/user.service';
 import { RolesLogicallyService } from '../../_shared/roles-logically.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { ICONS } from '../../_shared/icons';
 
 @Component({
   selector: 'app-navbar',
@@ -35,14 +36,14 @@ import { MatListModule } from '@angular/material/list';
 })
 export class NavbarComponent {
   routes: NavItem[] = [
-    { name: 'Dashboard', route: '/dashboard/feed', icon: 'home' },
+    { name: 'Dashboard', route: '/dashboard/feed', icon: ICONS.HOME },
     {
       name: 'Employees',
       route: '/dashboard/employees',
-      icon: 'assignment_ind',
+      icon: ICONS.EMPLOYEE,
     },
-    { name: 'Cars', route: '/dashboard/cars', icon: 'airport_shuttle' },
-    { name: 'Processes', route: '/dashboard/processes', icon: 'account_tree' },
+    { name: 'Cars', route: '/dashboard/cars', icon: ICONS.CAR },
+    { name: 'Processes', route: '/dashboard/processes', icon: ICONS.PROCESS },
   ];
 
   feet: NavItem = this.routes[0];

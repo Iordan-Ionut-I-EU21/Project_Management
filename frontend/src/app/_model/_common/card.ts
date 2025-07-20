@@ -3,5 +3,5 @@ export interface Card {
   count?: number;
   icon: string;
   color: string;
-  route: string;
+  route?: string;
 }

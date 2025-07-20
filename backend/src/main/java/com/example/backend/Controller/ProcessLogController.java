@@ -21,12 +21,23 @@ public class ProcessLogController {
     private ProcessLogService processLogService;
 
     @PostMapping("find/by")
-    public ResponseEntity<GroupedResult> getDataByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final String status, @RequestBody TableRequest tableRequest) {
+    public ResponseEntity<GroupedResult> getDataByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status, @RequestBody TableRequest tableRequest) {
         try {
             log.info("getDataByUserNameAndStatus() - Successful.....");
             return ResponseEntity.ok(new GroupedResult(this.processLogService.findByUserNameAndStatus(name, status, tableRequest), this.processLogService.countByUserNameAndStatus(name, status)));
         } catch (Exception e) {
             log.error("Error in getDataByUserNameAndStatus: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/count/by")
+    public ResponseEntity<Long> countByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status) {
+        try {
+            log.info("countByUserNameAndStatus() - Successful.....");
+            return ResponseEntity.ok(this.processLogService.countByUserNameAndStatus(name, status));
+        } catch (Exception e) {
+            log.error("Error in countByUserNameAndStatus: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

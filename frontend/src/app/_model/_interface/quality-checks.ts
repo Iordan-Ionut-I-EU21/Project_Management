@@ -1,4 +1,4 @@
-import { Car } from './car';
+import { Cars } from './car';
 import { Employee } from './employee';
 
 export interface QualityChecks {
@@ -6,6 +6,6 @@ export interface QualityChecks {
   check_date: string;
   passed: boolean;
   notes: string;
-  car_id: Car;
+  car_id: Cars;
   inspector_id: Employee;
 }

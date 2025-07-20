@@ -1,48 +1,40 @@
 import { Injectable } from '@angular/core';
 import { Environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ProcessLog } from '../../_model/_interface/process-log';
-import { GroupResult } from '../../_model/_common/group-result';
 import { ChangePage } from '../../_model/_common/change-page';
 import { SortPage } from '../../_model/_common/sort-page';
-import { ProcessLogStatus } from '../../_model/_enum/process-log-status';
+import { GroupResult } from '../../_model/_common/group-result';
+import { QualityChecks } from '../../_model/_interface/quality-checks';
+import { Observable } from 'rxjs';
+import { Cars } from '../../_model/_interface/car';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProcessLogService {
-  private authUrl = Environment.apiUrl + '/process/log';
+export class CarsService {
+  private authUrl = Environment.apiUrl + '/cars';
 
   constructor(private _http: HttpClient) {}
 
   getDataByUserNameAndStatus(
     name: string,
-    status: ProcessLogStatus | null,
     changePage: ChangePage,
     sortPage: SortPage
-  ): Observable<GroupResult<ProcessLog>> {
+  ): Observable<GroupResult<Cars>> {
     const tableBody = { changePage, sortPage };
     const params = new URLSearchParams();
     params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
-    return this._http.post<GroupResult<ProcessLog>>(
+
+    return this._http.post<GroupResult<Cars>>(
       `${this.authUrl}/find/by?${params.toString()}`,
       tableBody
     );
   }
 
-  countByUserNameAndStatus(
-    name: string,
-    status: ProcessLogStatus | null
-  ): Observable<number> {
+  countByUsername(name: string): Observable<number> {
     const params = new URLSearchParams();
     params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
+
     return this._http.get<number>(
       `${this.authUrl}/count/by?${params.toString()}`
     );
@@ -50,14 +42,10 @@ export class ProcessLogService {
 
   getExcelByUserNameAndStatus(
     name: string,
-    status: ProcessLogStatus | null,
     columns: string
   ): Observable<any[]> {
     const params = new URLSearchParams();
     params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
     params.append('columns', columns);
 
     return this._http.get<any[]>(

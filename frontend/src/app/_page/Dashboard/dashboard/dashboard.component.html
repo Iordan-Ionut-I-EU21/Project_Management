@@ -1,6 +1,14 @@
 <mat-card>
   <app-name-page [page]="page"></app-name-page>
-  <app-table
+  <div class="flex flex-row justify-between items-center gap-4">
+    <app-card
+      class="w-4/12"
+      *ngFor="let card of cards"
+      [card]="card"
+      (cardClicked)="onCardClick(card)"
+    ></app-card>
+  </div>
+  <!-- <app-table
     [data]="data"
     [count]="count"
     [columns]="columns"
@@ -8,5 +16,5 @@
     (sortChanged)="onSortChanged($event)"
     [enableDblClickForRow]="true"
     (onExport)="onExport()"
-  ></app-table>
+  ></app-table> -->
 </mat-card>
