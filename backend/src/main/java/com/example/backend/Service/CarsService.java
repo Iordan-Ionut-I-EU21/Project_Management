@@ -2,6 +2,8 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.*;
+import com.example.backend.Model.Dto.CountViewDTO;
+import com.example.backend.Model.Enum.CarsStatus;
 import com.example.backend.Repository.CarsRepository;
 import com.example.backend.Utility.TableRequest;
 import jakarta.persistence.EntityManager;
@@ -43,7 +45,7 @@ public class CarsService {
                 collect(Collectors.toSet());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUsername", key = "#name")
+    @Cacheable(cacheNames = CACHEABLE + "findByUsername", key = "#name  + '_' + #tableRequest.changePage.pageIndex + '_' + #tableRequest.changePage.pageSize + '_' + (#tableRequest.sortPage?.column ?: '') + '_' + (#tableRequest.sortPage?.direction ?: '')")
     public List<Cars> findByUsername(final String name, TableRequest tableRequest) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
         return this.carsRepository.findByUsername(name, pageRequest);
@@ -62,5 +64,10 @@ public class CarsService {
                 + CarModel.class.getSimpleName() + " cm ON cm.id = c.model_id.id WHERE u.username = :name", Object[].class);
         query.setParameter("name", name);
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "countStatusByCarModelId", key = "#carModelId")
+    public List<CountViewDTO> countStatusByCarModelId(final String carModelId) {
+        return BackendApplication.generateObjectByStatus(this.carsRepository.countStatusByCarModelId(carModelId), CarsStatus.class);
     }
 }

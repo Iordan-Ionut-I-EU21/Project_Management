@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChartsPieComponent } from './charts-pie.component';
+import { ViewLineComponent } from './view-line.component';
 
-describe('ChartsPieComponent', () => {
-  let component: ChartsPieComponent;
-  let fixture: ComponentFixture<ChartsPieComponent>;
+describe('ViewLineComponent', () => {
+  let component: ViewLineComponent;
+  let fixture: ComponentFixture<ViewLineComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartsPieComponent]
+      imports: [ViewLineComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ChartsPieComponent);
+    fixture = TestBed.createComponent(ViewLineComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

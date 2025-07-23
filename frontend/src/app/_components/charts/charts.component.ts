@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   MatDialogActions,
@@ -12,7 +17,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
-  selector: 'app-charts-pie',
+  selector: 'app-charts',
   standalone: true,
   imports: [
     MatDialogActions,
@@ -25,15 +30,16 @@ import { BaseChartDirective } from 'ng2-charts';
     HttpClientModule,
     BaseChartDirective,
   ],
-  templateUrl: './charts-pie.component.html',
-  styleUrl: './charts-pie.component.scss',
+  templateUrl: './charts.component.html',
+  styleUrl: './charts.component.scss',
 })
-export class ChartsPieComponent {
+export class ChartsComponent {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
-  @Input() pieChartData!: ChartData<'pie'>;
-  @Input() pieChartOptions!: ChartOptions<'pie'>;
+  @Input() chartData!: ChartData;
+  @Input() chartOptions!: ChartOptions;
   @Input() hasValue = false;
-  
+  @Input() type!: 'pie' | 'line';
+
   constructor() {}
 
   ngOnInit(): void {

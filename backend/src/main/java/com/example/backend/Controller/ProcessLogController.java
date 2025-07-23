@@ -42,8 +42,8 @@ public class ProcessLogController {
         }
     }
 
-    @GetMapping("excel/find/by")
-    public ResponseEntity<List<Object[]>> getExcelByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final String status, @RequestParam("columns") final String columns) {
+    @GetMapping("/excel/find/by")
+    public ResponseEntity<List<Object[]>> getExcelByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status, @RequestParam("columns") final String columns) {
         try {
             log.info("getExcelByUserNameAndStatus() - Successful.....");
             return ResponseEntity.ok(this.processLogService.getExcelByUserNameAndStatus(name, status, columns));

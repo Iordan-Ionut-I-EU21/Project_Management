@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Dto.CountViewDTO;
 import com.example.backend.Service.CarsService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
@@ -48,6 +49,17 @@ public class CarsController {
             return ResponseEntity.ok(this.carsService.getExcelByUserName(name, columns));
         } catch (Exception e) {
             log.error("Error in getExcelByUserName: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/count/dialog/by")
+    public ResponseEntity<List<CountViewDTO>> countStatusByCarModelId(@RequestParam("carModelId") final String carModelId) {
+        try {
+            log.info("countStatusByCarModelId() - Successful.....");
+            return ResponseEntity.ok(this.carsService.countStatusByCarModelId(carModelId));
+        } catch (Exception e) {
+            log.error("Error in countStatusByCarModelId: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

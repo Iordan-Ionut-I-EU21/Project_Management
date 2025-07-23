@@ -1,6 +1,6 @@
 package com.example.backend.Model.View;
 
-public interface countView {
+public interface CountView {
     String getStatus();
     Long getCount();
 }

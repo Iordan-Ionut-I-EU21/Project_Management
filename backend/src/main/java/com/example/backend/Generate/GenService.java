@@ -257,10 +257,10 @@ public class GenService {
                 System.out.println("Car vin: " + vin + " is duplicate");
                 continue;
             }
-            if (generatedNameCarModel.contains(carModel.getName()) || exisingNameCarModel.contains(carModel.getName())) {
-                System.out.println("Car model: " + carModel.getName() + " is existing in database");
-                continue;
-            }
+//            if (generatedNameCarModel.contains(carModel.getName()) || exisingNameCarModel.contains(carModel.getName())) {
+//                System.out.println("Car model: " + carModel.getName() + " is existing in database");
+//                continue;
+//            }
             Cars car = new Cars();
             car.setId(new BackendApplication().generateId());
             car.setStatus(this.randomEnum(CarsStatus.class));

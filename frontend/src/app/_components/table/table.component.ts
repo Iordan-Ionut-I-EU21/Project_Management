@@ -63,6 +63,11 @@ export class TableComponent {
     if (changes['data'] && changes['data'].currentValue) {
       this.dataSource.data = changes['data'].currentValue;
     }
+    if (changes['columns'] && changes['columns'].currentValue) {
+      this.displayedColumnKeys = changes['columns'].currentValue.map(
+        (c: TableColumn) => c.code
+      );
+    }
   }
 
   constructor(private _cdr: ChangeDetectorRef, private _router: Router) {}
@@ -83,7 +88,6 @@ export class TableComponent {
     });
 
     this.sort.sortChange.subscribe((sortEvent) => {
-      console.log('Sort changed:', sortEvent);
       if (sortEvent.active !== 'view') {
         this.sortChanged.emit({
           column: sortEvent.active,

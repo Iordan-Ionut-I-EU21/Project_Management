@@ -1,5 +1,8 @@
 package com.example.backend;
 
+import com.example.backend.Model.Dto.CountViewDTO;
+import com.example.backend.Model.Enum.ProcessLogStatus;
+import com.example.backend.Model.View.CountView;
 import com.example.backend.Utility.ChangePage;
 import com.example.backend.Utility.SortPage;
 import com.example.backend.Utility.TableRequest;
@@ -13,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.OptionalInt;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RestController
@@ -57,6 +58,22 @@ public class BackendApplication {
 
         return results;
     }
+
+    public static <E extends Enum<E>> List<CountViewDTO> generateObjectByStatus(
+            List<CountView> results,
+            Class<E> enumClass
+    ) {
+        Map<String, Long> resultMap = results.stream()
+                .collect(Collectors.toMap(CountView::getStatus, CountView::getCount));
+        List<CountViewDTO> completeResult = new ArrayList<>();
+        for (E enumConstant : enumClass.getEnumConstants()) {
+            String key = enumConstant.name();
+            Long count = resultMap.getOrDefault(key, 0L);
+            completeResult.add(new CountViewDTO(key, count));
+        }
+        return completeResult;
+    }
+
 
     private static String generateDateTime(Object[] row, int columnIndex) {
         if (row[columnIndex] instanceof LocalDateTime endTime) {

@@ -55,6 +55,10 @@
             {{ row[col.key] | date : "dd MMM yyyy" }}
           </span>
         </ng-container>
+        <ng-container [ngSwitch]="col.passed">
+          <span *ngSwitchCase="true" class="text-green-500">Passed</span>
+          <span *ngSwitchCase="false" class="text-red-500">Failed</span>
+        </ng-container>
       </td>
     </ng-container>
 

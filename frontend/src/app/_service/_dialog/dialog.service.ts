@@ -4,6 +4,9 @@ import { ViewChartComponent } from '../../_dialog/view-chart/view-chart.componen
 import { CommentComponent } from '../../_dialog/comment/comment.component';
 import { Observable } from 'rxjs';
 import { ValidateChangeComponent } from '../../_dialog/validate-change/validate-change.component';
+import { ProcessLog } from '../../_model/_interface/process-log';
+import { Cars } from '../../_model/_interface/car';
+import { ViewLineComponent } from '../../_dialog/view-line/view-line.component';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +14,28 @@ import { ValidateChangeComponent } from '../../_dialog/validate-change/validate-
 export class DialogService {
   constructor(private dialog: MatDialog) {}
 
-  openDialogViewChart(projectId: string, type: 'PROJECT') {
+  openDialogViewChart(
+    data: ProcessLog | Cars,
+    type: 'PROCESS_LOG' | 'CARS',
+    title: string
+  ) {
     const dialogRef = this.dialog.open(ViewChartComponent, {
-      data: { projectId: projectId, type: type },
+      data: { data: data, type: type, title: title },
+      restoreFocus: false,
+    });
+
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   console.log('Dialog closed', result);
+    // });
+  }
+
+  openDialogViewLine(
+    data: ProcessLog | Cars,
+    type: 'PROCESS_LOG' | 'CARS',
+    title: string
+  ) {
+    const dialogRef = this.dialog.open(ViewLineComponent, {
+      data: { data: data, type: type, title: title },
       restoreFocus: false,
     });
 

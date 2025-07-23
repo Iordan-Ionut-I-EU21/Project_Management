@@ -3,11 +3,11 @@
   *ngIf="hasValue; else noDataTemplate"
 >
   <canvas
+    style="width: 600px; height: 600px"
     baseChart
-    [data]="pieChartData"
-    [type]="'pie'"
-    [options]="pieChartOptions"
-    class="max-h-max max-w-max block"
+    [data]="chartData"
+    [type]="type"
+    [options]="chartOptions"
   >
   </canvas>
 </div>

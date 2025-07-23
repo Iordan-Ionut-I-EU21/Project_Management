@@ -39,7 +39,7 @@ export class NavbarComponent {
     { name: 'Dashboard', route: '/dashboard/feed', icon: ICONS.HOME },
     {
       name: 'Employees',
-      route: '/dashboard/employees',
+      route: '/dashboard/employee',
       icon: ICONS.EMPLOYEE,
     },
     { name: 'Cars', route: '/dashboard/cars', icon: ICONS.CAR },

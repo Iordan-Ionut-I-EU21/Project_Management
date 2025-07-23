@@ -46,9 +46,9 @@ public class ProcessLogService {
     }
 
     @Cacheable(cacheNames = CACHEABLE + "getExcelByUserNameAndStatus", key = "#name +'_'+#status +'_' +#columns")
-    public List<Object[]> getExcelByUserNameAndStatus(final String name, final String status, final String columns) {
+    public List<Object[]> getExcelByUserNameAndStatus(final String name, final ProcessLogStatus status, final String columns) {
         TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + " FROM " + ProcessLog.class.getSimpleName() +
-                " p LEFT JOIN " + User.class.getSimpleName() + " u ON u.employees_id.id = p.employee_id.id WHERE u.username = :name AND p.status = :status", Object[].class);
+                " p LEFT JOIN " + User.class.getSimpleName() + " u ON u.employees_id.id = p.employee_id.id WHERE u.username = :name AND (:status IS NULL OR p.status = :status)", Object[].class);
         query.setParameter("name", name);
         query.setParameter("status", status);
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);

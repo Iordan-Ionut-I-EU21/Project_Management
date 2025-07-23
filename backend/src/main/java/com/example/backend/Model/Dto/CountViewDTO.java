@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProcessStatusCountViewDTO implements CountView {
+public class CountViewDTO implements CountView {
     private String status;
     private Long count;
 }

@@ -4,16 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { ChangePage } from '../../_model/_common/change-page';
 import { SortPage } from '../../_model/_common/sort-page';
 import { GroupResult } from '../../_model/_common/group-result';
-import { QualityChecks } from '../../_model/_interface/quality-checks';
+import { Process } from '../../_model/_interface/process';
 import { Observable } from 'rxjs';
-import { Cars } from '../../_model/_interface/car';
-import { CountViewDTO } from '../../_model/_dto/count-view-dto';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CarsService {
-  private authUrl = Environment.apiUrl + '/cars';
+export class PartsService {
+  private authUrl = Environment.apiUrl + '/parts';
 
   constructor(private _http: HttpClient) {}
 
@@ -21,12 +19,12 @@ export class CarsService {
     name: string,
     changePage: ChangePage,
     sortPage: SortPage
-  ): Observable<GroupResult<Cars>> {
+  ): Observable<GroupResult<Process>> {
     const tableBody = { changePage, sortPage };
     const params = new URLSearchParams();
     params.append('name', name);
 
-    return this._http.post<GroupResult<Cars>>(
+    return this._http.post<GroupResult<Process>>(
       `${this.authUrl}/find/by?${params.toString()}`,
       tableBody
     );
@@ -38,25 +36,6 @@ export class CarsService {
 
     return this._http.get<number>(
       `${this.authUrl}/count/by?${params.toString()}`
-    );
-  }
-
-  getExcelByUserNameAndStatus(
-    name: string,
-    columns: string
-  ): Observable<any[]> {
-    const params = new URLSearchParams();
-    params.append('name', name);
-    params.append('columns', columns);
-
-    return this._http.get<any[]>(
-      `${this.authUrl}/excel/find/by?${params.toString()}`
-    );
-  }
-
-  countStatusByCarModelId(carModelId: string): Observable<CountViewDTO> {
-    return this._http.get<CountViewDTO>(
-      `${this.authUrl}/count/dialog/by?carModelId=${carModelId}`
     );
   }
 }

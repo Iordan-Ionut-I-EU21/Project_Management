@@ -215,3 +215,12 @@ mat-card{
 .cdk-overlay-pane{
   width: max-content !important;
 }
+
+.divide{
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+
+.mat-mdc-dialog-content{
+  max-height: max-content !important;
+}

@@ -15,4 +15,5 @@ export interface TableColumn {
     onClick?: (row: any) => void;
   }[];
   isActive?: boolean;
+  passed?: boolean;
 }

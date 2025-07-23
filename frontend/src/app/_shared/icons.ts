@@ -4,4 +4,6 @@ export const ICONS = {
   CAR: 'airport_shuttle',
   PROCESS: 'account_tree',
   QUALITY_CHECKS: 'check_circle',
+  FEET: 'folder_open',
+  PARTS: 'brick',
 };
