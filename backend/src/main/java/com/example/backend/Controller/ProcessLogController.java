@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
-import com.example.backend.Model.Enum.ProcessLogStatus;
+import com.example.backend.Model.Dto.FindByRequestDTO;
+import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
 import com.example.backend.Service.ProcessLogService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
@@ -14,41 +15,45 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
-@RequestMapping("/api/process/log/")
+@RequestMapping("/api/process/log")
 @JBossLog
 public class ProcessLogController {
     @Autowired
     private ProcessLogService processLogService;
 
-    @PostMapping("find/by")
-    public ResponseEntity<GroupedResult> getDataByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status, @RequestBody TableRequest tableRequest) {
+	@PostMapping("/find/by")
+	public ResponseEntity<GroupedResult> getDataByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getDataByUserNameAndStatus() - Successful.....");
-            return ResponseEntity.ok(new GroupedResult(this.processLogService.findByUserNameAndStatus(name, status, tableRequest), this.processLogService.countByUserNameAndStatus(name, status)));
+			log.info("getDataByUserNameAndProcessLogFilters() - Successful.....");
+			TableRequest tableRequest = request.getTableRequest();
+			ProcessLogsFilterDTO processLogsFilterDTO = request.getProcessLogsFilterDTO();
+			return ResponseEntity.ok(new GroupedResult(this.processLogService.findByUserNameAndProcessLogFilters(name, tableRequest, processLogsFilterDTO), this.processLogService.countByUserNameAndProcessLogFilters(name, processLogsFilterDTO)));
         } catch (Exception e) {
-            log.error("Error in getDataByUserNameAndStatus: {}", e.getMessage(), e);
+			log.error("Error in getDataByUserNameAndProcessLogFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/count/by")
-    public ResponseEntity<Long> countByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status) {
+	public ResponseEntity<Long> countByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("countByUserNameAndStatus() - Successful.....");
-            return ResponseEntity.ok(this.processLogService.countByUserNameAndStatus(name, status));
+			log.info("countByUserNameAndProcessLogFilters() - Successful.....");
+			ProcessLogsFilterDTO processLogsFilterDTO = request.getProcessLogsFilterDTO();
+			return ResponseEntity.ok(this.processLogService.countByUserNameAndProcessLogFilters(name, processLogsFilterDTO));
         } catch (Exception e) {
-            log.error("Error in countByUserNameAndStatus: {}", e.getMessage(), e);
+			log.error("Error in countByUserNameAndProcessLogFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/excel/find/by")
-    public ResponseEntity<List<Object[]>> getExcelByUserNameAndStatus(@RequestParam("name") final String name, @RequestParam(name = "status", required = false) final ProcessLogStatus status, @RequestParam("columns") final String columns) {
+	@PostMapping("/excel/find/by")
+	public ResponseEntity<List<Object[]>> postExcelByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getExcelByUserNameAndStatus() - Successful.....");
-            return ResponseEntity.ok(this.processLogService.getExcelByUserNameAndStatus(name, status, columns));
+			log.info("postExcelByUserNameAndProcessLogFilters() - Successful.....");
+			ProcessLogsFilterDTO processLogsFilterDTO = request.getProcessLogsFilterDTO();
+			return ResponseEntity.ok(this.processLogService.postExcelByUserNameAndProcessLogFilters(name, columns, processLogsFilterDTO));
         } catch (Exception e) {
-            log.error("Error in getExcelByUserNameAndStatus: {}", e.getMessage(), e);
+			log.error("Error in postExcelByUserNameAndProcessLogFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

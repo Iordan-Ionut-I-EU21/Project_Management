@@ -16,10 +16,14 @@
   <app-table
     [data]="data"
     [count]="count"
+    [pageIndex]="onGetPageIndex()"
     [columns]="onColumns()"
+    [isTable]="true"
+    [form]="onForms()"
     (pageChanged)="onPageChanged($event)"
     (sortChanged)="onSortChanged($event)"
     [enableDblClickForRow]="true"
     (onExport)="onExport()"
+    (onActivateFilters)="onActivateFilters()"
   ></app-table>
 </mat-card>

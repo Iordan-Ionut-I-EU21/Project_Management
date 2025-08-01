@@ -8,6 +8,11 @@ import { QualityChecks } from '../../_model/_interface/quality-checks';
 import { Observable } from 'rxjs';
 import { Cars } from '../../_model/_interface/car';
 import { CountViewDTO } from '../../_model/_dto/count-view-dto';
+import { CarsFiltersDTO } from '../../_model/_dto/cars-filter-dto';
+import {
+  FindByRequestDTO,
+  TableRequest,
+} from '../../_model/_dto/find-by-request-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -17,40 +22,58 @@ export class CarsService {
 
   constructor(private _http: HttpClient) {}
 
-  getDataByUserName(
+  postDataByUserNameAndCarsFilters(
     name: string,
     changePage: ChangePage,
-    sortPage: SortPage
+    sortPage: SortPage,
+    carsFiltersDTO: CarsFiltersDTO
   ): Observable<GroupResult<Cars>> {
-    const tableBody = { changePage, sortPage };
+    const tableRequest: TableRequest = {
+      changePage: changePage,
+      sortPage: sortPage,
+    };
+    const requestBody: FindByRequestDTO = {
+      tableRequest: tableRequest,
+      carsFiltersDTO: carsFiltersDTO,
+    };
     const params = new URLSearchParams();
     params.append('name', name);
 
     return this._http.post<GroupResult<Cars>>(
       `${this.authUrl}/find/by?${params.toString()}`,
-      tableBody
+      requestBody
     );
   }
 
-  countByUsername(name: string): Observable<number> {
+  countByUsernameAndCarsFilters(
+    name: string,
+    carsFilterDTO: CarsFiltersDTO
+  ): Observable<number> {
     const params = new URLSearchParams();
     params.append('name', name);
-
-    return this._http.get<number>(
-      `${this.authUrl}/count/by?${params.toString()}`
+    const requestBody = {
+      carsFiltersDTO: carsFilterDTO,
+    };
+    return this._http.post<number>(
+      `${this.authUrl}/count/by?${params.toString()}`,
+      requestBody
     );
   }
 
-  getExcelByUserNameAndStatus(
+  postExcelByUserNameAncCarsFilter(
     name: string,
-    columns: string
+    columns: string,
+    carsFilterDTO: CarsFiltersDTO
   ): Observable<any[]> {
     const params = new URLSearchParams();
     params.append('name', name);
     params.append('columns', columns);
-
-    return this._http.get<any[]>(
-      `${this.authUrl}/excel/find/by?${params.toString()}`
+    const requestBody = {
+      carsFiltersDTO: carsFilterDTO,
+    };
+    return this._http.post<any[]>(
+      `${this.authUrl}/excel/find/by?${params.toString()}`,
+      requestBody
     );
   }
 

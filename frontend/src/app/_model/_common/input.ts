@@ -1,6 +1,6 @@
 export interface GenInput {
-  label: string;
-  icon: string;
+  label?: string;
+  icon?: string;
   type:
     | 'text'
     | 'password'
@@ -13,7 +13,7 @@ export interface GenInput {
     | 'select';
   placeholder: string;
   formControlName: string;
-  labelKey?: string;
-  valueKey?: string;
+  labelKey?: string | null;
+  valueKey?: string | null;
   options?: any[];
 }

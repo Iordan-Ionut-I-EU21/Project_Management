@@ -6,6 +6,11 @@ import { SortPage } from '../../_model/_common/sort-page';
 import { GroupResult } from '../../_model/_common/group-result';
 import { QualityChecks } from '../../_model/_interface/quality-checks';
 import { Observable } from 'rxjs';
+import { QualityChecksFiltersDTO } from '../../_model/_dto/quality-check-filter-dto';
+import {
+  FindByRequestDTO,
+  TableRequest,
+} from '../../_model/_dto/find-by-request-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -15,39 +20,54 @@ export class QualityChecksService {
 
   constructor(private _http: HttpClient) {}
 
-  getDataByUserNameAndStatus(
+  postDataByUserNameAndQualityChecksFilters(
     name: string,
     changePage: ChangePage,
-    sortPage: SortPage
+    sortPage: SortPage,
+    qualityChecksFilterDTO: QualityChecksFiltersDTO
   ): Observable<GroupResult<QualityChecks>> {
-    const tableBody = { changePage, sortPage };
+    const tableRequest: TableRequest = { changePage, sortPage };
     const params = new URLSearchParams();
     params.append('name', name);
-
+    const request: FindByRequestDTO = {
+      tableRequest: tableRequest,
+      qualityChecksFiltersDTO: qualityChecksFilterDTO,
+    };
     return this._http.post<GroupResult<QualityChecks>>(
       `${this.authUrl}/find/by?${params.toString()}`,
-      tableBody
+      request
     );
   }
 
-  countByUserName(name: string): Observable<number> {
+  countByUserNameAndQualityChecksFilters(
+    name: string,
+    qualityChecksFiltersDTO: QualityChecksFiltersDTO
+  ): Observable<number> {
     const params = new URLSearchParams();
     params.append('name', name);
-    return this._http.get<number>(
-      `${this.authUrl}/count/by?${params.toString()}`
+    const requestBody: FindByRequestDTO = {
+      qualityChecksFiltersDTO: qualityChecksFiltersDTO,
+    };
+    return this._http.post<number>(
+      `${this.authUrl}/count/by?${params.toString()}`,
+      requestBody
     );
   }
 
-  getExcelByUserNameAndStatus(
+  postExcelByUserNameAndQualityChecksFilters(
     name: string,
-    columns: string
+    columns: string,
+    qualityChecksFiltersDTO: QualityChecksFiltersDTO
   ): Observable<any[]> {
     const params = new URLSearchParams();
     params.append('name', name);
     params.append('columns', columns);
-
-    return this._http.get<any[]>(
-      `${this.authUrl}/excel/find/by?${params.toString()}`
+    const requestBody: FindByRequestDTO = {
+      qualityChecksFiltersDTO: qualityChecksFiltersDTO,
+    };
+    return this._http.post<any[]>(
+      `${this.authUrl}/excel/find/by?${params.toString()}`,
+      requestBody
     );
   }
 }

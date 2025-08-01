@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { GenInput } from '../../_model/_common/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -13,14 +19,55 @@ import { CommonModule } from '@angular/common';
 export class InputComponent {
   @Input() config!: GenInput;
   @Input() formGroup!: FormGroup;
+  @Input() isTable!: boolean;
   @Output() selectChange = new EventEmitter<any>();
   constructor() {}
 
-  onSelectChange(event: any) {
-    const selectEl = event.target as HTMLSelectElement;
-    const selectedIndex = selectEl.selectedIndex;
-    const selectedOption = this.config.options?.[selectedIndex];
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config'] && changes['config'].currentValue) {
+      this.config = changes['config'].currentValue;
+    }
+    if (changes['formGroup'] && changes['formGroup'].currentValue) {
+      this.formGroup = changes['formGroup'].currentValue;
+    }
+  }
 
-    this.selectChange.emit(selectedOption);
+  getValueByPath(obj: any, path?: string): any {
+    if (!obj || !path) return obj;
+
+    return path
+      .split('.')
+      .reduce(
+        (acc, part) => (acc && acc[part] !== undefined ? acc[part] : ''),
+        obj
+      );
+  }
+
+  onSelectChange(event: any): void {
+    if (!this.isTable) {
+      const target = event.target as HTMLInputElement | HTMLSelectElement;
+
+      if (target.tagName === 'SELECT') {
+        const selectEl = target as HTMLSelectElement;
+        const selectedIndex = selectEl.selectedIndex;
+        const selectedOption = this.config.options?.[selectedIndex];
+        console.log('select');
+        this.selectChange.emit(selectedOption);
+      } else if (target.tagName === 'INPUT') {
+        console.log('input');
+        const inputEl = target as HTMLInputElement;
+
+        if (inputEl.type === 'date') {
+          const value = inputEl.value;
+          console.log('date');
+          const date = value ? new Date(value + 'T00:00:00') : null;
+          this.selectChange.emit(date);
+        } else {
+          this.selectChange.emit(inputEl.value);
+        }
+      }
+    } else {
+      this.selectChange.emit(true);
+    }
   }
 }

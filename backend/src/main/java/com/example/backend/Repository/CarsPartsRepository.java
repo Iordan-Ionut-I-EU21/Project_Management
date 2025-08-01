@@ -1,8 +1,7 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.CarParts;
-import com.example.backend.Model.Class.Parts;
-import com.example.backend.Service.CarsPartsService;
+import com.example.backend.Model.Dto.CarsPartsFiltersDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface CarsPartsRepository extends JpaRepository<CarParts, String> {
-    @Query("SELECT cp FROM CarParts cp LEFT JOIN Employees e ON e.id = cp.installed_by.id LEFT JOIN User u ON u.employees_id.id = e.id WHERE u.username = :username")
-    List<CarParts> findByUserName(@Param("username") final String username, Pageable pageable);
+    @Query("SELECT cp " + CarParts.QUERY + " u.username = :username " + CarsPartsFiltersDTO.QUERY)
+    List<CarParts> findByUserNameAndCarsPartsFilters(@Param("username") final String username, Pageable pageable, @Param("part_id_unit_cost") final Long part_id_unit_cost, @Param("quantity") final Long quantity, @Param("installed_by_name") final String installed_by_name, @Param("part_id_category") final String part_id_category, @Param("part_id_name") final String part_id_name, @Param("car_id_model_id_name") final String car_id_model_id_name);
 
-    @Query("SELECT COUNT(cp.id) FROM CarParts cp LEFT JOIN Employees e ON e.id = cp.installed_by.id LEFT JOIN User u ON u.employees_id.id = e.id WHERE u.username = :username")
-    Long countByUserName(@Param("username") final String username);
+    @Query("SELECT COUNT(cp.id) " + CarParts.QUERY + " u.username = :username " + CarsPartsFiltersDTO.QUERY)
+    Long countByUserNameAndCarsPartsFilters(@Param("username") final String username, @Param("part_id_unit_cost") final Long part_id_unit_cost, @Param("quantity") final Long quantity, @Param("installed_by_name") final String installed_by_name, @Param("part_id_category") final String part_id_category, @Param("part_id_name") final String part_id_name, @Param("car_id_model_id_name") final String car_id_model_id_nameF);
 }

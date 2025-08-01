@@ -3,7 +3,6 @@ package com.example.backend.Model.Class;
 import com.example.backend.Model.Enum.ProcessLogStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -37,4 +36,6 @@ public class ProcessLog {
     @ManyToOne
     @JoinColumn(name = "machine_id", referencedColumnName = "id")
     private Machines machine_id;
+    public static final String QUERY = " FROM ProcessLog p LEFT JOIN User u ON u.employees_id.id = p.employee_id.id " +
+            "WHERE ";
 }

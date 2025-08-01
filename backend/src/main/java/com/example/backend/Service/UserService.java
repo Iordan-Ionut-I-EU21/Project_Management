@@ -1,8 +1,7 @@
 package com.example.backend.Service;
 
 import com.example.backend.Model.Class.User;
-import com.example.backend.Model.Dto.UserInformationDTO;
-import com.example.backend.Model.Enum.ProcessLogStatus;
+import com.example.backend.Model.Dto.*;
 import com.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,8 @@ public class UserService {
     private CarsService carsService;
     @Autowired
     private QualityChecksService qualityChecksService;
+    @Autowired
+    private CarsPartsService carsPartsService;
 
     public void saveAll(List<User> users){
         this.userRepository.saveAll(users);
@@ -42,8 +43,9 @@ public class UserService {
     }
 
     public UserInformationDTO countInformationByUserName(final String name) {
-        return new UserInformationDTO(this.processLogService.countByUserNameAndStatus(name, null),
-                this.carsService.countByUsername(name), this.processLogService.countByUserNameAndStatus(name, ProcessLogStatus.IN_PROGRESS),
-                this.qualityChecksService.countByUserName(name));
+        return new UserInformationDTO(this.processLogService.countByUserNameAndProcessLogFilters(name, new ProcessLogsFilterDTO()),
+                this.carsService.countByUsernameAndCarsFilters(name, new CarsFiltersDTO()),
+                this.qualityChecksService.countByUserName(name, new QualityChecksFiltersDTO()),
+                this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()));
     }
 }

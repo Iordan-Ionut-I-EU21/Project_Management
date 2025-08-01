@@ -156,27 +156,6 @@ export class EmployeeComponent {
     this.card = card;
     this.onColumns();
     this._cdr.detectChanges();
-
-    switch (card.name) {
-      case this.cards[0].name: {
-        this._carsPartsService
-          .getDataByUserName(userName, settings.changePage, settings.sortPage)
-          .subscribe({
-            next: (response) => {
-              console.log(response);
-              this.data = [...response.items];
-              this.count = response.count;
-            },
-            error: (error) => {
-              console.error(error);
-            },
-          });
-        break;
-      }
-      default: {
-        break;
-      }
-    }
   }
 
   onColumns(): TableColumn[] {
@@ -198,30 +177,6 @@ export class EmployeeComponent {
     const tables = this.onColumns()
       .map((col) => col.label)
       .filter((label) => label && label !== 'View');
-
-    switch (this.card.name) {
-      case this.cards[0].name: {
-        this._carsPartsService
-          .getExcelByUserName(
-            this._JwtService.getUserInfo()?.name!,
-            columns.join(',')
-          )
-          .subscribe({
-            next: (response) => {
-              console.log(response);
-
-              this._excelService.exportToExcel(
-                tables,
-                response,
-                'Assigned_Parts_' + new Date().toLocaleDateString()
-              );
-            },
-            error: (error) => {
-              console.log(error);
-            },
-          });
-      }
-    }
   }
 
   onSortChanged(sort: any) {

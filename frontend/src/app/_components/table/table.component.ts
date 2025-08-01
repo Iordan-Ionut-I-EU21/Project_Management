@@ -21,6 +21,10 @@ import { ChangePage } from '../../_model/_common/change-page';
 import { Environment } from '../../../environments/environment';
 import { Router, RouterModule } from '@angular/router';
 import { IsNearEndDatePipe } from '../../_model/_pipe/isNearEndDate.pipe';
+import { InputComponent } from '../input/input.component';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { GenInput } from '../../_model/_common/input';
+import { eventNames } from 'process';
 
 @Component({
   selector: 'app-table',
@@ -37,6 +41,7 @@ import { IsNearEndDatePipe } from '../../_model/_pipe/isNearEndDate.pipe';
     DatePipe,
     RouterModule,
     IsNearEndDatePipe,
+    InputComponent,
   ],
   providers: [DatePipe],
   templateUrl: './table.component.html',
@@ -45,12 +50,16 @@ import { IsNearEndDatePipe } from '../../_model/_pipe/isNearEndDate.pipe';
 export class TableComponent {
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
+  @Input() pageIndex: number = 0;
   @Input() count: number = 0;
   @Input() enableDblClickForRow: boolean = false;
+  @Input() isTable: boolean = false;
+  @Input() form?: FormGroup;
   @Output() pageChanged = new EventEmitter<ChangePage>();
   @Output() sortChanged = new EventEmitter<SortPage>();
   @Output() onDblClickRow = new EventEmitter<any>();
   @Output() onExport = new EventEmitter();
+  @Output() onActivateFilters = new EventEmitter();
 
   dataSource = new MatTableDataSource<any>();
   displayedColumnKeys: string[] = [];
@@ -67,6 +76,9 @@ export class TableComponent {
       this.displayedColumnKeys = changes['columns'].currentValue.map(
         (c: TableColumn) => c.code
       );
+    }
+    if (changes['form'] && changes['form'].currentValue) {
+      this.form = changes['form'].currentValue;
     }
   }
 
@@ -121,5 +133,13 @@ export class TableComponent {
 
   export() {
     this.onExport.emit();
+  }
+
+  onSelectChange(event: any) {
+    this.onActivateFilters.emit(event);
+  }
+
+  activateFilters() {
+    this.onActivateFilters.emit();
   }
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
@@ -13,4 +12,5 @@ import org.springframework.data.domain.Sort;
 public class TableRequest {
     private ChangePage changePage;
     private SortPage sortPage;
+    public static final String KEY = "+ '_' + #tableRequest.changePage.pageIndex + '_' + #tableRequest.changePage.pageSize" + " +" + " '_' + (#tableRequest.sortPage?.column ?: '') + '_' + (#tableRequest.sortPage?.direction ?: '')+ ";
 }

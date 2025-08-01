@@ -1,3 +1,6 @@
+import { FormGroup } from '@angular/forms';
+import { GenInput } from './input';
+
 export interface TableColumn {
   key: string;
   code: string;
@@ -14,6 +17,8 @@ export interface TableColumn {
     icon?: string;
     onClick?: (row: any) => void;
   }[];
+  config?: GenInput;
   isActive?: boolean;
+  activeFilters?: boolean;
   passed?: boolean;
 }

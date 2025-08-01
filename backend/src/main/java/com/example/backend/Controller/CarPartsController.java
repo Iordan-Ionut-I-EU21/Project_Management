@@ -1,8 +1,8 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Dto.FindByRequestDTO;
 import com.example.backend.Service.CarsPartsService;
 import com.example.backend.Utility.GroupedResult;
-import com.example.backend.Utility.TableRequest;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,34 +20,34 @@ public class CarPartsController {
     private CarsPartsService carsPartsService;
 
     @PostMapping("/find/by")
-    public ResponseEntity<GroupedResult> getDataByUserName(@RequestParam("name") final String name, @RequestBody TableRequest tableRequest) {
+    public ResponseEntity<GroupedResult> postDataByUserNameAndCarsPartsFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getDataByUserName() - Successful.....");
-            return ResponseEntity.ok(new GroupedResult(this.carsPartsService.findByUserName(name, tableRequest), this.carsPartsService.countByUserName(name)));
+            log.info("postDataByUserNameAndCarsPartsFilters() - Successful.....");
+            return ResponseEntity.ok(new GroupedResult(this.carsPartsService.findByUserNameAndCarsPartsFilters(name, request.getTableRequest(), request.getCarsPartsFiltersDTO()), this.carsPartsService.countByUserNameAndCarsPartsFilters(name, request.getCarsPartsFiltersDTO())));
         } catch (Exception e) {
-            log.error("Error in getDataByUserName: {}", e.getMessage(), e);
+            log.error("Error in postDataByUserNameAndCarsPartsFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/count/by")
-    public ResponseEntity<Long> countByUsername(@RequestParam("name") final String name) {
+    @PostMapping("/count/by")
+    public ResponseEntity<Long> countByUsernameAndCarsPartsFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("countByUsername() - Successful.....");
-            return ResponseEntity.ok(this.carsPartsService.countByUserName(name));
+            log.info("countByUsernameAndCarsPartsFilters() - Successful.....");
+            return ResponseEntity.ok(this.carsPartsService.countByUserNameAndCarsPartsFilters(name, request.getCarsPartsFiltersDTO()));
         } catch (Exception e) {
-            log.error("Error in countByUsername: {}", e.getMessage(), e);
+            log.error("Error in countByUsernameAndCarsPartsFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/excel/find/by")
-    public ResponseEntity<List<Object[]>> getExcelByUserName(@RequestParam("name") final String name, @RequestParam("columns") final String columns) {
+    @PostMapping("/excel/find/by")
+    public ResponseEntity<List<Object[]>> getExcelByUserNameAndCarsPartsFilters(@RequestParam("name") final String name, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getExcelByUserName() - Successful.....");
-            return ResponseEntity.ok(this.carsPartsService.getExcelByUserName(name, columns));
+            log.info("getExcelByUserNameAndCarsPartsFilters() - Successful.....");
+            return ResponseEntity.ok(this.carsPartsService.getExcelByUserNameAndCarsPartsFilters(name, columns, request.getCarsPartsFiltersDTO()));
         } catch (Exception e) {
-            log.error("Error in getExcelByUserName: {}", e.getMessage(), e);
+            log.error("Error in getExcelByUserNameAndCarsPartsFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -1,5 +1,8 @@
 package com.example.backend.Model.Enum;
 
+import lombok.Getter;
+
+@Getter
 public enum CarsStatus {
     IN_PRODUCTION("In Production"),
     ASSEMBLED("Assembled"),
@@ -12,11 +15,7 @@ public enum CarsStatus {
         this.label = label;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    @Override
+	@Override
     public String toString() {
         return label;
     }

@@ -1,5 +1,7 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Dto.FindByRequestDTO;
+import com.example.backend.Model.Dto.QualityChecksFiltersDTO;
 import com.example.backend.Service.QualityChecksService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
@@ -20,34 +22,37 @@ public class QualityChecksController {
     private QualityChecksService qualityChecksService;
 
     @PostMapping("/find/by")
-    public ResponseEntity<GroupedResult> getDataByUserName(@RequestParam("name") final String name, @RequestBody TableRequest tableRequest) {
+    public ResponseEntity<GroupedResult> getDataByUserNameAndQualityChecksFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getDataByUserName() - Successful.....");
-            return ResponseEntity.ok(new GroupedResult(this.qualityChecksService.findByUserName(name, tableRequest), this.qualityChecksService.countByUserName(name)));
+            log.info("getDataByUserNameAndQualityChecksFilters() - Successful.....");
+            TableRequest tableRequest = request.getTableRequest();
+            QualityChecksFiltersDTO qualityChecksFilterDTO = request.getQualityChecksFiltersDTO();
+            return ResponseEntity.ok(new GroupedResult(this.qualityChecksService.findByUserName(name, tableRequest, qualityChecksFilterDTO), this.qualityChecksService.countByUserName(name, qualityChecksFilterDTO)));
         } catch (Exception e) {
-            log.error("Error in getDataByUserName: {}", e.getMessage(), e);
+            log.error("Error in getDataByUserNameAndQualityChecksFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/count/by")
-    public ResponseEntity<Long> countByUserName(@RequestParam("name") final String name) {
+    @PostMapping("/count/by")
+    public ResponseEntity<Long> countByUserNameAndQualityChecksFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("countByUserName() - Successful.....");
-            return ResponseEntity.ok(this.qualityChecksService.countByUserName(name));
+            log.info("countByUserNameAndQualityChecksFilters() - Successful.....");
+            return ResponseEntity.ok(this.qualityChecksService.countByUserName(name, request.getQualityChecksFiltersDTO()));
         } catch (Exception e) {
-            log.error("Error in countByUserName: {}", e.getMessage(), e);
+            log.error("Error in countByUserNameAndQualityChecksFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/excel/find/by")
-    public ResponseEntity<List<Object[]>> getExcelByUserName(@RequestParam("name") final String name, @RequestParam("columns") final String columns) {
+    @PostMapping("/excel/find/by")
+    public ResponseEntity<List<Object[]>> postExcelByUserNameAndQualityChecksFilters(@RequestParam("name") final String name, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
         try {
-            log.info("getExcelByUserName() - Successful.....");
-            return ResponseEntity.ok(this.qualityChecksService.getExcelByUserName(name, columns));
+            log.info("postExcelByUserNameAndQualityChecksFilters() - Successful.....");
+            return ResponseEntity.ok(this.qualityChecksService.getExcelByUserName(name, columns,
+                    request.getQualityChecksFiltersDTO()));
         } catch (Exception e) {
-            log.error("Error in getExcelByUserName: {}", e.getMessage(), e);
+            log.error("Error in postExcelByUserNameAndQualityChecksFilters: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

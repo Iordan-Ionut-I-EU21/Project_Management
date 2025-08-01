@@ -7,6 +7,7 @@ import { GroupResult } from '../../_model/_common/group-result';
 import { ChangePage } from '../../_model/_common/change-page';
 import { SortPage } from '../../_model/_common/sort-page';
 import { ProcessLogStatus } from '../../_model/_enum/process-log-status';
+import { ProcessLogsFilterDTO } from '../../_model/_dto/process-log-filter-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -16,52 +17,40 @@ export class ProcessLogService {
 
   constructor(private _http: HttpClient) {}
 
-  getDataByUserNameAndStatus(
+  postDataByUserNameAndProcessLogFilters(
     name: string,
-    status: ProcessLogStatus | null,
     changePage: ChangePage,
-    sortPage: SortPage
+    sortPage: SortPage,
+    processLogsFilter: ProcessLogsFilterDTO
   ): Observable<GroupResult<ProcessLog>> {
-    const tableBody = { changePage, sortPage };
+    const tableRequest = { changePage: changePage, sortPage: sortPage };
+    const requestBody = {
+      tableRequest: tableRequest,
+      processLogsFilterDTO: processLogsFilter,
+    };
     const params = new URLSearchParams();
     params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
+
     return this._http.post<GroupResult<ProcessLog>>(
       `${this.authUrl}/find/by?${params.toString()}`,
-      tableBody
+      requestBody
     );
   }
 
-  countByUserNameAndStatus(
+  postExcelByUserNameAndProcessLogFilters(
     name: string,
-    status: ProcessLogStatus | null
-  ): Observable<number> {
-    const params = new URLSearchParams();
-    params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
-    return this._http.get<number>(
-      `${this.authUrl}/count/by?${params.toString()}`
-    );
-  }
-
-  getExcelByUserNameAndStatus(
-    name: string,
-    status: ProcessLogStatus | null,
-    columns: string
+    columns: string,
+    processLogsFilter: ProcessLogsFilterDTO
   ): Observable<any[]> {
     const params = new URLSearchParams();
     params.append('name', name);
-    if (status !== null) {
-      params.append('status', status.toString());
-    }
     params.append('columns', columns);
-
-    return this._http.get<any[]>(
-      `${this.authUrl}/excel/find/by?${params.toString()}`
+    const requestBody = {
+      processLogsFilterDTO: processLogsFilter,
+    };
+    return this._http.post<any[]>(
+      `${this.authUrl}/excel/find/by?${params.toString()}`,
+      requestBody
     );
   }
 }

@@ -33,4 +33,6 @@ public class QualityChecks {
     @ManyToOne
     @JoinColumn(name = "inspector_id", referencedColumnName = "id")
     private Employees inspector_id;
+    public static final String QUERY = " FROM QualityChecks qc LEFT JOIN User u on u.employees_id.id = qc" +
+            ".inspector_id.id WHERE ";
 }

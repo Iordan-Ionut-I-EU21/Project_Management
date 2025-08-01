@@ -2,8 +2,7 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.CarParts;
-import com.example.backend.Model.Class.Employees;
-import com.example.backend.Model.Class.User;
+import com.example.backend.Model.Dto.CarsPartsFiltersDTO;
 import com.example.backend.Repository.CarsPartsRepository;
 import com.example.backend.Utility.TableRequest;
 import jakarta.persistence.EntityManager;
@@ -23,25 +22,32 @@ public class CarsPartsService {
     private CarsPartsRepository carsPartsRepository;
     @PersistenceContext
     private EntityManager entityManager;
+
     public void saveAll(List<CarParts> carParts){
         this.carsPartsRepository.saveAll(carParts);
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUsername", key = "#name  + '_' + #tableRequest.changePage.pageIndex + '_' + #tableRequest.changePage.pageSize + '_' + (#tableRequest.sortPage?.column ?: '') + '_' + (#tableRequest.sortPage?.direction ?: '')")
-    public List<CarParts> findByUserName(final String name, TableRequest tableRequest) {
+    @Cacheable(cacheNames = CACHEABLE + "findByUserNameAndCarsPartsFilters", key = "#username + (#tableRequest?.KEY " + "?: '') + @carsPartsCacheKeyHelper.buildCarsPartsKey(#carsPartsFiltersDTO)")
+    public List<CarParts> findByUserNameAndCarsPartsFilters(final String username, final TableRequest tableRequest, final CarsPartsFiltersDTO carsPartsFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
-        return this.carsPartsRepository.findByUserName(name, pageRequest);
+        return this.carsPartsRepository.findByUserNameAndCarsPartsFilters(username, pageRequest, carsPartsFiltersDTO.getPart_id_unit_cost(), carsPartsFiltersDTO.getQuantity(), carsPartsFiltersDTO.getInstalled_by_name(), carsPartsFiltersDTO.getPart_id_category(), carsPartsFiltersDTO.getPart_id_name(), carsPartsFiltersDTO.getCar_id_model_id_name());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "countByUsername", key = "#name")
-    public Long countByUserName(final String name) {
-        return this.carsPartsRepository.countByUserName(name);
+    @Cacheable(cacheNames = CACHEABLE + "countByUserNameAndCarsPartsFilters", key = "#username+ @carsPartsCacheKeyHelper.buildCarsPartsKey(#carsPartsFiltersDTO)")
+    public Long countByUserNameAndCarsPartsFilters(final String username, final CarsPartsFiltersDTO carsPartsFiltersDTO) {
+        return this.carsPartsRepository.countByUserNameAndCarsPartsFilters(username, carsPartsFiltersDTO.getPart_id_unit_cost(), carsPartsFiltersDTO.getQuantity(), carsPartsFiltersDTO.getInstalled_by_name(), carsPartsFiltersDTO.getPart_id_category(), carsPartsFiltersDTO.getPart_id_name(), carsPartsFiltersDTO.getCar_id_model_id_name());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserName", key = "#username")
-    public List<Object[]> getExcelByUserName(final String username, final String columns) {
-        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + " FROM " + CarParts.class.getSimpleName() + " cp LEFT JOIN " + Employees.class.getSimpleName() + " e ON e.id = cp.installed_by.id LEFT JOIN " + User.class.getSimpleName() + " u ON u.employees_id.id = e.id WHERE u.username = :username", Object[].class);
+    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserNameAndCarsPartsFilters", key = "#username + '_' +#columns  +@carsPartsCacheKeyHelper.buildCarsPartsKey(#carsPartsFiltersDTO)")
+    public List<Object[]> getExcelByUserNameAndCarsPartsFilters(final String username, final String columns, final CarsPartsFiltersDTO carsPartsFiltersDTO) {
+        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + CarParts.QUERY + " u.username = :username", Object[].class);
         query.setParameter("username", username);
+        query.setParameter("part_id_unit_cost", carsPartsFiltersDTO.getPart_id_unit_cost());
+        query.setParameter("quantity", carsPartsFiltersDTO.getQuantity());
+        query.setParameter("installed_by_name", carsPartsFiltersDTO.getInstalled_by_name());
+        query.setParameter("part_id_category", carsPartsFiltersDTO.getPart_id_category());
+        query.setParameter("part_id_name", carsPartsFiltersDTO.getPart_id_name());
+        query.setParameter("car_id_model_id_name", carsPartsFiltersDTO.getCar_id_model_id_name());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
 }

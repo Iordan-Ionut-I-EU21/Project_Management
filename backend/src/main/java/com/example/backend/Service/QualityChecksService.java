@@ -2,7 +2,7 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.QualityChecks;
-import com.example.backend.Model.Class.User;
+import com.example.backend.Model.Dto.QualityChecksFiltersDTO;
 import com.example.backend.Repository.QualityCheckRepository;
 import com.example.backend.Utility.TableRequest;
 import jakarta.persistence.EntityManager;
@@ -31,22 +31,27 @@ public class QualityChecksService {
         return  this.qualityCheckRepository.findAll();
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUserName", key = "#name  + '_' + #tableRequest.changePage.pageIndex + '_' + #tableRequest.changePage.pageSize + '_' + (#tableRequest.sortPage?.column ?: '') + '_' + (#tableRequest.sortPage?.direction ?: '')")
-    public List<QualityChecks> findByUserName(final String name, final TableRequest tableRequest) {
+    @Cacheable(cacheNames = CACHEABLE + "findByUserName", key = "#name + (#tableRequest?.KEY ?: '') +  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
+    public List<QualityChecks> findByUserName(final String name, final TableRequest tableRequest, final QualityChecksFiltersDTO qualityChecksFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
-        return this.qualityCheckRepository.findByUserName(name, pageRequest);
+        return this.qualityCheckRepository.findByUserName(name, pageRequest, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "countByUserName", key = "#name")
-    public Long countByUserName(final String name) {
-        return this.qualityCheckRepository.countByUserName(name);
+    @Cacheable(cacheNames = CACHEABLE + "countByUserName", key = "#name +  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
+    public Long countByUserName(final String name, final QualityChecksFiltersDTO qualityChecksFiltersDTO) {
+        return this.qualityCheckRepository.countByUserName(name, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserName", key = "#name + '_' + #columns")
-    public List<Object[]> getExcelByUserName(final String name, final String columns) {
-        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + " FROM " + QualityChecks.class.getSimpleName() +
-                " qc LEFT JOIN " + User.class.getSimpleName() + " u on u.employees_id.id = qc.inspector_id.id WHERE u.username = :name", Object[].class);
-        query.setParameter("name", name);
+    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserName", key = "#name + '_' + #columns+  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
+    public List<Object[]> getExcelByUserName(final String name, final String columns, final QualityChecksFiltersDTO qualityChecksFiltersDTO) {
+        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + QualityChecks.QUERY + " u.username = :username " + QualityChecksFiltersDTO.QUERY, Object[].class);
+        query.setParameter("username", name);
+        query.setParameter("car_id_model_id_name", qualityChecksFiltersDTO.getCar_id_model_id_name());
+        query.setParameter("car_id_model_id_generation", qualityChecksFiltersDTO.getCar_id_model_id_generation());
+        query.setParameter("car_id_model_id_release_year", qualityChecksFiltersDTO.getCar_id_model_id_release_year());
+        query.setParameter("inspector_id_name", qualityChecksFiltersDTO.getInspector_id_name());
+        query.setParameter("check_date", qualityChecksFiltersDTO.getCheck_date());
+        query.setParameter("passed", qualityChecksFiltersDTO.getPassed());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
 }

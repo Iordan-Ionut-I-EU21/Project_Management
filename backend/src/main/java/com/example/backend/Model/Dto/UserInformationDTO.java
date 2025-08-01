@@ -12,6 +12,6 @@ import lombok.Setter;
 public class UserInformationDTO {
     private Long countProcessLog;
     private Long countCars;
-    private Long countProcessLogStatus;
     private Long countQualityChecks;
+    private Long countAssignedParts;
 }

@@ -1,7 +1,8 @@
 package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
-import com.example.backend.Model.Class.*;
+import com.example.backend.Model.Class.Cars;
+import com.example.backend.Model.Dto.CarsFiltersDTO;
 import com.example.backend.Model.Dto.CountViewDTO;
 import com.example.backend.Model.Enum.CarsStatus;
 import com.example.backend.Repository.CarsRepository;
@@ -45,24 +46,26 @@ public class CarsService {
                 collect(Collectors.toSet());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUsername", key = "#name  + '_' + #tableRequest.changePage.pageIndex + '_' + #tableRequest.changePage.pageSize + '_' + (#tableRequest.sortPage?.column ?: '') + '_' + (#tableRequest.sortPage?.direction ?: '')")
-    public List<Cars> findByUsername(final String name, TableRequest tableRequest) {
+    @Cacheable(cacheNames = CACHEABLE + "findByUsernameAndCarsFilters", key = "#name  + '_' + (#tableRequest?.KEY ?: '') +@carsCacheKeyHelper.buildCarsKey(#carsFiltersDTO)")
+    public List<Cars> findByUsernameAndCarsFilters(final String name, TableRequest tableRequest, final CarsFiltersDTO carsFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
-        return this.carsRepository.findByUsername(name, pageRequest);
+        return this.carsRepository.findByUsernameAndCarsFilters(name, pageRequest, carsFiltersDTO.getModel_id_name(), carsFiltersDTO.getModel_id_generation(), carsFiltersDTO.getModel_id_release_year(), carsFiltersDTO.getVin(), carsFiltersDTO.getStatus());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "countByUsername", key = "#name")
-    public Long countByUsername(final String name) {
-        return this.carsRepository.countByUsername(name);
+    @Cacheable(cacheNames = CACHEABLE + "countByUsernameAndCarsFilters", key = "#name  +'_' +@carsCacheKeyHelper.buildCarsKey(#carsFiltersDTO)")
+    public Long countByUsernameAndCarsFilters(final String name, final CarsFiltersDTO carsFiltersDTO) {
+        return this.carsRepository.countByUsernameAndCarsFilters(name, carsFiltersDTO.getModel_id_name(), carsFiltersDTO.getModel_id_generation(), carsFiltersDTO.getModel_id_release_year(), carsFiltersDTO.getVin(), carsFiltersDTO.getStatus());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserName", key = "")
-    public List<Object[]> getExcelByUserName(final String name, final String columns) {
-        TypedQuery<Object[]> query = this.entityManager.createQuery(" SELECT DISTINCT " + columns + "  FROM " + Cars.class.getSimpleName() +
-                " c LEFT JOIN " + CarParts.class.getSimpleName() + " cp ON c.id = cp.car_id.id LEFT JOIN " + Employees.class.getSimpleName() +
-                " e ON cp.installed_by.id = e.id LEFT JOIN " + User.class.getSimpleName() + " u ON u.employees_id.id = e.id LEFT JOIN "
-                + CarModel.class.getSimpleName() + " cm ON cm.id = c.model_id.id WHERE u.username = :name", Object[].class);
-        query.setParameter("name", name);
+    @Cacheable(cacheNames = CACHEABLE + "getExcelByUserNameCarsFilters", key = "#username +'_'+ #columns+'_'+@carsCacheKeyHelper.buildCarsKey(#carsFiltersDTO)")
+    public List<Object[]> getExcelByUserNameCarsFilters(final String username, final String columns, final CarsFiltersDTO carsFiltersDTO) {
+        TypedQuery<Object[]> query = this.entityManager.createQuery(" SELECT DISTINCT " + columns + Cars.QUERY + " u.username = :username " + CarsFiltersDTO.QUERY, Object[].class);
+        query.setParameter("username", username);
+        query.setParameter("model_id_release_year", carsFiltersDTO.getModel_id_release_year());
+        query.setParameter("status", carsFiltersDTO.getStatus());
+        query.setParameter("vin", carsFiltersDTO.getVin());
+        query.setParameter("model_id_generation", carsFiltersDTO.getModel_id_generation());
+        query.setParameter("model_id_name", carsFiltersDTO.getModel_id_name());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
 

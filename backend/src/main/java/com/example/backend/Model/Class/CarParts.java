@@ -29,4 +29,7 @@ public class CarParts {
     @ManyToOne
     @JoinColumn(name ="installed_by", referencedColumnName = "id")
     private Employees installed_by;
+
+    public static final String QUERY =" FROM CarParts cp LEFT JOIN Employees e ON e.id = cp.installed_by.id LEFT " +
+            "JOIN User u ON u.employees_id.id = e.id WHERE ";
 }

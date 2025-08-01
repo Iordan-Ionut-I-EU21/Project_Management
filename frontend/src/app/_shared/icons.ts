@@ -5,5 +5,5 @@ export const ICONS = {
   PROCESS: 'account_tree',
   QUALITY_CHECKS: 'check_circle',
   FEET: 'folder_open',
-  PARTS: 'brick',
+  PARTS: 'pie_chart',
 };
