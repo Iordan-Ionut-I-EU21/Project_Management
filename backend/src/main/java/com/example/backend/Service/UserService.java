@@ -46,6 +46,7 @@ public class UserService {
         return new UserInformationDTO(this.processLogService.countByUserNameAndProcessLogFilters(name, new ProcessLogsFilterDTO()),
                 this.carsService.countByUsernameAndCarsFilters(name, new CarsFiltersDTO()),
                 this.qualityChecksService.countByUserName(name, new QualityChecksFiltersDTO()),
-                this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()));
+                this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()),
+                this.processLogService.countByUsernameAndMachineUsedFilters(name, new MachineUsedFiltersDTO()));
     }
 }

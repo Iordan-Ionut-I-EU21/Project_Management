@@ -1,0 +1,20 @@
+::ng-deep .custom-toggle-group .mat-button-toggle {
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease-in-out;
+}
+
+.mat-button-toggle-standalone:not([class*=mat-elevation-z]), .mat-button-toggle-group:not([class*=mat-elevation-z]){
+    box-shadow: none !important;
+}
+
+::ng-deep .custom-toggle-group .mat-button-toggle-checked {
+  background-color: #1d4ed8 !important;
+  color: white !important;
+}
+
+::ng-deep .custom-toggle-group .mat-icon {
+  vertical-align: middle;
+}

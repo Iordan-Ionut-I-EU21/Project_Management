@@ -1,0 +1,52 @@
+<mat-card class="mt-2">
+  <ng-container *ngIf="information; else loading">
+    <div class="flex flex-row items-start justify-between">
+      <div class="flex flex-col gap-3">
+        <div class="card" *ngFor="let item of information.left">
+          <div class="text">
+            <mat-icon class="icon">{{ item.icon }}</mat-icon>
+            <span>{{ item.name }}:</span>
+          </div>
+          <div class="answer">
+            {{ item.answer }}
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-row">
+          <div class="card" *ngFor="let item of information.right">
+            <div class="text">
+              <mat-icon class="icon">{{ item.icon }}</mat-icon>
+              <span>{{ item.name }}:</span>
+            </div>
+            <div class="answer">
+              {{ item.answer }}
+            </div>
+          </div>
+        </div>
+        <div>
+          <mat-button-toggle-group
+            name="textStyle"
+            aria-label="Text Style"
+            appearance="legacy"
+            class="custom-toggle-group"
+            (change)="onSelectChart($event)"
+          >
+            <mat-button-toggle *ngFor="let item of chars" [value]="item.name">
+              <mat-icon class="mr-1">{{ item.icon }}</mat-icon
+              >{{ item.name }}
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loading>
+    <div class="flex justify-center items-center p-6">
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="40"
+      ></mat-progress-spinner>
+    </div>
+  </ng-template>
+</mat-card>

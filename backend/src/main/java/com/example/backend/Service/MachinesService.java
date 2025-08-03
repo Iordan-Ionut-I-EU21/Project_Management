@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 public class MachinesService {
     private static final String CACHEABLE = "Machines";
-
     @Autowired
     private MachinesRepository machinesRepository;
 
@@ -35,4 +34,8 @@ public class MachinesService {
         return BackendApplication.generateObjectByStatus(this.machinesRepository.countStatusByMachineId(machineId), ProcessLogStatus.class);
     }
 
+    @Cacheable(cacheNames = CACHEABLE+"findMachinesByKey", key = "#key")
+    public Machines findMachinesByKey(final String key){
+        return this.machinesRepository.findMachinesByKey(key);
+    }
 }

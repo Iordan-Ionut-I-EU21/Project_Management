@@ -70,35 +70,25 @@ public class GenService {
     public void generateUserAndEmployee(int number) {
         List<Employees> employees = new ArrayList<>();
         List<User> users = new ArrayList<>();
-        Set<String> existingNamesEmployees = new HashSet<>(this.employeesService.getAllNames());
+
+        Set<String> existingNamesEmployees = new HashSet<>(employeesService.getAllNames());
+        Set<String> existingEmailUsers = new HashSet<>(userService.getAllEmails());
         Set<String> generatedNamesEmployees = new HashSet<>();
+        Set<String> generatedEmailUsers = new HashSet<>();
+
         int attempts = 0;
+
         while (employees.size() < number && attempts < number * 10) {
             attempts++;
-            String name = this.faker.name().fullName();
+
+            String name = faker.name().fullName();
+            String email = faker.internet().safeEmailAddress();
+
             if (existingNamesEmployees.contains(name) || generatedNamesEmployees.contains(name)) {
                 System.out.println("Employee: " + name + " is duplicate");
                 continue;
             }
-            Employees employee = new Employees();
-            employee.setId(BackendApplication.generateId());
-            employee.setName(name);
-            employee.setRole(randomEnum(EmployeeRole.class));
-            employee.setDepartment(faker.company().industry());
-            employee.setHire_date(this.generateNowDate());
 
-            employees.add(employee);
-            generatedNamesEmployees.add(name);
-        }
-        this.employeesService.saveAll(employees);
-
-        int i = 0;
-        Set<String> existingEmailUsers = new HashSet<>(this.userService.getAllEmails());
-        Set<String> generatedEmailUsers = new HashSet<>();
-        attempts = 0;
-        while (users.size() < number && attempts < number * 10) {
-            attempts++;
-            String email = faker.internet().safeEmailAddress();
             if (existingEmailUsers.contains(email) || generatedEmailUsers.contains(email)) {
                 System.out.println("User: " + email + " is duplicate");
                 continue;
@@ -107,16 +97,26 @@ public class GenService {
             User user = new User();
             user.setId(BackendApplication.generateId());
             user.setUsername(faker.name().username());
-            user.setPassword(this.passwordEncoder.encode("123asd,./A"));
+            user.setPassword(passwordEncoder.encode("123asd,./A"));
             user.setEmail(email);
             user.setRole(randomEnum(UserRole.class));
-            user.setEmployees_id(employees.get(i));
+
+            Employees employee = new Employees();
+            employee.setId(BackendApplication.generateId());
+            employee.setName(name);
+            employee.setRole(randomEnum(EmployeeRole.class));
+            employee.setDepartment(faker.company().industry());
+            employee.setHire_date(generateNowDate());
+
+            user.setEmployees_id(employee);
+            employee.setUser_id(user);
 
             users.add(user);
+            employees.add(employee);
+            generatedNamesEmployees.add(name);
             generatedEmailUsers.add(email);
-            i++;
         }
-        this.userService.saveAll(users);
+        employeesService.saveAll(employees);
     }
 
     public void generateSuppliers(int number) throws SQLException {
@@ -156,7 +156,7 @@ public class GenService {
             }
 
             Process process = new Process();
-            process.setId(new BackendApplication().generateId());
+            process.setId(BackendApplication.generateId());
             process.setName(name);
             process.setDescription(this.shortDescription());
 
@@ -180,7 +180,7 @@ public class GenService {
             }
 
             CarModel carModel = new CarModel();
-            carModel.setId(new BackendApplication().generateId());
+            carModel.setId(BackendApplication.generateId());
             carModel.setRelease_year(this.faker.random().nextInt(1988, 2025));
             carModel.setName(name);
             carModel.setGeneration(this.faker.random().nextInt(0, 6));
@@ -205,7 +205,7 @@ public class GenService {
             }
 
             Parts part = new Parts();
-            part.setId(new BackendApplication().generateId());
+            part.setId( BackendApplication.generateId());
             part.setCategory(this.randomEnum(PartCategory.class));
             part.setName(name);
             part.setUnit_cost(this.faker.random().nextDouble());
@@ -229,7 +229,7 @@ public class GenService {
                 continue;
             }
             Machines machine = new Machines();
-            machine.setId(new BackendApplication().generateId());
+            machine.setId(BackendApplication.generateId());
             machine.setName(name);
             machine.setLast_maintenance(LocalDateTime.now());
             machine.setStatus(this.randomEnum(MachineStatus.class));
@@ -251,7 +251,7 @@ public class GenService {
         int attempts = 0;
         while (cars.size() < number && attempts < number * 10) {
             attempts++;
-            String vin = this.faker.vehicle().vin();
+            String vin = VinGenerator.generateVin();
             CarModel carModel = this.randomFromList(carModels);
             if (existingVinCars.contains(vin) || generatedVinCars.contains(vin)) {
                 System.out.println("Car vin: " + vin + " is duplicate");
@@ -262,7 +262,7 @@ public class GenService {
 //                continue;
 //            }
             Cars car = new Cars();
-            car.setId(new BackendApplication().generateId());
+            car.setId(BackendApplication.generateId());
             car.setStatus(this.randomEnum(CarsStatus.class));
             car.setAssembly_date(LocalDateTime.now().minusMonths(120).plusDays(faker.number().numberBetween(0, 10)).plusHours(faker.number().numberBetween(0, 48)));
             car.setVin(vin);
@@ -284,7 +284,7 @@ public class GenService {
         while (carParts.size() < number && attempts < number * 10) {
             attempts = 0;
             CarParts carPart = new CarParts();
-            carPart.setId(new BackendApplication().generateId());
+            carPart.setId( BackendApplication.generateId());
             carPart.setQuantity(this.faker.random().nextInt(100, 1000000));
             carPart.setInstalled_at(LocalDateTime.now().minusMonths(2).plusDays(faker.number().numberBetween(0, 10)).plusHours(faker.number().numberBetween(0, 48)));
             carPart.setInstalled_by(this.randomFromList(employees));
@@ -302,7 +302,7 @@ public class GenService {
         List<Machines> machines = this.machinesService.findAll();
         for (int i = 0; i < number; i++) {
             PartProduction partProduction = new PartProduction();
-            partProduction.setId(new BackendApplication().generateId());
+            partProduction.setId( BackendApplication.generateId());
             partProduction.setQuantity(this.faker.random().nextInt(1000, 20000000));
             partProduction.setProduced_date(this.generateNowDate());
             partProduction.setPart_id(this.randomFromList(parts));
@@ -319,7 +319,7 @@ public class GenService {
         List<Parts> parts = this.partsService.findAll();
         for (int i = 0; i < number; i++) {
             PartSuppliers partSupplier = new PartSuppliers();
-            partSupplier.setId(new BackendApplication().generateId());
+            partSupplier.setId( BackendApplication.generateId());
             partSupplier.setDelivery_time_days(generateNowDate());
             partSupplier.setPart_id(this.randomFromList(parts));
             partSupplier.setSupplier_id(this.randomFromList(suppliers));
@@ -338,7 +338,7 @@ public class GenService {
         List<Cars> cars = this.carsService.findAll();
         while (processLogs.size() < number) {
             ProcessLog processLog = new ProcessLog();
-            processLog.setId(new BackendApplication().generateId());
+            processLog.setId( BackendApplication.generateId());
             processLog.setStatus(this.randomEnum(ProcessLogStatus.class));
             processLog.setMachine_id(this.randomFromList(machines));
             processLog.setProcess_id(this.randomFromList(processes));
@@ -366,7 +366,7 @@ public class GenService {
         List<Cars> cars = this.carsService.findAll();
         for (int i = 0; i < number; i++) {
             QualityChecks qualityCheck = new QualityChecks();
-            qualityCheck.setId(new BackendApplication().generateId());
+            qualityCheck.setId( BackendApplication.generateId());
             qualityCheck.setCheck_date(LocalDateTime.now().minusMonths(2).plusDays(faker.number().numberBetween(0, 10)).plusHours(faker.number().numberBetween(0, 48)));
             qualityCheck.setPassed(this.faker.random().nextBoolean());
             qualityCheck.setNotes(this.shortDescription());

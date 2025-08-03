@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NamePage } from '../../_model/_common/name-page';
+import { NamePage } from './name-page';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-name-page',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, CommonModule],
   templateUrl: './name-page.component.html',
   styleUrl: './name-page.component.scss',
 })

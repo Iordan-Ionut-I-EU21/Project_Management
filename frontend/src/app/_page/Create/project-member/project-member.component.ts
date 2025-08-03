@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NamePage } from '../../../_model/_common/name-page';
+import { NamePage } from '../../../_components/name-page/name-page';
 import {
   FormBuilder,
   FormGroup,
@@ -13,7 +13,7 @@ import { TasksService } from '../../../_service/_model/tasks.service';
 import { InputComponent } from '../../../_components/input/input.component';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { MatCardModule } from '@angular/material/card';
-import { GenInput } from '../../../_model/_common/input';
+import { GenInput } from '../../../_components/input/input';
 import { Role } from '../../../_model/_enum/role';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { AlertEnum } from '../../../_model/_common/alert';
@@ -30,7 +30,7 @@ import { TableColumn } from '../../../_model/_common/table-column';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Projects } from '../../../_model/_interface/projects';
-import { TableComponent } from '../../../_components/table/table.component';
+import { TableComponent } from '../../../_components/generate-table/table/table.component';
 import { User } from '../../../_model/_interface/user';
 import { HttpClientModule } from '@angular/common/http';
 import { ExcelExportService } from '../../../_service/_excel/excel.service';

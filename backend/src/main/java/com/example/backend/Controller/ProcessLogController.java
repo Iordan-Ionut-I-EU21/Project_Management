@@ -21,7 +21,7 @@ public class ProcessLogController {
     @Autowired
     private ProcessLogService processLogService;
 
-	@PostMapping("/find/by")
+	@PostMapping("/find/by-process-log")
 	public ResponseEntity<GroupedResult> getDataByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
 			log.info("getDataByUserNameAndProcessLogFilters() - Successful.....");
@@ -34,7 +34,7 @@ public class ProcessLogController {
         }
     }
 
-    @GetMapping("/count/by")
+	@GetMapping("/count/by-process-log")
 	public ResponseEntity<Long> countByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestBody FindByRequestDTO request) {
         try {
 			log.info("countByUserNameAndProcessLogFilters() - Successful.....");
@@ -46,7 +46,7 @@ public class ProcessLogController {
         }
     }
 
-	@PostMapping("/excel/find/by")
+	@PostMapping("/excel/find/by-process-log")
 	public ResponseEntity<List<Object[]>> postExcelByUserNameAndProcessLogFilters(@RequestParam("name") final String name, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
         try {
 			log.info("postExcelByUserNameAndProcessLogFilters() - Successful.....");
@@ -57,4 +57,26 @@ public class ProcessLogController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+	@PostMapping("/find/by-machine-used")
+	public ResponseEntity<GroupedResult> postDataByUsernameAndMachineUsedFilters(@RequestParam("username") final String userName, @RequestBody FindByRequestDTO response) {
+		try {
+			log.info("postDataByUsernameAndMachineUsedFilters() - Successful.....");
+			return ResponseEntity.ok(new GroupedResult(this.processLogService.findByUsernameAndMachineUsedFilters(userName, response.getTableRequest(), response.getMachineUsedFiltersDTO()), this.processLogService.countByUsernameAndMachineUsedFilters(userName, response.getMachineUsedFiltersDTO())));
+		} catch (Exception e) {
+			log.error("Error in postDataByUsernameAndMachineUsedFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PostMapping("/excel/find/by-machine-used")
+	public ResponseEntity<List<Object[]>> postExcelByUserNameAndMachineUsedFilters(@RequestParam("name") final String name, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
+		try {
+			log.info("postExcelByUserNameAndMachineUsedFilters() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.postExcelByUserNameAndMachineUsedFilters(name, columns, request.getMachineUsedFiltersDTO()));
+		} catch (Exception e) {
+			log.error("Error in postExcelByUserNameAndMachineUsedFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 }

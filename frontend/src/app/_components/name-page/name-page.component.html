@@ -1,8 +1,11 @@
 <div class="flex flex-row justify-between">
-  <h2 class="text-2xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+  <div class="text-2xl font-bold mb-6 text-blue-700 flex items-center gap-2">
     <mat-icon color="primary">{{ page.icon }}</mat-icon>
     {{ page.name }}
-  </h2>
+    <div *ngFor="let item of page.content">
+      <span class="text-blue-600 font-semibold mx-1">→</span> {{ item }}
+    </div>
+  </div>
   <div>
     <button
       class="flex items-center gap-2 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"

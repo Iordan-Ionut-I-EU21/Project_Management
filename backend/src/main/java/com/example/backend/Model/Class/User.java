@@ -2,6 +2,7 @@ package com.example.backend.Model.Class;
 
 
 import com.example.backend.Model.Enum.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
     @OneToOne
-    @JoinColumn(name = "employees_id", referencedColumnName = "id")
+    @JoinColumn(name = "employee_id")
+    @JsonIgnoreProperties("user_id")
     private Employees employees_id;
 }

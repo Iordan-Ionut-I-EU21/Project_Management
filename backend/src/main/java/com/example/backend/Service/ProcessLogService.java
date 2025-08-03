@@ -2,6 +2,7 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.ProcessLog;
+import com.example.backend.Model.Dto.MachineUsedFiltersDTO;
 import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
 import com.example.backend.Repository.ProcessLogRepository;
 import com.example.backend.Utility.TableRequest;
@@ -33,7 +34,7 @@ public class ProcessLogService {
         return this.processLogRepository.findAll();
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUserNameAndProcessLogFilters", key = "#name + (#tableRequest?.KEY ?: '') + @processLogsCacheKeyHelper.buildProcessLogKey(#processLogsFilterDTO)")
+    @Cacheable(cacheNames = CACHEABLE + "findByUserNameAndProcessLogFilters", key = "#name + @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest) + @processLogsCacheKeyHelper.buildProcessLogKey(#processLogsFilterDTO)")
     public List<ProcessLog> findByUserNameAndProcessLogFilters(final String name, final TableRequest tableRequest, final ProcessLogsFilterDTO processLogsFilterDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
         return this.processLogRepository.findByUserNameAndProcessLogFilters(name, pageRequest, processLogsFilterDTO.getStatus(), processLogsFilterDTO.getProcess_id_name(), processLogsFilterDTO.getMachine_id_name(), processLogsFilterDTO.getStart_date(), processLogsFilterDTO.getEnd_date());
@@ -46,13 +47,41 @@ public class ProcessLogService {
 
     @Cacheable(cacheNames = CACHEABLE + "postExcelByUserNameAndProcessLogFilters", key = "#username +'_' +#columns + @processLogsCacheKeyHelper.buildProcessLogKey(#processLogsFilterDTO)")
     public List<Object[]> postExcelByUserNameAndProcessLogFilters(final String username, final String columns, final ProcessLogsFilterDTO processLogsFilterDTO) {
-        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + ProcessLog.QUERY + " u.username = :username " + ProcessLogsFilterDTO.QUERY, Object[].class);
+        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + ProcessLog.QUERY_PROCESS_LOG_FILTERS + " u.username = :username " + ProcessLogsFilterDTO.QUERY, Object[].class);
         query.setParameter("username", username);
         query.setParameter("status", processLogsFilterDTO.getStatus());
         query.setParameter("process_id_name", processLogsFilterDTO.getProcess_id_name());
         query.setParameter("machine_id_name", processLogsFilterDTO.getMachine_id_name());
         query.setParameter("start_date", processLogsFilterDTO.getStart_date());
         query.setParameter("end_date", processLogsFilterDTO.getEnd_date());
+        return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "findByUsernameAndMachineUsedFilters", key = "#username  + @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest)  +@machineUsedCacheKeyHelper.buildMachineUsedKey(#machineUsedFiltersDTO)")
+    public List<ProcessLog> findByUsernameAndMachineUsedFilters(final String username, final TableRequest tableRequest, final MachineUsedFiltersDTO machineUsedFiltersDTO) {
+        PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
+        return this.processLogRepository.findByUsernameAndMachineUsedFilters(username, pageRequest, machineUsedFiltersDTO.getMachine_id_name(),
+                machineUsedFiltersDTO.getMachine_id_status(), machineUsedFiltersDTO.getCar_id_model_id_name(), machineUsedFiltersDTO.getStatus(),
+                machineUsedFiltersDTO.getProcess_id_name(), machineUsedFiltersDTO.getEmployee_id_user_id_username());
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "countByUsernameAndMachineUsedFilters", key = "#username + @machineUsedCacheKeyHelper.buildMachineUsedKey(#machineUsedFiltersDTO)")
+    public Long countByUsernameAndMachineUsedFilters(final String username, final MachineUsedFiltersDTO machineUsedFiltersDTO) {
+        return this.processLogRepository.countByUsernameAndMachineUsedFilters(username,machineUsedFiltersDTO.getMachine_id_name(),
+                machineUsedFiltersDTO.getMachine_id_status(), machineUsedFiltersDTO.getCar_id_model_id_name(), machineUsedFiltersDTO.getStatus(),
+                machineUsedFiltersDTO.getProcess_id_name(), machineUsedFiltersDTO.getEmployee_id_user_id_username());
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "postExcelByUserNameAndMachineUsedFilters", key = "#username +'_' +#columns + @machineUsedCacheKeyHelper.buildMachineUsedKey(#machineUsedFiltersDTO)")
+    public List<Object[]> postExcelByUserNameAndMachineUsedFilters(final String username, final String columns, final MachineUsedFiltersDTO machineUsedFiltersDTO) {
+        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + ProcessLog.QUERY_MACHINE_USED_FILTERS + MachineUsedFiltersDTO.QUERY, Object[].class);
+        query.setParameter("username", username);
+        query.setParameter("machine_id_name", machineUsedFiltersDTO.getMachine_id_name());
+        query.setParameter("machine_id_status", machineUsedFiltersDTO.getMachine_id_status());
+        query.setParameter("car_id_model_id_name", machineUsedFiltersDTO.getCar_id_model_id_name());
+        query.setParameter("status", machineUsedFiltersDTO.getStatus());
+        query.setParameter("process_id_name", machineUsedFiltersDTO.getProcess_id_name());
+        query.setParameter("employee_id_user_id_username", machineUsedFiltersDTO.getEmployee_id_user_id_username());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
 }

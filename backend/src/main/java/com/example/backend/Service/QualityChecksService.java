@@ -31,15 +31,15 @@ public class QualityChecksService {
         return  this.qualityCheckRepository.findAll();
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUserName", key = "#name + (#tableRequest?.KEY ?: '') +  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
+    @Cacheable(cacheNames = CACHEABLE + "findByUserName", key = "#name + @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest)  +  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
     public List<QualityChecks> findByUserName(final String name, final TableRequest tableRequest, final QualityChecksFiltersDTO qualityChecksFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
-        return this.qualityCheckRepository.findByUserName(name, pageRequest, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed());
+		return this.qualityCheckRepository.findByUserName(name, pageRequest, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed(), qualityChecksFiltersDTO.getCar_id_status());
     }
 
     @Cacheable(cacheNames = CACHEABLE + "countByUserName", key = "#name +  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
     public Long countByUserName(final String name, final QualityChecksFiltersDTO qualityChecksFiltersDTO) {
-        return this.qualityCheckRepository.countByUserName(name, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed());
+		return this.qualityCheckRepository.countByUserName(name, qualityChecksFiltersDTO.getCar_id_model_id_name(), qualityChecksFiltersDTO.getCar_id_model_id_generation(), qualityChecksFiltersDTO.getCar_id_model_id_release_year(), qualityChecksFiltersDTO.getInspector_id_name(), qualityChecksFiltersDTO.getCheck_date(), qualityChecksFiltersDTO.getPassed(), qualityChecksFiltersDTO.getCar_id_status());
     }
 
     @Cacheable(cacheNames = CACHEABLE + "getExcelByUserName", key = "#name + '_' + #columns+  @qualityChecksCacheKeyHelper.buildQualityChecksKey(#qualityChecksFiltersDTO)")
@@ -52,6 +52,7 @@ public class QualityChecksService {
         query.setParameter("inspector_id_name", qualityChecksFiltersDTO.getInspector_id_name());
         query.setParameter("check_date", qualityChecksFiltersDTO.getCheck_date());
         query.setParameter("passed", qualityChecksFiltersDTO.getPassed());
+		query.setParameter("car_id_status", qualityChecksFiltersDTO.getCar_id_status());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
 }

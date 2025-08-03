@@ -1,0 +1,1146 @@
+import { HttpClientModule } from '@angular/common/http';
+import { Component, Input, ViewChild } from '@angular/core';
+import { CardComponent } from '../card/card.component';
+import { CommonModule } from '@angular/common';
+import { NamePageComponent } from '../name-page/name-page.component';
+import { MatCardModule } from '@angular/material/card';
+import { TableComponent } from './table/table.component';
+import { SpinnerComponent } from '../../_service/_spinner/spinner/spinner.component';
+import { JwtService } from '../../_service/_http/jwt.service';
+import { RolesLogicallyService } from '../../_shared/roles-logically.service';
+import { ProcessLogService } from '../../_service/_model/process-log.service';
+import { QualityChecksService } from '../../_service/_model/quality-checks.service';
+import { UserService } from '../../_service/_model/user.service';
+import { CarsService } from '../../_service/_model/cars.service';
+import { MachineService } from '../../_service/_model/machine.service';
+import { CarsPartsService } from '../../_service/_model/cars-parts.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { ProcessLog } from '../../_model/_interface/process-log';
+import { Cars } from '../../_model/_interface/car';
+import { QualityChecks } from '../../_model/_interface/quality-checks';
+import { CarsParts } from '../../_model/_interface/cars-parts';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Card } from '../../_model/_common/card';
+import { ICONS } from '../../_shared/icons';
+import { SortPage } from '../../_model/_common/sort-page';
+import { ChangePage } from '../../_model/_common/change-page';
+import { Environment } from '../../../environments/environment';
+import { ExcelExportService } from '../../_service/_excel/excel.service';
+import { DialogService } from '../../_service/_dialog/dialog.service';
+import { UserInformationDTO } from '../../_model/_dto/user-information-dto';
+import { GenerateTableKeys } from './generate-table-key';
+import { TableColumn } from '../../_model/_common/table-column';
+import { ProcessLogStatus } from '../../_model/_enum/process-log-status';
+import { ProcessLogsFilterDTO } from '../../_model/_dto/process-log-filter-dto';
+import { CarsFiltersDTO } from '../../_model/_dto/cars-filter-dto';
+import { QualityChecksFiltersDTO } from '../../_model/_dto/quality-check-filter-dto';
+import { CarsPartsFilterDTO } from '../../_model/_dto/cars-parts-filter-dto';
+import { MachineUsedFiltersDTO } from '../../_model/_dto/machine-used-filters-dto';
+import { MachineStatus } from '../../_model/_enum/machine-status';
+import { ViewType } from '../../_dialog/view-type';
+import { CarsStatus } from '../../_model/_enum/cars-status';
+import { PartCategory } from '../../_model/_enum/part-category';
+
+@Component({
+  selector: 'app-generate-table',
+  standalone: true,
+  imports: [
+    HttpClientModule,
+    CardComponent,
+    CommonModule,
+    NamePageComponent,
+    MatCardModule,
+    TableComponent,
+    SpinnerComponent,
+  ],
+  providers: [
+    JwtService,
+    RolesLogicallyService,
+    ProcessLogService,
+    QualityChecksService,
+    UserService,
+    CarsService,
+    MachineService,
+    CarsPartsService,
+  ],
+  templateUrl: './generate-table.component.html',
+  styleUrl: './generate-table.component.scss',
+})
+export class GenerateTableComponent {
+  @Input() keys!: GenerateTableKeys[];
+  @Input() type: boolean = true;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  data!: ProcessLog[] | Cars[] | QualityChecks[] | CarsParts[];
+  count!: number;
+  card!: Card;
+  form!: { [key: string]: FormGroup };
+
+  cards: Card[] = [
+    {
+      name: GenerateTableKeys.PROCESS_LOG,
+      count: 0,
+      icon: ICONS.PROCESS,
+      color: 'green',
+    },
+    { name: GenerateTableKeys.CARS, count: 0, icon: ICONS.CAR, color: 'blue' },
+    {
+      name: GenerateTableKeys.QUALITY_CHECKS,
+      count: 0,
+      icon: ICONS.QUALITY_CHECKS,
+      color: 'purple',
+    },
+    {
+      name: GenerateTableKeys.ASSIGNED_PARTS,
+      count: 0,
+      icon: ICONS.PARTS,
+      color: 'orange',
+    },
+    {
+      name: GenerateTableKeys.MACHINE_USED,
+      count: 0,
+      icon: ICONS.MACHINE,
+      color: 'gray',
+    },
+  ];
+
+  columnsSettings: {
+    [key: string]: TableColumn[];
+  } = {
+    [GenerateTableKeys.PROCESS_LOG]: [
+      {
+        key: 'status',
+        code: 'p.status',
+        label: 'Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Status',
+          formControlName: 'status',
+          options: ['NONE', ...Object.keys(ProcessLogStatus)],
+          labelKey: null,
+          valueKey: null,
+        },
+      },
+      {
+        key: 'process_id.name',
+        code: 'p.process_id.name',
+        label: 'Process',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Process',
+          formControlName: 'process_id',
+        },
+      },
+      {
+        key: 'machine_id.name',
+        code: 'p.machine_id.name',
+        label: 'Machine',
+        type: 'link',
+        link: {
+          url: 'dashboard/machine',
+          code: 'machine_id.name',
+        },
+        config: {
+          type: 'text',
+          placeholder: 'Machine',
+          formControlName: 'machine_id',
+        },
+      },
+      {
+        key: 'start_time',
+        code: 'p.start_time',
+        label: 'Start Date',
+        pipe: 'date',
+        isActive: false,
+        config: {
+          type: 'date',
+          placeholder: 'Start Date',
+          formControlName: 'start_time',
+        },
+      },
+      {
+        key: 'end_time',
+        code: 'p.end_time',
+        label: 'End Date',
+        pipe: 'date',
+        isActive: true,
+        config: {
+          type: 'date',
+          placeholder: 'End Date',
+          formControlName: 'end_time',
+        },
+      },
+      {
+        key: 'view',
+        code: 'view',
+        label: 'View',
+        type: 'button',
+        activeFilters: true,
+        buttons: [
+          {
+            icon: ICONS.PIE,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewChart(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+          {
+            icon: ICONS.LINE,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewLine(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+          {
+            icon: ICONS.POLAR,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewPolar(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+        ],
+      },
+    ],
+    [GenerateTableKeys.CARS]: [
+      {
+        key: 'model_id.name',
+        code: 'c.model_id.name',
+        label: 'Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Name',
+          formControlName: 'model_id_name',
+        },
+      },
+      {
+        key: 'model_id.generation',
+        code: 'c.model_id.generation',
+        label: 'Generation',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Generation',
+          formControlName: 'model_id_generation',
+        },
+      },
+      {
+        key: 'vin',
+        code: 'c.vin',
+        label: 'VIN',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'VIN',
+          formControlName: 'vin',
+        },
+      },
+      {
+        key: 'status',
+        code: 'c.status',
+        label: 'Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Status',
+          formControlName: 'status',
+          options: ['NONE', ...Object.keys(CarsStatus)],
+        },
+      },
+      {
+        key: 'model_id.release_year',
+        code: 'c.model_id.release_year',
+        label: 'Release Year',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Release Year',
+          formControlName: 'model_id_release_year',
+        },
+      },
+      {
+        key: 'view',
+        code: 'view',
+        label: 'View',
+        type: 'button',
+        buttons: [
+          {
+            icon: ICONS.PIE,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewChart(
+                row,
+                ViewType.CARS,
+                'Cars Count'
+              );
+            },
+          },
+        ],
+      },
+    ],
+    [GenerateTableKeys.QUALITY_CHECKS]: [
+      {
+        key: 'car_id.model_id.name',
+        code: 'qc.car_id.model_id.name',
+        label: 'Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Name',
+          formControlName: 'car_id_model_id_name',
+        },
+      },
+      {
+        key: 'car_id.model_id.generation',
+        code: 'qc.car_id.model_id.generation',
+        label: 'Generation',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Generation',
+          formControlName: 'car_id_model_id_generation',
+        },
+      },
+      {
+        key: 'car_id.model_id.release_year',
+        code: 'qc.car_id.model_id.release_year',
+        label: 'Release Year',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Release Year',
+          formControlName: 'car_id_model_id_release_year',
+        },
+      },
+      {
+        key: 'inspector_id.name',
+        code: 'qc.inspector_id.name',
+        label: 'Inspector',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Inspector',
+          formControlName: 'inspector_id_name',
+        },
+      },
+      {
+        key: 'car_id.status',
+        code: 'qc.car_id.status',
+        label: 'Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Status',
+          formControlName: 'car_id_status',
+          options: ['NONE', ...Object.keys(CarsStatus)],
+        },
+      },
+      {
+        key: 'check_date',
+        code: 'qc.check_date',
+        label: 'Check Date',
+        pipe: 'date',
+        config: {
+          type: 'date',
+          placeholder: 'Check Date',
+          formControlName: 'check_date',
+        },
+      },
+      {
+        key: 'passed',
+        code: 'qc.passed',
+        label: 'Passed',
+        passed: true,
+        config: {
+          type: 'select',
+          placeholder: 'Passed',
+          formControlName: 'passed',
+          options: ['NONE', 'TRUE', 'FALSE'],
+          labelKey: null,
+          valueKey: null,
+        },
+      },
+    ],
+    [GenerateTableKeys.ASSIGNED_PARTS]: [
+      {
+        key: 'car_id.model_id.name',
+        code: 'cp.car_id.model_id.name',
+        label: 'Car Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Car Name',
+          formControlName: 'car_id_model_id_name',
+        },
+      },
+      {
+        key: 'part_id.name',
+        code: 'cp.part_id.name',
+        label: 'Part Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Part Name',
+          formControlName: 'part_id_name',
+        },
+      },
+      {
+        key: 'part_id.category',
+        code: 'cp.part_id.category',
+        label: 'Part Category',
+        type: 'text',
+        config: {
+          type: 'select',
+          options: ['NONE', ...Object.keys(PartCategory)],
+          labelKey: null,
+          valueKey: null,
+          placeholder: 'Part Category',
+          formControlName: 'part_id_category',
+        },
+      },
+      {
+        key: 'installed_by.name',
+        code: 'cp.installed_by.name',
+        label: 'Installed',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Installed',
+          formControlName: 'installed_by_name',
+        },
+      },
+      {
+        key: 'quantity',
+        code: 'cp.quantity',
+        label: 'Quantity',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Quantity',
+          formControlName: 'quantity',
+        },
+      },
+      {
+        key: 'part_id.unit_cost',
+        code: 'cp.part_id.unit_cost',
+        label: 'Part unit_cost',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Part unit_cost',
+          formControlName: 'part_id_unit_cost',
+        },
+      },
+    ],
+    [GenerateTableKeys.MACHINE_USED]: [
+      {
+        key: 'machine_id.name',
+        code: 'pl.machine_id.name',
+        label: 'Machine Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Machine Name',
+          formControlName: 'machine_id_name',
+        },
+      },
+      {
+        key: 'machine_id.status',
+        code: 'pl.machine_id.status',
+        label: 'Machine Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Machine Status',
+          formControlName: 'machine_id_status',
+          options: ['NONE', ...Object.keys(MachineStatus)],
+        },
+      },
+      {
+        key: 'car_id.model_id.name',
+        code: 'pl.car_id.model_id.name',
+        label: 'Car Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Car Name',
+          formControlName: 'car_id_model_id_name',
+        },
+      },
+      {
+        key: 'status',
+        code: 'pl.status',
+        label: 'Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Status',
+          formControlName: 'status',
+          options: ['NONE', ...Object.keys(ProcessLogStatus)],
+        },
+      },
+      {
+        key: 'process_id.name',
+        code: 'pl.process_id.name',
+        label: 'Process Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Process Name',
+          formControlName: 'process_id_name',
+        },
+      },
+      {
+        key: 'employee_id.user_id.username',
+        code: 'pl.employee_id.user_id.username',
+        label: 'User Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'User Name',
+          formControlName: 'employee_id_user_id_username',
+        },
+      },
+      {
+        key: 'view',
+        code: 'view',
+        label: 'View',
+        type: 'button',
+        activeFilters: true,
+        buttons: [
+          {
+            icon: ICONS.PIE,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewChart(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+          {
+            icon: ICONS.LINE,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewLine(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+          {
+            icon: ICONS.POLAR,
+            buttonColor: 'primary',
+            onClick: (row: ProcessLog) => {
+              this._dialogService.openDialogViewPolar(
+                row,
+                ViewType.PROCESS_LOG,
+                'Process Log By Machine'
+              );
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  cardSettings: {
+    [key: string]: {
+      sortPage: SortPage;
+      changePage: ChangePage;
+    };
+  } = {
+    [GenerateTableKeys.PROCESS_LOG]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.PROCESS_LOG][0].key,
+        direction: '',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.CARS]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.CARS][0].key,
+        direction: '',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.QUALITY_CHECKS]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.QUALITY_CHECKS][0].key,
+        direction: '',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.ASSIGNED_PARTS]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.ASSIGNED_PARTS][0].key,
+        direction: '',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.MACHINE_USED]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.MACHINE_USED][0].key,
+        direction: '',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+  };
+
+  constructor(
+    private _excelService: ExcelExportService,
+    private _JwtService: JwtService,
+    private _processLogService: ProcessLogService,
+    private _qualityChecksService: QualityChecksService,
+    private _carsService: CarsService,
+    private _userService: UserService,
+    private _carsPartsService: CarsPartsService,
+    private _dialogService: DialogService,
+    private _fb: FormBuilder
+  ) {
+    this.onDefaultForms();
+    this._userService
+      .countInformationByUserName(this._JwtService.getUserInfo()?.name!)
+      .subscribe({
+        next: (response: UserInformationDTO) => {
+          this.cards[0].count = response.countProcessLog;
+          this.cards[1].count = response.countCars;
+          this.cards[2].count = response.countQualityChecks;
+          this.cards[3].count = response.countAssignedParts;
+          this.cards[4].count = response.countMachineUsed;
+        },
+        error: (error: Error) => {
+          console.error(error);
+        },
+      });
+  }
+
+  ngOnInit() {
+    this.onCardClick(this.cards[0]);
+  }
+
+  onSortChanged(sort: any) {
+    this.cardSettings[this.card.name].sortPage = { ...sort };
+    this.onCardClick(this.card);
+  }
+
+  onPageChanged(page: any) {
+    this.cardSettings[this.card.name].changePage = { ...page };
+    this.onCardClick(this.card);
+  }
+
+  onExport() {
+    const columns = this.onColumns()
+      .map((col) => col.code)
+      .filter((code) => code && code !== 'view');
+    const tables = this.onColumns()
+      .map((col) => col.label)
+      .filter((label) => label && label !== 'View');
+
+    switch (this.card.name) {
+      case GenerateTableKeys.PROCESS_LOG: {
+        this._processLogService
+          .postExcelByUserNameAndProcessLogFilters(
+            this._JwtService.getUserInfo()?.name!,
+            columns.join(', '),
+            this.onGiveFilters()! as ProcessLogsFilterDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Process_Logs_' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.CARS: {
+        this._carsService
+          .postExcelByUserNameAncCarsFilter(
+            this._JwtService.getUserInfo()?.name!,
+            columns.join(', '),
+            this.onGiveFilters()! as CarsFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Cars_' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.QUALITY_CHECKS: {
+        this._qualityChecksService
+          .postExcelByUserNameAndQualityChecksFilters(
+            this._JwtService.getUserInfo()?.name!,
+            columns.join(', '),
+            this.onGiveFilters()! as QualityChecksFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Quality_Checks_' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.ASSIGNED_PARTS: {
+        this._carsPartsService
+          .getExcelByUserNameAndCarsPartsFilters(
+            this._JwtService.getUserInfo()?.name!,
+            columns.join(', '),
+            this.onGiveFilters()! as CarsPartsFilterDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Cars_Parts' + new Date().toLocaleDateString()
+              );
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.MACHINE_USED: {
+        this._processLogService
+          .postExcelByUserNameAndMachineUsedFilters(
+            this._JwtService.getUserInfo()?.name!,
+            columns.join(', '),
+            this.onGiveFilters()! as MachineUsedFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Machine_Used' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  onCardClick(card: Card) {
+    const userName = this._JwtService.getUserInfo()?.name!;
+    const settings = this.cardSettings[card.name];
+    if (!settings) {
+      return;
+    }
+    this.card = card;
+    this.onColumns();
+
+    switch (card.name) {
+      case GenerateTableKeys.PROCESS_LOG: {
+        this._processLogService
+          .postDataByUserNameAndProcessLogFilters(
+            userName,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as ProcessLogsFilterDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.CARS: {
+        this._carsService
+          .postDataByUserNameAndCarsFilters(
+            userName,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as CarsFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.QUALITY_CHECKS: {
+        this._qualityChecksService
+          .postDataByUserNameAndQualityChecksFilters(
+            userName,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as QualityChecksFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.ASSIGNED_PARTS: {
+        this._carsPartsService
+          .postDataByUserNameAndCarsPartsFilters(
+            userName,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as CarsPartsFilterDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.MACHINE_USED: {
+        this._processLogService
+          .postDataByUsernameAndMachineUsedFilters(
+            this._JwtService.getUserInfo()?.name!,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as MachineUsedFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  }
+
+  onColumns(): TableColumn[] {
+    if (
+      !this.card ||
+      !this.card.name ||
+      !this.columnsSettings[this.card.name]
+    ) {
+      return [];
+    }
+
+    return this.columnsSettings[this.card.name];
+  }
+
+  onType(event: boolean) {
+    this.type = event;
+  }
+
+  onForms() {
+    return this.form[this.card.name];
+  }
+
+  onActivateFilters() {
+    this.cardSettings[this.card.name].changePage.pageIndex = 0;
+    this.onCardClick(this.card);
+  }
+
+  onGetPageIndex(): number {
+    return this.cardSettings[this.card.name].changePage.pageIndex;
+  }
+
+  onDblClickRow() {
+    if (this.keys[0] === this.card.name) {
+      console.log(this.card.name);
+    } else if (GenerateTableKeys.PROCESS_LOG === this.card.name) {
+      console.log(this.card.name);
+    } else if (GenerateTableKeys.CARS === this.card.name) {
+      console.log(this.card.name);
+    } else if (GenerateTableKeys.QUALITY_CHECKS === this.card.name) {
+      console.log(this.card.name);
+    } else if (GenerateTableKeys.MACHINE_USED === this.card.name) {
+      console.log(this.card.name);
+    }
+  }
+
+  private onGiveFilters():
+    | ProcessLogsFilterDTO
+    | CarsFiltersDTO
+    | QualityChecksFiltersDTO
+    | CarsPartsFilterDTO
+    | MachineUsedFiltersDTO
+    | null {
+    if (this.card.name === GenerateTableKeys.PROCESS_LOG) {
+      return {
+        status:
+          this.form[GenerateTableKeys.PROCESS_LOG].value.status === '' ||
+          this.form[GenerateTableKeys.PROCESS_LOG].value.status === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.status,
+        process_id_name:
+          this.form[GenerateTableKeys.PROCESS_LOG].value.process_id === ''
+            ? null
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.process_id,
+        machine_id_name:
+          this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id === ''
+            ? null
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id,
+        start_date:
+          this.form[GenerateTableKeys.PROCESS_LOG].value.start_time === ''
+            ? null
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.start_time,
+        end_date:
+          this.form[GenerateTableKeys.PROCESS_LOG].value.end_time === ''
+            ? null
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.end_time,
+      };
+    } else if (this.card.name === GenerateTableKeys.CARS) {
+      return {
+        model_id_release_year:
+          this.form[GenerateTableKeys.CARS].value.model_id_release_year === ''
+            ? null
+            : this.form[GenerateTableKeys.CARS].value.model_id_release_year,
+        status:
+          this.form[GenerateTableKeys.CARS].value.status === '' ||
+          this.form[GenerateTableKeys.CARS].value.status === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.CARS].value.status,
+        vin:
+          this.form[GenerateTableKeys.CARS].value.vin === ''
+            ? null
+            : this.form[GenerateTableKeys.CARS].value.vin,
+        model_id_generation:
+          this.form[GenerateTableKeys.CARS].value.model_id_generation === ''
+            ? null
+            : this.form[GenerateTableKeys.CARS].value.model_id_generation,
+        model_id_name:
+          this.form[GenerateTableKeys.CARS].value.model_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.CARS].value.model_id_name,
+      };
+    } else if (this.card.name === GenerateTableKeys.QUALITY_CHECKS) {
+      return {
+        car_id_model_id_name:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value
+            .car_id_model_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                .car_id_model_id_name,
+        car_id_model_id_generation:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value
+            .car_id_model_id_generation === ''
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                .car_id_model_id_generation,
+        car_id_model_id_release_year:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value
+            .car_id_model_id_release_year === ''
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                .car_id_model_id_release_year,
+        inspector_id_name:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value
+            .inspector_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                .inspector_id_name,
+        check_date:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date === ''
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date,
+        passed:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === '' ||
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed,
+        car_id_status:
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
+            '' ||
+          this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
+            'NONE'
+            ? null
+            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status,
+      };
+    } else if (this.card.name === GenerateTableKeys.ASSIGNED_PARTS) {
+      return {
+        part_id_unit_cost:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+            .part_id_unit_cost === ''
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                .part_id_unit_cost,
+        quantity:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity === ''
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity,
+        installed_by_name:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+            .installed_by_name === ''
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                .installed_by_name,
+        part_id_category:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_category ===
+            '' ||
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_category ===
+            'NONE'
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                .part_id_category,
+        part_id_name:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name,
+        car_id_model_id_name:
+          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+            .car_id_model_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                .car_id_model_id_name,
+      };
+    } else if (this.card.name === GenerateTableKeys.MACHINE_USED) {
+      return {
+        machine_id_name:
+          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name,
+        machine_id_status:
+          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status ===
+            '' ||
+          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status ===
+            'NONE'
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status,
+        car_id_model_id_name:
+          this.form[GenerateTableKeys.MACHINE_USED].value
+            .car_id_model_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value
+                .car_id_model_id_name,
+        status:
+          this.form[GenerateTableKeys.MACHINE_USED].value.status === '' ||
+          this.form[GenerateTableKeys.MACHINE_USED].value.status === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value.status,
+        process_id_name:
+          this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name,
+        employee_id_user_id_username:
+          this.form[GenerateTableKeys.MACHINE_USED].value
+            .employee_id_user_id_username === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_USED].value
+                .employee_id_user_id_username,
+      };
+    }
+
+    return null;
+  }
+
+  private onDefaultForms() {
+    this.form = {
+      [GenerateTableKeys.PROCESS_LOG]: this._fb.group({
+        status: ['NONE'],
+        process_id: [null],
+        machine_id: [null],
+        start_time: [null],
+        end_time: [null],
+      }),
+      [GenerateTableKeys.CARS]: this._fb.group({
+        model_id_release_year: [null],
+        status: ['NONE'],
+        vin: [null],
+        model_id_generation: [null],
+        model_id_name: [null],
+      }),
+      [GenerateTableKeys.QUALITY_CHECKS]: this._fb.group({
+        car_id_model_id_name: [null],
+        car_id_model_id_generation: [null],
+        car_id_model_id_release_year: [null],
+        inspector_id_name: [null],
+        check_date: [null],
+        passed: ['NONE'],
+        car_id_status: ['NONE'],
+      }),
+      [GenerateTableKeys.ASSIGNED_PARTS]: this._fb.group({
+        part_id_unit_cost: [null],
+        quantity: [null],
+        installed_by_name: [null],
+        part_id_category: ['NONE'],
+        part_id_name: [null],
+        car_id_model_id_name: [null],
+      }),
+      [GenerateTableKeys.MACHINE_USED]: this._fb.group({
+        machine_id_name: [null],
+        machine_id_status: ['NONE'],
+        car_id_model_id_name: [null],
+        status: ['NONE'],
+        process_id_name: [null],
+        employee_id_user_id_username: [null],
+      }),
+    };
+  }
+
+  visibleCards(): Card[] {
+    return this.cards.filter((card) =>
+      this.keys.includes(card.name as GenerateTableKeys)
+    );
+  }
+}

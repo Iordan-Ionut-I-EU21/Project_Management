@@ -1,3 +1,5 @@
+import { CarsStatus } from "../_enum/cars-status";
+
 export interface QualityChecksFiltersDTO {
   car_id_model_id_name: string;
   car_id_model_id_generation: number;
@@ -5,4 +7,5 @@ export interface QualityChecksFiltersDTO {
   inspector_id_name: string;
   check_date: Date;
   passed: boolean;
+  car_id_status: string
 }

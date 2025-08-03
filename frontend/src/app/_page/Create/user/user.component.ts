@@ -9,8 +9,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { InputComponent } from '../../../_components/input/input.component';
-import { NamePage } from '../../../_model/_common/name-page';
-import { GenInput } from '../../../_model/_common/input';
+import { NamePage } from '../../../_components/name-page/name-page';
+import { GenInput } from '../../../_components/input/input';
 import { UserRole } from '../../../_model/_enum/user-role';
 import { UserService } from '../../../_service/_model/user.service';
 import { Router } from '@angular/router';

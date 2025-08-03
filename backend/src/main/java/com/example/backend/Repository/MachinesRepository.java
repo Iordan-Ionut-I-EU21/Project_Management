@@ -21,4 +21,6 @@ public interface MachinesRepository extends JpaRepository<Machines, String> {
             """)
     List<CountView> countStatusByMachineId(@Param("machineId") String machineId);
 
+    @Query("SELECT m FROM Machines m WHERE m.id = :key OR m.name = :key")
+    Machines findMachinesByKey(@Param("key") final String key);
 }

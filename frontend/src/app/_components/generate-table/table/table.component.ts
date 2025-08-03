@@ -7,7 +7,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { TableColumn } from '../../_model/_common/table-column';
+import { TableColumn } from '../../../_model/_common/table-column';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -16,14 +16,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { SortPage } from '../../_model/_common/sort-page';
-import { ChangePage } from '../../_model/_common/change-page';
-import { Environment } from '../../../environments/environment';
+import { SortPage } from '../../../_model/_common/sort-page';
+import { ChangePage } from '../../../_model/_common/change-page';
+import { Environment } from '../../../../environments/environment';
 import { Router, RouterModule } from '@angular/router';
-import { IsNearEndDatePipe } from '../../_model/_pipe/isNearEndDate.pipe';
-import { InputComponent } from '../input/input.component';
+import { IsNearEndDatePipe } from '../../../_model/_pipe/isNearEndDate.pipe';
+import { InputComponent } from '../../input/input.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { GenInput } from '../../_model/_common/input';
+import { GenInput } from '../../input/input';
 import { eventNames } from 'process';
 
 @Component({

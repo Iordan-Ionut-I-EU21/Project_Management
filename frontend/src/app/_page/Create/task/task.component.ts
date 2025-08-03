@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { InputComponent } from '../../../_components/input/input.component';
-import { GenInput } from '../../../_model/_common/input';
+import { GenInput } from '../../../_components/input/input';
 import {
   FormBuilder,
   FormGroup,
@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ProjectsService } from '../../../_service/_model/projects.service';
-import { NamePage } from '../../../_model/_common/name-page';
+import { NamePage } from '../../../_components/name-page/name-page';
 import { NamePageComponent } from '../../../_components/name-page/name-page.component';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';

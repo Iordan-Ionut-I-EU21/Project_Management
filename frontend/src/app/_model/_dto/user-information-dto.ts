@@ -3,4 +3,5 @@ export interface UserInformationDTO {
   countCars: number;
   countQualityChecks: number;
   countAssignedParts: number;
+  countMachineUsed: number;
 }

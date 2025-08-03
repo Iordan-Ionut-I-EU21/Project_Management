@@ -46,7 +46,7 @@ public class CarsService {
                 collect(Collectors.toSet());
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUsernameAndCarsFilters", key = "#name  + '_' + (#tableRequest?.KEY ?: '') +@carsCacheKeyHelper.buildCarsKey(#carsFiltersDTO)")
+    @Cacheable(cacheNames = CACHEABLE + "findByUsernameAndCarsFilters", key = "#name  + '_' + @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest)  +@carsCacheKeyHelper.buildCarsKey(#carsFiltersDTO)")
     public List<Cars> findByUsernameAndCarsFilters(final String name, TableRequest tableRequest, final CarsFiltersDTO carsFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
         return this.carsRepository.findByUsernameAndCarsFilters(name, pageRequest, carsFiltersDTO.getModel_id_name(), carsFiltersDTO.getModel_id_generation(), carsFiltersDTO.getModel_id_release_year(), carsFiltersDTO.getVin(), carsFiltersDTO.getStatus());

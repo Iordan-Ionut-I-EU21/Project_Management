@@ -7,6 +7,10 @@ import { Cars } from '../../_model/_interface/car';
 import { ChartsComponent } from '../../_components/charts/charts.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { ViewType } from '../view-type';
+import { ViewData } from '../view-data';
+import { isMachine } from '../../_model/_interface/machine';
+import { CountViewDTO } from '../../_model/_dto/count-view-dto';
 
 @Component({
   selector: 'app-view-line',
@@ -25,6 +29,7 @@ export class ViewLineComponent {
       {
         data: [],
         borderColor: '#42A5F5',
+        label: '',
         backgroundColor: 'rgba(66,165,245,0.3)',
         fill: true,
         tension: 0.4,
@@ -48,8 +53,8 @@ export class ViewLineComponent {
     private _machineService: MachineService,
     @Inject(MAT_DIALOG_DATA)
     protected data: {
-      data: ProcessLog | Cars;
-      type: 'PROCESS_LOG' | 'CARS';
+      data: ViewData;
+      type: ViewType;
       title: string;
     }
   ) {}
@@ -60,20 +65,34 @@ export class ViewLineComponent {
         .countStatusByMachineId(this.data.data.machine_id.id)
         .subscribe({
           next: (response) => {
-            Object.entries(response).forEach(([key, value]) => {
-              if (value !== 0) {
-                this.hasValue = true;
-              }
-            });
-            const data = Object.values(response);
-
-            this.lineChartData.labels = data.map((d) => d.status);
-            this.lineChartData.datasets[0].data = data.map((d) => d.count);
+            this.generateChartLine(response);
           },
           error: (error) => {
             console.error('Line chart data error:', error);
           },
         });
     }
+    if (isMachine(this.data.data)) {
+      this._machineService.countStatusByMachineId(this.data.data.id).subscribe({
+        next: (response) => {
+          this.generateChartLine(response);
+        },
+        error: (error) => {
+          console.error('Line chart data error:', error);
+        },
+      });
+    }
+  }
+
+  private generateChartLine(response: CountViewDTO) {
+    Object.entries(response).forEach(([key, value]) => {
+      if (value !== 0) {
+        this.hasValue = true;
+      }
+    });
+    const data = Object.values(response);
+
+    this.lineChartData.labels = data.map((d) => d.status);
+    this.lineChartData.datasets[0].data = data.map((d) => d.count);
   }
 }

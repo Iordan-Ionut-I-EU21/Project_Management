@@ -7,6 +7,10 @@ import { ValidateChangeComponent } from '../../_dialog/validate-change/validate-
 import { ProcessLog } from '../../_model/_interface/process-log';
 import { Cars } from '../../_model/_interface/car';
 import { ViewLineComponent } from '../../_dialog/view-line/view-line.component';
+import { ViewPolarComponent } from '../../_dialog/view-polar/view-polar.component';
+import { ViewType } from '../../_dialog/view-type';
+import { Machines } from '../../_model/_interface/machine';
+import { ViewData } from '../../_dialog/view-data';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +18,7 @@ import { ViewLineComponent } from '../../_dialog/view-line/view-line.component';
 export class DialogService {
   constructor(private dialog: MatDialog) {}
 
-  openDialogViewChart(
-    data: ProcessLog | Cars,
-    type: 'PROCESS_LOG' | 'CARS',
-    title: string
-  ) {
+  openDialogViewChart(data: ViewData, type: ViewType, title: string) {
     const dialogRef = this.dialog.open(ViewChartComponent, {
       data: { data: data, type: type, title: title },
       restoreFocus: false,
@@ -29,11 +29,7 @@ export class DialogService {
     // });
   }
 
-  openDialogViewLine(
-    data: ProcessLog | Cars,
-    type: 'PROCESS_LOG' | 'CARS',
-    title: string
-  ) {
+  openDialogViewLine(data: ViewData, type: ViewType, title: string) {
     const dialogRef = this.dialog.open(ViewLineComponent, {
       data: { data: data, type: type, title: title },
       restoreFocus: false,
@@ -42,6 +38,13 @@ export class DialogService {
     // dialogRef.afterClosed().subscribe((result) => {
     //   console.log('Dialog closed', result);
     // });
+  }
+
+  openDialogViewPolar(data: ViewData, type: ViewType, title: string) {
+    const dialogRef = this.dialog.open(ViewPolarComponent, {
+      data: { data: data, type: type, title: title },
+      restoreFocus: false,
+    });
   }
 
   openDialogCommentTask(taskId: string): Observable<any> {

@@ -1,0 +1,6 @@
+export enum CarsStatus {
+  IN_PRODUCTION = 'IN_PRODUCTION',
+  ASSEMBLED = 'ASSEMBLED',
+  SHIPPED = 'SHIPPED',
+  QC_FAILED = 'QC_FAILED',
+}

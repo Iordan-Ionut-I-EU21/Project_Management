@@ -224,3 +224,20 @@ mat-card{
 .mat-mdc-dialog-content{
   max-height: max-content !important;
 }
+
+
+.card{
+  @apply  flex items-center space-x-4;
+
+  .text{
+   @apply flex items-center text-[#1d4ed8] text-xl font-semibold;
+  }
+
+  .icon{
+    @apply mr-2 text-[24px];
+  }
+
+  .answer{
+   @apply text-gray-800 text-lg font-medium;
+  }
+}

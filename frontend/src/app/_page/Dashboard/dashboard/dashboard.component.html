@@ -4,26 +4,5 @@
     [type]="type"
     (onType)="onType($event)"
   ></app-name-page>
-  <div class="flex flex-row justify-between items-center gap-4" *ngIf="type">
-    <app-card
-      class="w-4/12"
-      *ngFor="let card of cards"
-      [card]="card"
-      (cardClicked)="onCardClick(card)"
-    ></app-card>
-  </div>
-  <div class="divide"></div>
-  <app-table
-    [data]="data"
-    [count]="count"
-    [pageIndex]="onGetPageIndex()"
-    [columns]="onColumns()"
-    [isTable]="true"
-    [form]="onForms()"
-    (pageChanged)="onPageChanged($event)"
-    (sortChanged)="onSortChanged($event)"
-    [enableDblClickForRow]="true"
-    (onExport)="onExport()"
-    (onActivateFilters)="onActivateFilters()"
-  ></app-table>
+  <app-generate-table [keys]="keys" [type]="type"></app-generate-table>
 </mat-card>

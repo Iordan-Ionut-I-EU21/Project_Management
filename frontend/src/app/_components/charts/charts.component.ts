@@ -38,7 +38,7 @@ export class ChartsComponent {
   @Input() chartData!: ChartData;
   @Input() chartOptions!: ChartOptions;
   @Input() hasValue = false;
-  @Input() type!: 'pie' | 'line';
+  @Input() type!: 'pie' | 'line' | 'polarArea';
 
   constructor() {}
 

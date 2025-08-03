@@ -1,6 +1,7 @@
 package com.example.backend.Model.Class;
 
 import com.example.backend.Model.Enum.EmployeeRole;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,7 @@ public class Employees {
     private String department;
     @Column(name = "hire_date")
     private LocalDateTime hire_date;
+    @OneToOne(mappedBy = "employees_id", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("employees_id")
+    private User user_id;
 }

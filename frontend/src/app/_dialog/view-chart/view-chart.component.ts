@@ -16,6 +16,11 @@ import { Cars, isCars } from '../../_model/_interface/car';
 import { CarsService } from '../../_service/_model/cars.service';
 import { response } from 'express';
 import { error } from 'console';
+import { ViewType } from '../view-type';
+import { CHART_COLORS } from '../chard-colors';
+import { isMachine, Machines } from '../../_model/_interface/machine';
+import { ViewData } from '../view-data';
+import { CountViewDTO } from '../../_model/_dto/count-view-dto';
 
 @Component({
   selector: 'app-view-chart',
@@ -52,8 +57,8 @@ export class ViewChartComponent {
     private _carsService: CarsService,
     @Inject(MAT_DIALOG_DATA)
     protected data: {
-      data: ProcessLog | Cars;
-      type: 'PROCESS_LOG' | 'CARS';
+      data: ViewData;
+      type: ViewType;
       title: string;
     }
   ) {}
@@ -64,36 +69,7 @@ export class ViewChartComponent {
         .countStatusByMachineId(this.data.data.machine_id.id)
         .subscribe({
           next: (response) => {
-            Object.entries(response).forEach(([key, value]) => {
-              if (value !== 0) {
-                this.hasValue = true;
-              }
-            });
-            const data = Object.values(response);
-
-            this.pieChartData.labels = data.map(
-              (l) => l.status + ' ' + l.count
-            );
-            this.pieChartData.datasets[0].data = data.map(
-              (d) => d.count
-            ) as number[];
-            this.pieChartData.datasets[0].backgroundColor = [
-              'rgba(255, 206, 86, 0.7)', // PENDING
-              'rgba(54, 162, 235, 0.7)', // IN_PROGRESS
-              'rgba(75, 192, 192, 0.7)', // COMPLETED
-              'rgba(255, 99, 132, 0.7)', // FAILED
-              'rgba(255, 159, 64, 0.7)', // PAUSED
-              'rgba(153, 102, 255, 0.7)', // CANCELLED
-            ];
-
-            this.pieChartData.datasets[0].borderColor = [
-              'rgba(255, 206, 86, 1)', // PENDING
-              'rgba(54, 162, 235, 1)', // IN_PROGRESS
-              'rgba(75, 192, 192, 1)', // COMPLETED
-              'rgba(255, 99, 132, 1)', // FAILED
-              'rgba(255, 159, 64, 1)', // PAUSED
-              'rgba(153, 102, 255, 1)', // CANCELLED
-            ];
+            this.generateChartPie(response, CHART_COLORS.STATUS_BY_MACHINE_ID);
           },
           error: (error) => {
             console.error(error);
@@ -104,37 +80,39 @@ export class ViewChartComponent {
         .countStatusByCarModelId(this.data.data.model_id.id)
         .subscribe({
           next: (response) => {
-            Object.entries(response).forEach(([key, value]) => {
-              if (value !== 0) {
-                this.hasValue = true;
-              }
-            });
-            const data = Object.values(response);
-
-            this.pieChartData.labels = data.map(
-              (l) => l.status + ' ' + l.count
+            this.generateChartPie(
+              response,
+              CHART_COLORS.STATUS_BY_CAR_MODEL_ID
             );
-            this.pieChartData.datasets[0].data = data.map(
-              (d) => d.count
-            ) as number[];
-            this.pieChartData.datasets[0].backgroundColor = [
-              'rgba(255, 206, 86, 0.7)', // IN_PRODUCTION
-              'rgba(54, 162, 235, 0.7)', // ASSEMBLED
-              'rgba(75, 192, 192, 0.7)', // SHIPPED
-              'rgba(255, 99, 132, 0.7)', // QC_FAILED
-            ];
-
-            this.pieChartData.datasets[0].borderColor = [
-              'rgba(255, 206, 86, 1)', // IN_PRODUCTION
-              'rgba(54, 162, 235, 1)', // ASSEMBLED
-              'rgba(75, 192, 192, 1)', // SHIPPED
-              'rgba(255, 99, 132, 1)', // QC_FAILED
-            ];
           },
           error: (error) => {
             console.error(error);
           },
         });
+    } else if (isMachine(this.data.data)) {
+      this._machineService.countStatusByMachineId(this.data.data.id).subscribe({
+        next: (response) => {
+          this.generateChartPie(response, CHART_COLORS.STATUS_BY_MACHINE_ID);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
     }
+  }
+
+  private generateChartPie(response: CountViewDTO, chartColor: string[]) {
+    Object.entries(response).forEach(([key, value]) => {
+      if (value !== 0) {
+        this.hasValue = true;
+      }
+    });
+    const data = Object.values(response);
+
+    this.pieChartData.labels = data.map((l) => l.status + ' ' + l.count);
+    this.pieChartData.datasets[0].data = data.map((d) => d.count) as number[];
+
+    this.pieChartData.datasets[0].backgroundColor = chartColor;
+    this.pieChartData.datasets[0].borderColor = chartColor;
   }
 }

@@ -27,7 +27,7 @@ public class CarsPartsService {
         this.carsPartsRepository.saveAll(carParts);
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findByUserNameAndCarsPartsFilters", key = "#username + (#tableRequest?.KEY " + "?: '') + @carsPartsCacheKeyHelper.buildCarsPartsKey(#carsPartsFiltersDTO)")
+    @Cacheable(cacheNames = CACHEABLE + "findByUserNameAndCarsPartsFilters", key = "#username + @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest)  + @carsPartsCacheKeyHelper.buildCarsPartsKey(#carsPartsFiltersDTO)")
     public List<CarParts> findByUserNameAndCarsPartsFilters(final String username, final TableRequest tableRequest, final CarsPartsFiltersDTO carsPartsFiltersDTO) {
         PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
         return this.carsPartsRepository.findByUserNameAndCarsPartsFilters(username, pageRequest, carsPartsFiltersDTO.getPart_id_unit_cost(), carsPartsFiltersDTO.getQuantity(), carsPartsFiltersDTO.getInstalled_by_name(), carsPartsFiltersDTO.getPart_id_category(), carsPartsFiltersDTO.getPart_id_name(), carsPartsFiltersDTO.getCar_id_model_id_name());

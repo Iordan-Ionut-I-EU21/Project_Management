@@ -1,0 +1,11 @@
+<mat-dialog-content class="w-full h-full">
+  <label class="flex flex-row justify-center text-lg">
+    {{ data.title }}
+  </label>
+  <app-charts
+    [chartData]="pieChartData"
+    [chartOptions]="pieChartOptions"
+    [type]="'polarArea'"
+    [hasValue]="hasValue"
+  ></app-charts>
+</mat-dialog-content>

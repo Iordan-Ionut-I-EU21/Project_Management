@@ -24,7 +24,7 @@ public class Cars {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private CarsStatus status;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "model_id", referencedColumnName = "id")
     private CarModel model_id;
     public static final String QUERY = " FROM Cars c LEFT JOIN CarParts cp ON c.id = cp.car_id.id LEFT JOIN Employees" +
