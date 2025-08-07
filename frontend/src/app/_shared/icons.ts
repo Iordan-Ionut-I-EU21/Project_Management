@@ -6,6 +6,8 @@ export const ICONS = {
   QUALITY_CHECKS: 'check_circle',
   FEET: 'folder_open',
   PARTS: 'pie_chart',
+  ///PART PRODUCTION
+  PART_PRODUCTION: 'production_quantity_limits',
   ///MACHINE
   MACHINE: 'precision_manufacturing',
   MACHINE_TYPE: 'merge_type',

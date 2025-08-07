@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { InformationLeftRight } from './informatin-left-right';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { InformationLeftRight } from './information-left-right';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, NgClass } from '@angular/common';
@@ -9,11 +9,12 @@ import {
   MatButtonToggleModule,
 } from '@angular/material/button-toggle';
 import { ICONS } from '../../_shared/icons';
-import { error } from 'console';
 import { DialogService } from '../../_service/_dialog/dialog.service';
-import { machine } from 'os';
 import { ViewType } from '../../_dialog/view-type';
 import { isMachine, Machines } from '../../_model/_interface/machine';
+import { InputComponent } from '../input/input.component';
+import { GenInput } from '../input/input';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-information',
@@ -25,6 +26,7 @@ import { isMachine, Machines } from '../../_model/_interface/machine';
     CommonModule,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
+    InputComponent,
   ],
   templateUrl: './information.component.html',
   styleUrl: './information.component.scss',
@@ -32,6 +34,9 @@ import { isMachine, Machines } from '../../_model/_interface/machine';
 export class InformationComponent {
   @Input() information!: InformationLeftRight;
   @Input() data!: Machines;
+  @Input() config!: GenInput;
+  @Input() form!: FormGroup;
+  @Output() selectChange = new EventEmitter<any>();
 
   type!: ViewType;
   title!: string;
@@ -52,6 +57,10 @@ export class InformationComponent {
       this.type = ViewType.MACHINES;
       this.title = 'Status by Machine';
     }
+  }
+
+  onSelectChange(event: any) {
+    this.selectChange.emit(event);
   }
 
   onSelectChart(event: MatButtonToggleChange) {

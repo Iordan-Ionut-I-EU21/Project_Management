@@ -38,6 +38,7 @@
             </mat-button-toggle>
           </mat-button-toggle-group>
         </div>
+        <app-input [config]="config" [formGroup]="form" (selectChange)="onSelectChange($event)"></app-input>
       </div>
     </div>
   </ng-container>

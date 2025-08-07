@@ -41,6 +41,15 @@ import { MachineStatus } from '../../_model/_enum/machine-status';
 import { ViewType } from '../../_dialog/view-type';
 import { CarsStatus } from '../../_model/_enum/cars-status';
 import { PartCategory } from '../../_model/_enum/part-category';
+import { PartProductionService } from '../../_service/_model/part-production.service';
+import { ActivatedRoute } from '@angular/router';
+import { PartProduction } from '../../_model/_interface/part-production';
+import { PartProductionFiltersDTO } from '../../_model/_dto/part_production-filter-dto';
+import { Urls } from '../../_shared/urls';
+import { count, error } from 'console';
+import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
+import { text } from 'stream/consumers';
+import { UserRole } from '../../_model/_enum/user-role';
 
 @Component({
   selector: 'app-generate-table',
@@ -63,6 +72,7 @@ import { PartCategory } from '../../_model/_enum/part-category';
     CarsService,
     MachineService,
     CarsPartsService,
+    PartProductionService,
   ],
   templateUrl: './generate-table.component.html',
   styleUrl: './generate-table.component.scss',
@@ -73,38 +83,60 @@ export class GenerateTableComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  data!: ProcessLog[] | Cars[] | QualityChecks[] | CarsParts[];
+  data!:
+    | ProcessLog[]
+    | Cars[]
+    | QualityChecks[]
+    | CarsParts[]
+    | PartProduction[];
   count!: number;
   card!: Card;
   form!: { [key: string]: FormGroup };
 
-  cards: Card[] = [
-    {
+  cards: { [key: string]: Card } = {
+    [GenerateTableKeys.PROCESS_LOG]: {
       name: GenerateTableKeys.PROCESS_LOG,
       count: 0,
       icon: ICONS.PROCESS,
       color: 'green',
     },
-    { name: GenerateTableKeys.CARS, count: 0, icon: ICONS.CAR, color: 'blue' },
-    {
+    [GenerateTableKeys.CARS]: {
+      name: GenerateTableKeys.CARS,
+      count: 0,
+      icon: ICONS.CAR,
+      color: 'blue',
+    },
+    [GenerateTableKeys.QUALITY_CHECKS]: {
       name: GenerateTableKeys.QUALITY_CHECKS,
       count: 0,
       icon: ICONS.QUALITY_CHECKS,
       color: 'purple',
     },
-    {
+    [GenerateTableKeys.ASSIGNED_PARTS]: {
       name: GenerateTableKeys.ASSIGNED_PARTS,
       count: 0,
       icon: ICONS.PARTS,
       color: 'orange',
     },
-    {
+    [GenerateTableKeys.MACHINE_USED]: {
       name: GenerateTableKeys.MACHINE_USED,
       count: 0,
       icon: ICONS.MACHINE,
       color: 'gray',
     },
-  ];
+    [GenerateTableKeys.PART_PRODUCTION_BY_MACHINE]: {
+      name: GenerateTableKeys.PART_PRODUCTION_BY_MACHINE,
+      count: 0,
+      icon: ICONS.PART_PRODUCTION,
+      color: 'red',
+    },
+    [GenerateTableKeys.MACHINE_PAGE]: {
+      name: GenerateTableKeys.MACHINE_PAGE,
+      count: 0,
+      icon: ICONS.MACHINE,
+      color: 'blue',
+    },
+  };
 
   columnsSettings: {
     [key: string]: TableColumn[];
@@ -140,10 +172,7 @@ export class GenerateTableComponent {
         code: 'p.machine_id.name',
         label: 'Machine',
         type: 'link',
-        link: {
-          url: 'dashboard/machine',
-          code: 'machine_id.name',
-        },
+        link: Urls.MACHINE_NAME,
         config: {
           type: 'text',
           placeholder: 'Machine',
@@ -453,7 +482,8 @@ export class GenerateTableComponent {
         key: 'machine_id.name',
         code: 'pl.machine_id.name',
         label: 'Machine Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.MACHINE_NAME,
         config: {
           type: 'text',
           placeholder: 'Machine Name',
@@ -560,6 +590,147 @@ export class GenerateTableComponent {
         ],
       },
     ],
+    [GenerateTableKeys.PART_PRODUCTION_BY_MACHINE]: [
+      {
+        key: 'part_id.name',
+        code: 'pp.part_id.name',
+        label: 'Part Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Part Name',
+          formControlName: 'part_id_name',
+        },
+      },
+      {
+        key: 'part_id.category',
+        code: 'pp.part_id.category',
+        label: 'Part Category',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Part Category',
+          formControlName: 'part_id_category',
+          options: ['NONE', ...Object.keys(PartCategory)],
+        },
+      },
+      {
+        key: 'produced_date',
+        code: 'pp.produced_date',
+        label: 'Produced Date',
+        pipe: 'date',
+        config: {
+          type: 'date',
+          placeholder: 'Produced Date',
+          formControlName: 'produced_date',
+        },
+      },
+      {
+        key: 'quantity',
+        code: 'pp.quantity',
+        label: 'Quantity',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Quantity',
+          formControlName: 'quantity',
+        },
+      },
+      {
+        key: 'part_id.unit_cost',
+        code: 'pp.part_id.unit_cost',
+        label: 'Unit Cost',
+        type: 'text',
+        config: {
+          type: 'number',
+          placeholder: 'Unit Cost',
+          formControlName: 'part_id_unit_cost',
+        },
+      },
+    ],
+    [GenerateTableKeys.MACHINE_PAGE]: [
+      {
+        key: 'employee_id.user_id.username',
+        code: 'p.employee_id.user_id.username',
+        label: 'Username',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Username',
+          formControlName: 'employee_id_user_id_username',
+        },
+      },
+      {
+        key: 'employee_id.user_id.role',
+        code: 'p.employee_id.user_id.role',
+        label: 'Role',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Role',
+          formControlName: 'employee_id_user_id_role',
+          options: ['NONE', ...Object.keys(UserRole)],
+        },
+      },
+      {
+        key: 'process_id.name',
+        code: 'p.process_id.name',
+        label: 'Process Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Process Name',
+          formControlName: 'process_id_name',
+        },
+      },
+      {
+        key: 'employee_id.department',
+        code: 'p.employee_id.department',
+        label: 'Department',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Department',
+          formControlName: 'employee_id_department',
+        },
+      },
+      {
+        key: 'start_time',
+        code: 'p.start_time',
+        label: 'Start Date',
+        isActive: false,
+        pipe: 'date',
+        config: {
+          type: 'date',
+          placeholder: 'Start Date',
+          formControlName: 'start_time',
+        },
+      },
+      {
+        key: 'end_time',
+        code: 'p.end_time',
+        label: 'End Date',
+        pipe: 'date',
+        isActive: true,
+        config: {
+          type: 'date',
+          placeholder: 'End Date',
+          formControlName: 'end_time',
+        },
+      },
+      {
+        key: 'status',
+        code: 'p.status',
+        label: 'Status',
+        type: 'text',
+        config: {
+          type: 'select',
+          placeholder: 'Status',
+          formControlName: 'status',
+          options: ['NONE', ...Object.keys(ProcessLogStatus)],
+        },
+      },
+    ],
   };
 
   cardSettings: {
@@ -603,6 +774,22 @@ export class GenerateTableComponent {
       },
       changePage: { pageIndex: 0, pageSize: Environment.pageSize },
     },
+    [GenerateTableKeys.PART_PRODUCTION_BY_MACHINE]: {
+      sortPage: {
+        column:
+          this.columnsSettings[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE][0]
+            .key,
+        direction: 'asc',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.MACHINE_PAGE]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.MACHINE_PAGE][0].key,
+        direction: 'asc',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
   };
 
   constructor(
@@ -613,19 +800,32 @@ export class GenerateTableComponent {
     private _carsService: CarsService,
     private _userService: UserService,
     private _carsPartsService: CarsPartsService,
+    private _partProductionService: PartProductionService,
     private _dialogService: DialogService,
+    private route: ActivatedRoute,
     private _fb: FormBuilder
   ) {
     this.onDefaultForms();
     this._userService
-      .countInformationByUserName(this._JwtService.getUserInfo()?.name!)
+      .countInformation(
+        this._JwtService.getUserInfo()?.name!,
+        this.route.snapshot.paramMap.get('key')!
+      )
       .subscribe({
         next: (response: UserInformationDTO) => {
-          this.cards[0].count = response.countProcessLog;
-          this.cards[1].count = response.countCars;
-          this.cards[2].count = response.countQualityChecks;
-          this.cards[3].count = response.countAssignedParts;
-          this.cards[4].count = response.countMachineUsed;
+          this.cards[GenerateTableKeys.PROCESS_LOG].count =
+            response.countProcessLog;
+          this.cards[GenerateTableKeys.CARS].count = response.countCars;
+          this.cards[GenerateTableKeys.QUALITY_CHECKS].count =
+            response.countQualityChecks;
+          this.cards[GenerateTableKeys.ASSIGNED_PARTS].count =
+            response.countAssignedParts;
+          this.cards[GenerateTableKeys.MACHINE_USED].count =
+            response.countMachineUsed;
+          this.cards[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].count =
+            response.countByPartProduction;
+          this.cards[GenerateTableKeys.MACHINE_PAGE].count =
+            response.countByMachine;
         },
         error: (error: Error) => {
           console.error(error);
@@ -634,7 +834,7 @@ export class GenerateTableComponent {
   }
 
   ngOnInit() {
-    this.onCardClick(this.cards[0]);
+    this.onCardClick(this.cards[this.keys[0]]!);
   }
 
   onSortChanged(sort: any) {
@@ -758,6 +958,48 @@ export class GenerateTableComponent {
           });
         break;
       }
+      case GenerateTableKeys.PART_PRODUCTION_BY_MACHINE: {
+        this._partProductionService
+          .excelDataByMachineNameOrIdAndPartProductionFilters(
+            this.route.snapshot.paramMap.get('key')!,
+            columns.join(', '),
+            this.onGiveFilters()! as PartProductionFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Part_Production' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.MACHINE_PAGE: {
+        this._processLogService
+          .postExcelByMachineNameOrIdAndMachineFilters(
+            this.route.snapshot.paramMap.get('key')!,
+            columns.join(', '),
+            this.onGiveFilters()! as MachineFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Machine_' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
       default: {
         break;
       }
@@ -869,7 +1111,41 @@ export class GenerateTableComponent {
           });
         break;
       }
-
+      case GenerateTableKeys.PART_PRODUCTION_BY_MACHINE: {
+        this._partProductionService
+          .postDataByMachineNameOrIdAndPartProductionFilters(
+            this.route.snapshot.paramMap.get('key')!,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as PartProductionFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.MACHINE_PAGE: {
+        this._processLogService
+          .postDataByMachineNameOrIdAndMachineFilters(
+            this.route.snapshot.paramMap.get('key')!,
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters()! as MachineFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+          });
+        break;
+      }
       default: {
         break;
       }
@@ -925,6 +1201,8 @@ export class GenerateTableComponent {
     | QualityChecksFiltersDTO
     | CarsPartsFilterDTO
     | MachineUsedFiltersDTO
+    | PartProductionFiltersDTO
+    | MachineFiltersDTO
     | null {
     if (this.card.name === GenerateTableKeys.PROCESS_LOG) {
       return {
@@ -1089,8 +1367,84 @@ export class GenerateTableComponent {
             : this.form[GenerateTableKeys.MACHINE_USED].value
                 .employee_id_user_id_username,
       };
+    } else if (
+      this.card.name === GenerateTableKeys.PART_PRODUCTION_BY_MACHINE
+    ) {
+      return {
+        part_id_name:
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .part_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                .part_id_name,
+        part_id_category:
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .part_id_category === '' ||
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .part_id_category === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                .part_id_category,
+        produced_date:
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .produced_date === ''
+            ? null
+            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                .produced_date,
+        quantity:
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .quantity === ''
+            ? null
+            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                .quantity,
+        part_id_unit_cost:
+          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+            .part_id_unit_cost === ''
+            ? null
+            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                .part_id_unit_cost,
+      };
+    } else if (this.card.name === GenerateTableKeys.MACHINE_PAGE) {
+      return {
+        employee_id_user_id_username:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value
+            .employee_id_user_id_username === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                .employee_id_user_id_username,
+        employee_id_user_id_role:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value
+            .employee_id_user_id_role === '' ||
+          this.form[GenerateTableKeys.MACHINE_PAGE].value
+            .employee_id_user_id_role === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                .employee_id_user_id_role,
+        process_id_name:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name,
+        employee_id_department:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value
+            .employee_id_department === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                .employee_id_department,
+        start_time:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time,
+        end_time:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time === ''
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time,
+        status:
+          this.form[GenerateTableKeys.MACHINE_PAGE].value.status === '' ||
+          this.form[GenerateTableKeys.MACHINE_PAGE].value.status === 'NONE'
+            ? null
+            : this.form[GenerateTableKeys.MACHINE_PAGE].value.status,
+      };
     }
-
     return null;
   }
 
@@ -1135,11 +1489,27 @@ export class GenerateTableComponent {
         process_id_name: [null],
         employee_id_user_id_username: [null],
       }),
+      [GenerateTableKeys.PART_PRODUCTION_BY_MACHINE]: this._fb.group({
+        part_id_name: [null],
+        part_id_category: ['NONE'],
+        produced_date: [null],
+        quantity: [null],
+        part_id_unit_cost: [null],
+      }),
+      [GenerateTableKeys.MACHINE_PAGE]: this._fb.group({
+        employee_id_user_id_username: [null],
+        employee_id_user_id_role: ['NONE'],
+        process_id_name: [null],
+        employee_id_department: [null],
+        start_time: [null],
+        end_time: [null],
+        status: ['NONE'],
+      }),
     };
   }
 
   visibleCards(): Card[] {
-    return this.cards.filter((card) =>
+    return Object.values(this.cards).filter((card) =>
       this.keys.includes(card.name as GenerateTableKeys)
     );
   }

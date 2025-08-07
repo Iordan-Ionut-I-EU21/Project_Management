@@ -1,7 +1,15 @@
 <mat-card>
-  <app-name-page [page]="page" [type]="type"></app-name-page>
+  <app-name-page
+    [page]="page"
+    [type]="type"
+    (onType)="onType($event)"
+  ></app-name-page>
   <app-information
     [information]="information"
     [data]="machine"
+    [config]="config"
+    [form]="form"
+    (selectChange)="onSelectChange($event)"
   ></app-information>
+  <app-generate-table [keys]="keys" [type]="type"></app-generate-table>
 </mat-card>

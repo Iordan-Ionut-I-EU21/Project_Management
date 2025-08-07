@@ -3,17 +3,16 @@ package com.example.backend.Service;
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.Machines;
 import com.example.backend.Model.Dto.CountViewDTO;
+import com.example.backend.Model.Enum.MachineStatus;
 import com.example.backend.Model.Enum.ProcessLogStatus;
-import com.example.backend.Model.View.CountView;
 import com.example.backend.Repository.MachinesRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class MachinesService {
@@ -34,8 +33,30 @@ public class MachinesService {
         return BackendApplication.generateObjectByStatus(this.machinesRepository.countStatusByMachineId(machineId), ProcessLogStatus.class);
     }
 
-    @Cacheable(cacheNames = CACHEABLE+"findMachinesByKey", key = "#key")
-    public Machines findMachinesByKey(final String key){
-        return this.machinesRepository.findMachinesByKey(key);
+	@Cacheable(cacheNames = CACHEABLE + "findMachinesByNameOrId", key = "#machine_name_or_id")
+	public Machines findMachinesByNameOrId(final String machine_name_or_id) {
+		return this.machinesRepository.findMachinesByNameOrId(machine_name_or_id);
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "countPartProductionByMachineNameOrIdAndUsername", key = "#machine_name_or_id+'_' + #username")
+	public Long countPartProductionByMachineNameOrIdAndUsername(final String machine_name_or_id, final String username) {
+		return this.machinesRepository.countPartProductionByMachineNameOrIdAndUsername(machine_name_or_id, username);
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "countProcessLogByMachineNameOrIdAndUsername", key = "#machine_name_or_id+'_' + #username")
+	public Long countProcessLogByMachineNameOrIdAndUsername(final String machine_name_or_id, final String username) {
+		return this.machinesRepository.countProcessLogByMachineNameOrIdAndUsername(machine_name_or_id, username);
+	}
+
+	public Boolean canAccessPage(final String machine_name_or_id, final String username) {
+		Long countProcessLogByMachineNameOrIdAndUsername = this.countProcessLogByMachineNameOrIdAndUsername(machine_name_or_id, username);
+		Long countPartProductionByMachineNameOrIdAndUsername = this.countPartProductionByMachineNameOrIdAndUsername(machine_name_or_id, username);
+		return countPartProductionByMachineNameOrIdAndUsername == 0 && countProcessLogByMachineNameOrIdAndUsername == 0;
     }
+
+	@Transactional
+	@CacheEvict(cacheNames = CACHEABLE + "findMachinesByNameOrId", key = "#machine_name_or_id")
+	public Integer updateMachineStatus(final String machine_name_or_id, final MachineStatus status) {
+		return this.machinesRepository.updateMachineStatus(machine_name_or_id, status);
+	}
 }

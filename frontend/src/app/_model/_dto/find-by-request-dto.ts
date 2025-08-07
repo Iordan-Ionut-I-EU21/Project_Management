@@ -2,7 +2,9 @@ import { ChangePage } from '../_common/change-page';
 import { SortPage } from '../_common/sort-page';
 import { CarsFiltersDTO } from './cars-filter-dto';
 import { CarsPartsFilterDTO } from './cars-parts-filter-dto';
+import { MachineFiltersDTO } from './machine-filters-dto';
 import { MachineUsedFiltersDTO } from './machine-used-filters-dto';
+import { PartProductionFiltersDTO } from './part_production-filter-dto';
 import { ProcessLogsFilterDTO } from './process-log-filter-dto';
 import { QualityChecksFiltersDTO } from './quality-check-filter-dto';
 
@@ -13,6 +15,8 @@ export interface FindByRequestDTO {
   qualityChecksFiltersDTO?: QualityChecksFiltersDTO;
   carsPartsFiltersDTO?: CarsPartsFilterDTO;
   machineUsedFiltersDTO?: MachineUsedFiltersDTO;
+  partProductionFiltersDTO?: PartProductionFiltersDTO;
+  machineFiltersDTO?: MachineFiltersDTO,
 }
 
 export interface TableRequest {

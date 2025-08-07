@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CountViewDTO } from '../../_model/_dto/count-view-dto';
 import { Machines } from '../../_model/_interface/machine';
+import { MachineStatus } from '../../_model/_enum/machine-status';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,29 @@ export class MachineService {
     );
   }
 
-  findMachinesByKey(key: string): Observable<Machines> {
-    return this._http.get<Machines>(`${this.authUrl}/find/by-key?key=${key}`);
+  findMachinesByNameOrId(machine_name_or_id: string): Observable<Machines> {
+    return this._http.get<Machines>(
+      `${this.authUrl}/find/by?machine_name_or_id=${machine_name_or_id}`
+    );
+  }
+
+  canAccessPage(
+    machine_name_or_id: string,
+    username: string
+  ): Observable<Boolean> {
+    const params = new HttpParams()
+      .append('machine_name_or_id', machine_name_or_id)
+      .append('username', username);
+    return this._http.get<Boolean>(`${this.authUrl}/can-access?${params}`);
+  }
+
+  updateMachineStatus(
+    machine_name_or_id: string,
+    status: MachineStatus
+  ): Observable<number> {
+    return this._http.put<number>(
+      `${this.authUrl}/put/status?machine_name_or_id=${machine_name_or_id}&status=${status}`,
+      null
+    );
   }
 }

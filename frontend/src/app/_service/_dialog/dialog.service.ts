@@ -11,6 +11,9 @@ import { ViewPolarComponent } from '../../_dialog/view-polar/view-polar.componen
 import { ViewType } from '../../_dialog/view-type';
 import { Machines } from '../../_model/_interface/machine';
 import { ViewData } from '../../_dialog/view-data';
+import { MachineStatus } from '../../_model/_enum/machine-status';
+import { validateType } from '../../_dialog/validate-change/validate-type';
+import { VALIDATE_STATUS } from '../../_dialog/validate-change/validate-status';
 
 @Injectable({
   providedIn: 'root',
@@ -56,9 +59,19 @@ export class DialogService {
     return dialogRef.afterClosed();
   }
 
-  openDialogValidateChange(message: string): Observable<any> {
+  openDialogValidateChange(
+    key: string,
+    type: validateType,
+    newStatus: VALIDATE_STATUS,
+    oldStatus: VALIDATE_STATUS
+  ): Observable<any> {
     const dialogRef = this.dialog.open(ValidateChangeComponent, {
-      data: { message: message },
+      data: {
+        key: key,
+        type: type,
+        newStatus: newStatus,
+        oldStatus: oldStatus,
+      },
       restoreFocus: false,
     });
     return dialogRef.afterClosed();

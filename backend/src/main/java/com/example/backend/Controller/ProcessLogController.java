@@ -79,4 +79,37 @@ public class ProcessLogController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+
+	@PostMapping("/find/by-machine")
+	public ResponseEntity<GroupedResult> postDataByMachineNameOrIdAndMachineFilters(@RequestParam("machine_name_or_id") final String machine_name_or_id, @RequestBody FindByRequestDTO request) {
+		try {
+			log.info("postDataByMachineNameOrIdAndMachineFilters() - Successful.....");
+			return ResponseEntity.ok(new GroupedResult(this.processLogService.findByMachineNameOrIdAndMachineFilters(machine_name_or_id, request.getTableRequest(), request.getMachineFiltersDTO()), this.processLogService.countByMachineNameOrIdAndMachineFilters(machine_name_or_id, request.getMachineFiltersDTO())));
+		} catch (Exception e) {
+			log.error("Error in postDataByMachineNameOrIdAndMachineFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PostMapping("/count/by-machine")
+	public ResponseEntity<Long> countByMachineNameOrIdAndMachineFilters(@RequestParam("machine_name_or_id") final String machine_name_or_id, @RequestBody FindByRequestDTO request) {
+		try {
+			log.info("countByMachineNameOrMachineIdAndMachineFilters() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.countByMachineNameOrIdAndMachineFilters(machine_name_or_id, request.getMachineFiltersDTO()));
+		} catch (Exception e) {
+			log.error("Error in countByMachineNameOrIdAndMachineFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PostMapping("/excel/find/by-machine")
+	public ResponseEntity<List<Object[]>> postExcelByMachineNameOrIdAndMachineFilters(@RequestParam("machine_name_or_id") final String machine_name_or_id, @RequestParam("columns") final String columns, @RequestBody FindByRequestDTO request) {
+		try {
+			log.info("postExcelByMachineNameOrIdAndMachineFilters() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.postExcelByMachineNameOrIdAndMachineFilters(machine_name_or_id, columns, request.getMachineFiltersDTO()));
+		} catch (Exception e) {
+			log.error("Error in postExcelByMachineNameOrIdAndMachineFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 }

@@ -4,4 +4,8 @@ export enum GenerateTableKeys {
   QUALITY_CHECKS = 'Quality Checks',
   ASSIGNED_PARTS = 'Assigned Parts',
   MACHINE_USED = 'Machine Used',
+  PART_PRODUCTION_BY_MACHINE = 'Part Production by Machine',
+
+  //PAGE
+  MACHINE_PAGE = 'Users Used',
 }

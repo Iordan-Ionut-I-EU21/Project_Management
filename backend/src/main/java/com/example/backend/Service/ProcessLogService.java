@@ -2,6 +2,7 @@ package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
 import com.example.backend.Model.Class.ProcessLog;
+import com.example.backend.Model.Dto.MachineFiltersDTO;
 import com.example.backend.Model.Dto.MachineUsedFiltersDTO;
 import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
 import com.example.backend.Repository.ProcessLogRepository;
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -83,5 +85,34 @@ public class ProcessLogService {
         query.setParameter("process_id_name", machineUsedFiltersDTO.getProcess_id_name());
         query.setParameter("employee_id_user_id_username", machineUsedFiltersDTO.getEmployee_id_user_id_username());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "findByMachineNameOrIdAndMachineFilters", key = "#machine_name_or_id +'_'+ @tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest) + @machineCacheKeyHelper.buildMachineKey(#machineFiltersDTO)")
+    public List<ProcessLog> findByMachineNameOrIdAndMachineFilters(final String machine_name_or_id, final TableRequest tableRequest, final MachineFiltersDTO machineFiltersDTO) {
+        PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
+        return this.processLogRepository.findByMachineNameOrIdAndMachineFilters(machine_name_or_id, pageRequest,
+				machineFiltersDTO.getEmployee_id_user_id_username(), machineFiltersDTO.getEmployee_id_user_id_role(), machineFiltersDTO.getProcess_id_name(),
+				machineFiltersDTO.getEmployee_id_department(), machineFiltersDTO.getStart_time(), machineFiltersDTO.getEnd_time(), machineFiltersDTO.getStatus());
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "countByMachineNameOrIdAndMachineFilters", key = "#machine_name_or_id + @machineCacheKeyHelper.buildMachineKey(#machineFiltersDTO)")
+    public Long countByMachineNameOrIdAndMachineFilters(final String machine_name_or_id, final MachineFiltersDTO machineFiltersDTO) {
+        return this.processLogRepository.countByMachineNameOrIdAndMachineFilters(machine_name_or_id,	machineFiltersDTO.getEmployee_id_user_id_username(), machineFiltersDTO.getEmployee_id_user_id_role(), machineFiltersDTO.getProcess_id_name(),
+				machineFiltersDTO.getEmployee_id_department(), machineFiltersDTO.getStart_time(), machineFiltersDTO.getEnd_time(), machineFiltersDTO.getStatus());
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "postExcelByMachineNameOrIdAndMachineFilters", key = "#machine_name_or_id + '_' + #columns + @machineCacheKeyHelper.buildMachineKey(#machineFiltersDTO)")
+    public List<Object[]> postExcelByMachineNameOrIdAndMachineFilters(final String machine_name_or_id, final String columns, final MachineFiltersDTO machineFiltersDTO) {
+        TypedQuery<Object[]> query = this.entityManager.createQuery("SELECT " + columns + ProcessLog.QUERY_MACHINE + MachineFiltersDTO.QUERY, Object[].class);
+        query.setParameter("machine_name_or_id", machine_name_or_id);
+		query.setParameter("employee_id_user_id_username", machineFiltersDTO.getEmployee_id_user_id_username());
+		query.setParameter("employee_id_user_id_role", machineFiltersDTO.getEmployee_id_user_id_role());
+		query.setParameter("process_id_name", machineFiltersDTO.getProcess_id_name());
+		query.setParameter("employee_id_department", machineFiltersDTO.getEmployee_id_department());
+		query.setParameter("start_time", machineFiltersDTO.getStart_time());
+		query.setParameter("end_time", machineFiltersDTO.getEnd_time());
+		query.setParameter("status", machineFiltersDTO.getStatus());
+
+		return query.getResultList();
     }
 }

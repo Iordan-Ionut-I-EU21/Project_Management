@@ -9,6 +9,7 @@ import { GenInput } from './input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-input',
   standalone: true,

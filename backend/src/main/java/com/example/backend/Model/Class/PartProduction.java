@@ -26,4 +26,6 @@ public class PartProduction {
     @ManyToOne
     @JoinColumn(name = "part_id",referencedColumnName = "id")
     private Parts part_id;
+    public static final String QUERY = " FROM PartProduction pp WHERE (LOWER(pp.machine_id.name) = " +
+            "LOWER(:machine_name_or_id) OR LOWER(pp.machine_id.id) = LOWER(:machine_name_or_id)) ";
 }

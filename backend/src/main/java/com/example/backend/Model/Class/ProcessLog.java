@@ -39,4 +39,5 @@ public class ProcessLog {
     public static final String QUERY_PROCESS_LOG_FILTERS = " FROM ProcessLog p LEFT JOIN User u ON u.employees_id.id = p.employee_id.id WHERE ";
     public static final String QUERY_MACHINE_USED_FILTERS = " FROM ProcessLog pl LEFT JOIN Employees e ON pl" +
             ".employee_id.id = e.id LEFT JOIN User u ON e.id = u.employees_id.id WHERE pl.machine_id.id IN ( SELECT " + "DISTINCT pl_sub.machine_id.id FROM ProcessLog pl_sub LEFT JOIN Employees e_sub ON pl_sub.employee_id.id " + "= e_sub.id " + "LEFT JOIN User u_sub ON " + "e_sub.id = u_sub.employees_id.id WHERE u_sub.username = " + ":username) AND u.username != :username";
+    public static final String QUERY_MACHINE = " FROM ProcessLog p WHERE (LOWER(p.machine_id.name) = LOWER(:machine_name_or_id) OR LOWER(p.machine_id.id) = LOWER(:machine_name_or_id)) ";
 }

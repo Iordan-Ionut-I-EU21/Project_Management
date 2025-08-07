@@ -1,8 +1,10 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.Machines;
+import com.example.backend.Model.Enum.MachineStatus;
 import com.example.backend.Model.View.CountView;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,6 +23,16 @@ public interface MachinesRepository extends JpaRepository<Machines, String> {
             """)
     List<CountView> countStatusByMachineId(@Param("machineId") String machineId);
 
-    @Query("SELECT m FROM Machines m WHERE m.id = :key OR m.name = :key")
-    Machines findMachinesByKey(@Param("key") final String key);
+    @Query("SELECT m FROM Machines m WHERE m.id = :machine_name_or_id OR m.name = :machine_name_or_id")
+    Machines findMachinesByNameOrId(@Param("machine_name_or_id") final String key);
+
+    @Query("SELECT count(pp.id) FROM PartProduction pp LEFT JOIN CarParts cp ON cp.part_id.id = pp.part_id.id WHERE " + "(LOWER(pp" + ".machine_id.name) = LOWER(:machine_name_or_id) OR LOWER(pp.machine_id.id) = LOWER" + "(:machine_name_or_id)) AND cp.installed_by.user_id.username = :username")
+    Long countPartProductionByMachineNameOrIdAndUsername(@Param("machine_name_or_id") final String machine_name_or_id, @Param("username") final String username);
+
+    @Query("SELECT count(pl.id) FROM ProcessLog pl WHERE LOWER(pl.machine_id.name) = LOWER(:machine_name_or_id) OR " + "LOWER" + "(pl.machine_id.id) = LOWER(:machine_name_or_id) AND pl.employee_id.user_id.username = :username")
+    Long countProcessLogByMachineNameOrIdAndUsername(@Param("machine_name_or_id") final String machine_name_or_id, @Param("username") final String username);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Machines m SET m.status = :status WHERE LOWER(m.name) = LOWER(:machine_name_or_id) OR LOWER(m.id) = LOWER(:machine_name_or_id)")
+    Integer updateMachineStatus(@Param("machine_name_or_id") String machine_name_or_id, @Param("status") MachineStatus status);
 }

@@ -12,6 +12,8 @@ import {
   TableRequest,
 } from '../../_model/_dto/find-by-request-dto';
 import { MachineUsedFiltersDTO } from '../../_model/_dto/machine-used-filters-dto';
+import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
+import { Table } from 'exceljs';
 
 @Injectable({
   providedIn: 'root',
@@ -95,6 +97,36 @@ export class ProcessLogService {
     return this._http.post<any[]>(
       `${this.authUrl}/excel/find/by-machine-used?${params.toString()}`,
       requestBody
+    );
+  }
+
+  postDataByMachineNameOrIdAndMachineFilters(
+    machine_name_or_id: string,
+    changePage: ChangePage,
+    sortPage: SortPage,
+    machineFiltersDTO: MachineFiltersDTO
+  ): Observable<GroupResult<ProcessLog>> {
+    const body: FindByRequestDTO = {
+      tableRequest: {
+        changePage: changePage,
+        sortPage: sortPage,
+      } as TableRequest,
+      machineFiltersDTO: machineFiltersDTO,
+    };
+    return this._http.post<GroupResult<ProcessLog>>(
+      `${this.authUrl}/find/by-machine?machine_name_or_id=${machine_name_or_id}`,
+      body
+    );
+  }
+
+  postExcelByMachineNameOrIdAndMachineFilters(
+    machine_name_or_id: string,
+    columns: string,
+    machineFiltersDTO: MachineFiltersDTO
+  ): Observable<any[]> {
+    return this._http.post<any[]>(
+      `${this.authUrl}/excel/find/by-machine?machine_name_or_id=${machine_name_or_id}&columns=${columns}`,
+      { machineFiltersDTO: machineFiltersDTO } as FindByRequestDTO
     );
   }
 }

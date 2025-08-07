@@ -17,4 +17,6 @@ public class FindByRequestDTO {
 	private QualityChecksFiltersDTO qualityChecksFiltersDTO;
 	private CarsPartsFiltersDTO carsPartsFiltersDTO;
 	private MachineUsedFiltersDTO machineUsedFiltersDTO;
+	private PartProductionFiltersDTO partProductionFiltersDTO;
+	private MachineFiltersDTO machineFiltersDTO;
 }

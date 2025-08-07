@@ -1,6 +1,5 @@
 package com.example.backend.Controller;
 
-import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Dto.UserInformationDTO;
 import com.example.backend.Service.UserService;
 import lombok.extern.jbosslog.JBossLog;
@@ -8,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -20,12 +17,12 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/information")
-    public ResponseEntity<UserInformationDTO> countInformationByUserName(@RequestParam("name") final String name) {
+    public ResponseEntity<UserInformationDTO> countInformation(@RequestParam("name") final String name, @RequestParam("machine_name_or_id") final String machine_name_or_id) {
         try {
-            log.info("countInformationByUserName() - Successful.....");
-            return ResponseEntity.ok(this.userService.countInformationByUserName(name));
+            log.info("countInformation() - Successful.....");
+            return ResponseEntity.ok(this.userService.countInformation(name, machine_name_or_id));
         } catch (Exception e) {
-            log.error("Error in countInformationByUserName: {}", e.getMessage(), e);
+            log.error("Error in countInformationByUserNameORMachineNameOrMachineId: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

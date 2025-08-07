@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from '../../_model/_interface/user';
 import { Observable } from 'rxjs';
 import { UserInformationDTO } from '../../_model/_dto/user-information-dto';
@@ -13,9 +13,15 @@ export class UserService {
 
   constructor(private _http: HttpClient) {}
 
-  countInformationByUserName(name: string): Observable<UserInformationDTO> {
+  countInformation(
+    name: string,
+    machine_name_or_id: string
+  ): Observable<UserInformationDTO> {
+    const params = new HttpParams()
+      .append('name', name)
+      .append('machine_name_or_id', machine_name_or_id);
     return this._http.get<UserInformationDTO>(
-      `${this.authUrl}/information?name=${name}`
+      `${this.authUrl}/information?${params}`
     );
   }
 }

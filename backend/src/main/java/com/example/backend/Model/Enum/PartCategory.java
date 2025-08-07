@@ -14,5 +14,4 @@ public enum PartCategory {
     FUEL_SYSTEM,
     COOLING,
     STEERING,
-
 }

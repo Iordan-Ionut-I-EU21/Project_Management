@@ -15,4 +15,6 @@ public class UserInformationDTO {
     private Long countQualityChecks;
     private Long countAssignedParts;
     private Long countMachineUsed;
+    private Long countByPartProduction;
+    private Long countByMachine;
 }

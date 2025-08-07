@@ -4,6 +4,7 @@ import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Dto.*;
 import com.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private static final String CACHEABLE = "User";
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -23,6 +25,8 @@ public class UserService {
     private QualityChecksService qualityChecksService;
     @Autowired
     private CarsPartsService carsPartsService;
+    @Autowired
+    private PartProductionService partProductionService;
 
     public void saveAll(List<User> users){
         this.userRepository.saveAll(users);
@@ -42,11 +46,15 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    public UserInformationDTO countInformationByUserName(final String name) {
+    @Cacheable(cacheNames = CACHEABLE + "countInformation", key = "#name + '_' + #machine_name_or_id")
+    public UserInformationDTO countInformation(final String name, final String machine_name_or_id) {
         return new UserInformationDTO(this.processLogService.countByUserNameAndProcessLogFilters(name, new ProcessLogsFilterDTO()),
                 this.carsService.countByUsernameAndCarsFilters(name, new CarsFiltersDTO()),
                 this.qualityChecksService.countByUserName(name, new QualityChecksFiltersDTO()),
                 this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()),
-                this.processLogService.countByUsernameAndMachineUsedFilters(name, new MachineUsedFiltersDTO()));
+                this.processLogService.countByUsernameAndMachineUsedFilters(name, new MachineUsedFiltersDTO()),
+                this.partProductionService.countByMachineNameOrIdAndPartProductionFilter(machine_name_or_id, new PartProductionFiltersDTO()),
+                this.processLogService.countByMachineNameOrIdAndMachineFilters(machine_name_or_id, new MachineFiltersDTO())
+        );
     }
 }
