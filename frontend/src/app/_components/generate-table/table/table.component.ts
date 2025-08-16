@@ -22,9 +22,8 @@ import { Environment } from '../../../../environments/environment';
 import { Router, RouterModule } from '@angular/router';
 import { IsNearEndDatePipe } from '../../../_model/_pipe/isNearEndDate.pipe';
 import { InputComponent } from '../../input/input.component';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { GenInput } from '../../input/input';
-import { eventNames } from 'process';
+import { FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'app-table',

@@ -10,7 +10,11 @@ export class RolesLogicallyService {
 
   onCanMakeChange() {}
 
-  onIsAdmin(): boolean {
+  onIsWorker(): boolean {
+    return this._jtw.getUserInfo()?.role! === UserRole.WORKER;
+  }
+
+  onIsAdminOrManager(): boolean {
     return (
       this._jtw.getUserInfo()?.role! === UserRole.ADMIN ||
       this._jtw.getUserInfo()?.role! === UserRole.MANAGER

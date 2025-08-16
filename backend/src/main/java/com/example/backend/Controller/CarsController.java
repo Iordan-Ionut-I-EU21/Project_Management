@@ -1,8 +1,10 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.Cars;
 import com.example.backend.Model.Dto.CarsFiltersDTO;
 import com.example.backend.Model.Dto.CountViewDTO;
 import com.example.backend.Model.Dto.FindByRequestDTO;
+import com.example.backend.Model.Enum.CarsStatus;
 import com.example.backend.Service.CarsService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
@@ -66,6 +68,39 @@ public class CarsController {
             return ResponseEntity.ok(this.carsService.countStatusByCarModelId(carModelId));
         } catch (Exception e) {
             log.error("Error in countStatusByCarModelId: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/find/by")
+    public ResponseEntity<Cars> findCarsByVinOrId(@RequestParam("car_vin_or_id") final String car_vin_or_id) {
+        try {
+            log.info("findCarsByVinOrId() - Successful.....");
+            return ResponseEntity.ok(this.carsService.findCarsByVinOrId(car_vin_or_id));
+        } catch (Exception e) {
+            log.error("Error in findCarsByVinOrId: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/put/status")
+    public ResponseEntity<Integer> updateCarsStatus(@RequestParam("car_vin_or_id") final String car_vin_or_id, @RequestParam("status") final CarsStatus status) {
+        try {
+            log.info("updateCarsStatus() - Successful.....");
+            return ResponseEntity.ok(this.carsService.updateCarsStatus(car_vin_or_id, status));
+        } catch (Exception e) {
+            log.error("Error in updateCarsStatus: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/can-access")
+    public ResponseEntity<Boolean> canAccessPage(@RequestParam("car_vin_or_id") final String car_vin_or_id, @RequestParam("username") final String username) {
+        try {
+            log.info("canAccessPage() - Successful.....");
+            return ResponseEntity.ok(this.carsService.canAccessPage(car_vin_or_id, username));
+        } catch (Exception e) {
+            log.error("Error in canAccessPage: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

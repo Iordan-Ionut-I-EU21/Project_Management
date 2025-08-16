@@ -1,22 +1,25 @@
 package com.example.backend.Service;
 
 import com.example.backend.BackendApplication;
+import com.example.backend.Model.Class.Cars;
 import com.example.backend.Model.Class.ProcessLog;
 import com.example.backend.Model.Dto.MachineFiltersDTO;
 import com.example.backend.Model.Dto.MachineUsedFiltersDTO;
 import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
+import com.example.backend.Model.Enum.ProcessLogStatus;
 import com.example.backend.Repository.ProcessLogRepository;
 import com.example.backend.Utility.TableRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -114,5 +117,21 @@ public class ProcessLogService {
 		query.setParameter("status", machineFiltersDTO.getStatus());
 
 		return query.getResultList();
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "findProcessByNameOrId", key = "#process_name_or_id")
+    public ProcessLog findProcessByNameOrId(final String process_name_or_id) {
+        return this.processLogRepository.findProcessByNameOrId(process_name_or_id);
+    }
+
+    @Transactional
+    @CacheEvict(cacheNames = CACHEABLE + "findProcessByNameOrId", key = "#process_name_or_id  ")
+    public Integer updateProcessLogStatus(final String process_name_or_id, final ProcessLogStatus status) {
+        return this.processLogRepository.updateProcessLogStatus(process_name_or_id, status);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE+"canAccessPage" , key = "#process_name_or_id +'_' + #username")
+    public Boolean canAccessPage(final String process_name_or_id, final String username){
+        return this.processLogRepository.canAccessPage(process_name_or_id, username) == 0;
     }
 }

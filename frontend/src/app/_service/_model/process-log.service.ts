@@ -13,7 +13,7 @@ import {
 } from '../../_model/_dto/find-by-request-dto';
 import { MachineUsedFiltersDTO } from '../../_model/_dto/machine-used-filters-dto';
 import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
-import { Table } from 'exceljs';
+import { ProcessLogStatus } from '../../_model/_enum/process-log-status';
 
 @Injectable({
   providedIn: 'root',
@@ -127,6 +127,31 @@ export class ProcessLogService {
     return this._http.post<any[]>(
       `${this.authUrl}/excel/find/by-machine?machine_name_or_id=${machine_name_or_id}&columns=${columns}`,
       { machineFiltersDTO: machineFiltersDTO } as FindByRequestDTO
+    );
+  }
+
+  findProcessByNameOrId(process_name_or_id: string): Observable<ProcessLog> {
+    return this._http.get<ProcessLog>(
+      `${this.authUrl}/find/by?process_name_or_id=${process_name_or_id}`
+    );
+  }
+
+  updateProcessLogStatus(
+    process_name_or_id: string,
+    status: ProcessLogStatus
+  ): Observable<number> {
+    return this._http.put<number>(
+      `${this.authUrl}/put/status?process_name_or_id=${process_name_or_id}&status=${status}`,
+      null
+    );
+  }
+
+  canAccessPage(
+    process_name_or_id: string,
+    username: string
+  ): Observable<boolean> {
+    return this._http.get<boolean>(
+      `${this.authUrl}/can-access?process_name_or_id=${process_name_or_id}&username=${username}`
     );
   }
 }

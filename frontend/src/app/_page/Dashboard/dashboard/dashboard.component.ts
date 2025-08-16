@@ -35,7 +35,10 @@ export class DashboardComponent {
     icon: ICONS.FEET,
   };
 
-  keys: GenerateTableKeys[] = [GenerateTableKeys.PROCESS_LOG];
+  keys: GenerateTableKeys[] = [
+    // GenerateTableKeys.PROCESS_LOG
+    ...Object.values(GenerateTableKeys),
+  ];
 
   constructor() {}
 

@@ -1,7 +1,10 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.ProcessLog;
 import com.example.backend.Model.Dto.FindByRequestDTO;
 import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
+import com.example.backend.Model.Enum.MachineStatus;
+import com.example.backend.Model.Enum.ProcessLogStatus;
 import com.example.backend.Service.ProcessLogService;
 import com.example.backend.Utility.GroupedResult;
 import com.example.backend.Utility.TableRequest;
@@ -109,6 +112,39 @@ public class ProcessLogController {
 			return ResponseEntity.ok(this.processLogService.postExcelByMachineNameOrIdAndMachineFilters(machine_name_or_id, columns, request.getMachineFiltersDTO()));
 		} catch (Exception e) {
 			log.error("Error in postExcelByMachineNameOrIdAndMachineFilters: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@GetMapping("/find/by")
+	public ResponseEntity<ProcessLog> findProcessByNameOrId(@RequestParam("process_name_or_id") final String process_name_or_id){
+		try {
+			log.info("findProcessByNameOrId() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.findProcessByNameOrId(process_name_or_id));
+		} catch (Exception e) {
+			log.error("Error in findProcessByNameOrId: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PutMapping("/put/status")
+	public ResponseEntity<Integer> updateProcessLogStatus(@RequestParam("process_name_or_id") final String process_name_or_id, @RequestParam("status") final ProcessLogStatus status){
+		try {
+			log.info("updateProcessLogStatus() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.updateProcessLogStatus(process_name_or_id, status));
+		} catch (Exception e) {
+			log.error("Error in updateProcessLogStatus: {}", e.getMessage(), e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@GetMapping("/can-access")
+	public ResponseEntity<Boolean> canAccessPage(@RequestParam("process_name_or_id") final String process_name_or_id, @RequestParam("username") final String username) {
+		try {
+			log.info("canAccessPage() - Successful.....");
+			return ResponseEntity.ok(this.processLogService.canAccessPage(process_name_or_id, username));
+		} catch (Exception e) {
+			log.error("Error in canAccessPage: {}", e.getMessage(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}

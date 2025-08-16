@@ -10,7 +10,9 @@ import com.example.backend.Utility.TableRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -72,5 +74,24 @@ public class CarsService {
     @Cacheable(cacheNames = CACHEABLE + "countStatusByCarModelId", key = "#carModelId")
     public List<CountViewDTO> countStatusByCarModelId(final String carModelId) {
         return BackendApplication.generateObjectByStatus(this.carsRepository.countStatusByCarModelId(carModelId), CarsStatus.class);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "findCarsByVinOrId", key = "#car_vin_or_id")
+    public Cars findCarsByVinOrId(final String car_vin_or_id) {
+        return this.carsRepository.findCarsByVinOrId(car_vin_or_id);
+    }
+
+    @Transactional
+    @CacheEvict(cacheNames = CACHEABLE + "findCarsByVinOrId", key = "#car_vin_or_id +'_' + #status")
+    public Integer updateCarsStatus(final String car_vin_or_id, final CarsStatus status) {
+        return this.carsRepository.updateCarsStatus(car_vin_or_id, status);
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "canAccessPage", key = "#car_vin_or_id +'_'+#username")
+    public Boolean canAccessPage(final String car_vin_or_id, final String username) {
+        Integer c1 = this.carsRepository.canAccessPageProcessLog(car_vin_or_id, username);
+        Integer c2 = this.carsRepository.canAccessPageCarParts(car_vin_or_id, username);
+        Integer c3 = this.carsRepository.canAccessPageQualityChecks(car_vin_or_id, username);
+        return c1 == 0 && c2 == 0 && c3 == 0;
     }
 }

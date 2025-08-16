@@ -14,47 +14,50 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private static final String CACHEABLE = "User";
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProcessLogService processLogService;
-    @Autowired
-    private CarsService carsService;
-    @Autowired
-    private QualityChecksService qualityChecksService;
-    @Autowired
-    private CarsPartsService carsPartsService;
-    @Autowired
-    private PartProductionService partProductionService;
+	private static final String CACHEABLE = "User";
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private ProcessLogService processLogService;
+	@Autowired
+	private CarsService carsService;
+	@Autowired
+	private QualityChecksService qualityChecksService;
+	@Autowired
+	private CarsPartsService carsPartsService;
+	@Autowired
+	private PartProductionService partProductionService;
 
-    public void saveAll(List<User> users){
-        this.userRepository.saveAll(users);
-    }
+	public void saveAll(List<User> users) {
+		this.userRepository.saveAll(users);
+	}
 
-    public List<User> finaAll(){
-        return this.userRepository.findAll();
-    }
+	public List<User> finaAll() {
+		return this.userRepository.findAll();
+	}
 
-    public Optional<User> findByEmail(final String email){
-        return this.userRepository.findByEmail(email);
-    }
+	public Optional<User> findByEmail(final String email) {
+		return this.userRepository.findByEmail(email);
+	}
 
-    public Set<String> getAllEmails() {
-        return userRepository.findAll().stream()
-                .map(User::getEmail)
-                .collect(Collectors.toSet());
-    }
+	public Set<String> getAllEmails() {
+		return userRepository.findAll().stream().map(User::getEmail).collect(Collectors.toSet());
+	}
 
-    @Cacheable(cacheNames = CACHEABLE + "countInformation", key = "#name + '_' + #machine_name_or_id")
-    public UserInformationDTO countInformation(final String name, final String machine_name_or_id) {
-        return new UserInformationDTO(this.processLogService.countByUserNameAndProcessLogFilters(name, new ProcessLogsFilterDTO()),
-                this.carsService.countByUsernameAndCarsFilters(name, new CarsFiltersDTO()),
-                this.qualityChecksService.countByUserName(name, new QualityChecksFiltersDTO()),
-                this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()),
-                this.processLogService.countByUsernameAndMachineUsedFilters(name, new MachineUsedFiltersDTO()),
-                this.partProductionService.countByMachineNameOrIdAndPartProductionFilter(machine_name_or_id, new PartProductionFiltersDTO()),
-                this.processLogService.countByMachineNameOrIdAndMachineFilters(machine_name_or_id, new MachineFiltersDTO())
-        );
-    }
+	@Cacheable(cacheNames = CACHEABLE + "countInformation", key = "#name + '_' + #machine_name_or_id")
+	public UserInformationDTO countInformation(final String name, final String machine_name_or_id) {
+		return new UserInformationDTO(this.processLogService.countByUserNameAndProcessLogFilters(name, new ProcessLogsFilterDTO()), this.carsService.countByUsernameAndCarsFilters(name, new CarsFiltersDTO()), this.qualityChecksService.countByUserName(name, new QualityChecksFiltersDTO()), this.carsPartsService.countByUserNameAndCarsPartsFilters(name, new CarsPartsFiltersDTO()), this.processLogService.countByUsernameAndMachineUsedFilters(name, new MachineUsedFiltersDTO()), this.partProductionService.countByMachineNameOrIdAndPartProductionFilter(machine_name_or_id, new PartProductionFiltersDTO()), this.processLogService.countByMachineNameOrIdAndMachineFilters(machine_name_or_id, new MachineFiltersDTO()));
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "findUserByUsernameOrId", key = "#user_username_or_id_or_email")
+	public User findUserByUsernameOrId(final String user_username_or_id_or_email) {
+		return this.userRepository.findUserByUsernameOrId(user_username_or_id_or_email);
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "canAccessPage", key = "#user_username_or_id_or_email")
+	public Boolean canAccessPage(final String user_username_or_id_or_email) {
+		return this.userRepository.canAccessQualityCheck(user_username_or_id_or_email) == 0 &&
+				this.userRepository.canAccessProcessLog(user_username_or_id_or_email) == 0 &&
+				this.userRepository.canAccessCarParts(user_username_or_id_or_email) == 0;
+	}
 }

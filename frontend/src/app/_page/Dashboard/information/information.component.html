@@ -4,12 +4,16 @@
     [type]="type"
     (onType)="onType($event)"
   ></app-name-page>
-  <app-information
+  <app-com-information
     [information]="information"
-    [data]="machine"
+    [data]="data"
     [config]="config"
     [form]="form"
     (selectChange)="onSelectChange($event)"
-  ></app-information>
-  <app-generate-table [keys]="keys" [type]="type"></app-generate-table>
+  ></app-com-information>
+  <app-generate-table
+    *ngIf="keys"
+    [keys]="keys"
+    [type]="type"
+  ></app-generate-table>
 </mat-card>

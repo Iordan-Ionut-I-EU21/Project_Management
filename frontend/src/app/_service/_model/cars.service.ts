@@ -13,6 +13,7 @@ import {
   FindByRequestDTO,
   TableRequest,
 } from '../../_model/_dto/find-by-request-dto';
+import { CarsStatus } from '../../_model/_enum/cars-status';
 
 @Injectable({
   providedIn: 'root',
@@ -81,5 +82,32 @@ export class CarsService {
     return this._http.get<CountViewDTO>(
       `${this.authUrl}/count/dialog/by?carModelId=${carModelId}`
     );
+  }
+
+  findCarsByVinOrId(
+    car_vin_or_id: string
+  ): Observable<Cars> {
+    return this._http.get<Cars>(
+      `${this.authUrl}/find/by?car_vin_or_id=${car_vin_or_id}`
+    );
+  }
+
+  updateCarsStatus(
+    car_vin_or_id: string,
+  status: CarsStatus): Observable<number> {
+    return this._http.put<number>(
+      `${this.authUrl}/put/status?car_vin_or_id=${car_vin_or_id}&status=${status}`,
+      null
+    );
+  }
+
+  canAccessPage(
+    car_vin_or_id: string,
+    username: string
+  ): Observable<Boolean> {
+    const params = new URLSearchParams();
+    params.append('car_vin_or_id', car_vin_or_id);
+    params.append('username', username);
+    return this._http.get<Boolean>(`${this.authUrl}/can-access?${params.toString()}`);
   }
 }

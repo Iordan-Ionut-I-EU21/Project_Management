@@ -48,6 +48,7 @@ public class MachinesService {
 		return this.machinesRepository.countProcessLogByMachineNameOrIdAndUsername(machine_name_or_id, username);
 	}
 
+	@Cacheable(cacheNames =  CACHEABLE + "canAccessPage", key = "#machine_name_or_id + '_' + #username")
 	public Boolean canAccessPage(final String machine_name_or_id, final String username) {
 		Long countProcessLogByMachineNameOrIdAndUsername = this.countProcessLogByMachineNameOrIdAndUsername(machine_name_or_id, username);
 		Long countPartProductionByMachineNameOrIdAndUsername = this.countPartProductionByMachineNameOrIdAndUsername(machine_name_or_id, username);

@@ -1,4 +1,5 @@
 import { UserRole } from '../_enum/user-role';
+import { Employee } from './employee';
 
 export interface User {
   id: string;
@@ -7,4 +8,5 @@ export interface User {
   password: string;
   role: UserRole;
   createdAt: Date;
+  employees_id: Employee;
 }

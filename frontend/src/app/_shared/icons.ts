@@ -6,6 +6,12 @@ export const ICONS = {
   QUALITY_CHECKS: 'check_circle',
   FEET: 'folder_open',
   PARTS: 'pie_chart',
+  DESCRIPTION: 'description',
+  ///CAR
+  CAR_VIN: 'directions_car',
+  CAR_STATUS: 'on_hub_device',
+  CAR_GENERATION: 'qr_code_2_add',
+  CAR_RELEASE_YEAR: 'deployed_code',
   ///PART PRODUCTION
   PART_PRODUCTION: 'production_quantity_limits',
   ///MACHINE
@@ -17,4 +23,8 @@ export const ICONS = {
   PIE: 'data_usage',
   LINE: 'area_chart',
   POLAR: 'circle',
+  //USER
+  EMAIL: 'email',
+  ROLE: 'badge',
+  DEPARTMENT: 'business_center',
 };

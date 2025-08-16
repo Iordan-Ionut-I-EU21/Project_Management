@@ -46,9 +46,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PartProduction } from '../../_model/_interface/part-production';
 import { PartProductionFiltersDTO } from '../../_model/_dto/part_production-filter-dto';
 import { Urls } from '../../_shared/urls';
-import { count, error } from 'console';
 import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
-import { text } from 'stream/consumers';
 import { UserRole } from '../../_model/_enum/user-role';
 
 @Component({
@@ -160,23 +158,24 @@ export class GenerateTableComponent {
         key: 'process_id.name',
         code: 'p.process_id.name',
         label: 'Process',
-        type: 'text',
+        type: 'link',
+        link: Urls.PROCESS_ID,
         config: {
           type: 'text',
           placeholder: 'Process',
-          formControlName: 'process_id',
+          formControlName: 'process_id_name',
         },
       },
       {
         key: 'machine_id.name',
         code: 'p.machine_id.name',
-        label: 'Machine',
+        label: 'Machine Name',
         type: 'link',
         link: Urls.MACHINE_NAME,
         config: {
           type: 'text',
-          placeholder: 'Machine',
-          formControlName: 'machine_id',
+          placeholder: 'Machine Name',
+          formControlName: 'machine_id_name',
         },
       },
       {
@@ -273,7 +272,8 @@ export class GenerateTableComponent {
         key: 'vin',
         code: 'c.vin',
         label: 'VIN',
-        type: 'text',
+        type: 'link',
+        link: Urls.CARS_VIN,
         config: {
           type: 'text',
           placeholder: 'VIN',
@@ -529,7 +529,8 @@ export class GenerateTableComponent {
         key: 'process_id.name',
         code: 'pl.process_id.name',
         label: 'Process Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.PROCESS_ID,
         config: {
           type: 'text',
           placeholder: 'Process Name',
@@ -540,7 +541,8 @@ export class GenerateTableComponent {
         key: 'employee_id.user_id.username',
         code: 'pl.employee_id.user_id.username',
         label: 'User Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.USER_NAME,
         config: {
           type: 'text',
           placeholder: 'User Name',
@@ -653,7 +655,8 @@ export class GenerateTableComponent {
         key: 'employee_id.user_id.username',
         code: 'p.employee_id.user_id.username',
         label: 'Username',
-        type: 'text',
+        type: 'link',
+        link: Urls.USER_NAME,
         config: {
           type: 'text',
           placeholder: 'Username',
@@ -676,7 +679,8 @@ export class GenerateTableComponent {
         key: 'process_id.name',
         code: 'p.process_id.name',
         label: 'Process Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.PROCESS_ID,
         config: {
           type: 'text',
           placeholder: 'Process Name',
@@ -1212,13 +1216,13 @@ export class GenerateTableComponent {
             ? null
             : this.form[GenerateTableKeys.PROCESS_LOG].value.status,
         process_id_name:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.process_id === ''
+          this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name === ''
             ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.process_id,
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name,
         machine_id_name:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id === ''
+          this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name === ''
             ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id,
+            : this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name,
         start_date:
           this.form[GenerateTableKeys.PROCESS_LOG].value.start_time === ''
             ? null
@@ -1452,8 +1456,8 @@ export class GenerateTableComponent {
     this.form = {
       [GenerateTableKeys.PROCESS_LOG]: this._fb.group({
         status: ['NONE'],
-        process_id: [null],
-        machine_id: [null],
+        process_id_name: [null],
+        machine_id_name: [null],
         start_time: [null],
         end_time: [null],
       }),

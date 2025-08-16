@@ -15,9 +15,13 @@ import { isMachine, Machines } from '../../_model/_interface/machine';
 import { InputComponent } from '../input/input.component';
 import { GenInput } from '../input/input';
 import { FormGroup } from '@angular/forms';
+import { isProcessLog, ProcessLog } from '../../_model/_interface/process-log';
+import { Cars, isCars } from '../../_model/_interface/car';
+import { User } from '../../_model/_interface/user';
+import { ViewData } from '../../_dialog/view-data';
 
 @Component({
-  selector: 'app-information',
+  selector: 'app-com-information',
   standalone: true,
   imports: [
     MatCardModule,
@@ -33,7 +37,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class InformationComponent {
   @Input() information!: InformationLeftRight;
-  @Input() data!: Machines;
+  @Input() data!: ViewData;
   @Input() config!: GenInput;
   @Input() form!: FormGroup;
   @Output() selectChange = new EventEmitter<any>();
@@ -57,6 +61,14 @@ export class InformationComponent {
       this.type = ViewType.MACHINES;
       this.title = 'Status by Machine';
     }
+    if (isProcessLog(this.data)) {
+      this.type = ViewType.PROCESS_LOG;
+      this.title = 'Status by Process';
+    }
+    if (isCars(this.data)) {
+      this.type = ViewType.CARS;
+      this.title = 'Status by Cars';
+    }
   }
 
   onSelectChange(event: any) {
@@ -66,27 +78,27 @@ export class InformationComponent {
   onSelectChart(event: MatButtonToggleChange) {
     switch (event.value) {
       case this.chars[0].name: {
-        this._dialogService.openDialogViewChart(
-          this.data,
-          this.type,
-          this.title
-        );
+        this._dialogService
+          .openDialogViewChart(this.data, this.type, this.title)
+          .subscribe((result) => {
+            this.selectChange.emit(null);
+          });
         break;
       }
       case this.chars[1].name: {
-        this._dialogService.openDialogViewLine(
-          this.data,
-          this.type,
-          this.title
-        );
+        this._dialogService
+          .openDialogViewLine(this.data, this.type, this.title)
+          .subscribe((result) => {
+            this.selectChange.emit(null);
+          });
         break;
       }
       case this.chars[2].name: {
-        this._dialogService.openDialogViewPolar(
-          this.data,
-          this.type,
-          this.title
-        );
+        this._dialogService
+          .openDialogViewPolar(this.data, this.type, this.title)
+          .subscribe((result) => {
+            this.selectChange.emit(null);
+          });
         break;
       }
       default: {

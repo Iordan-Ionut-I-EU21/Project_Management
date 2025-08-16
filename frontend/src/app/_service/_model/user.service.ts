@@ -24,4 +24,22 @@ export class UserService {
       `${this.authUrl}/information?${params}`
     );
   }
+
+  findUserByUsernameOrId(
+    user_username_or_id_or_email: string
+  ): Observable<User> {
+    const params = new HttpParams().append(
+      'user_username_or_id_or_email',
+      user_username_or_id_or_email
+    );
+    return this._http.get<User>(`${this.authUrl}/find/by?${params}`);
+  }
+
+  canAccessPage(user_username_or_id_or_email: string): Observable<Boolean> {
+    const params = new HttpParams().append(
+      'user_username_or_id_or_email',
+      user_username_or_id_or_email
+    );
+    return this._http.get<Boolean>(`${this.authUrl}/can-access?${params}`);
+  }
 }

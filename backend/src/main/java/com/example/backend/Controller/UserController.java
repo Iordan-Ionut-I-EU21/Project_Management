@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Dto.UserInformationDTO;
 import com.example.backend.Service.UserService;
 import lombok.extern.jbosslog.JBossLog;
@@ -22,7 +23,29 @@ public class UserController {
             log.info("countInformation() - Successful.....");
             return ResponseEntity.ok(this.userService.countInformation(name, machine_name_or_id));
         } catch (Exception e) {
-            log.error("Error in countInformationByUserNameORMachineNameOrMachineId: {}", e.getMessage(), e);
+            log.error("Error in countInformation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/find/by")
+    public ResponseEntity<User> findUserByUsernameOrId(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email){
+        try {
+            log.info("findUserByUsernameOrId() - Successful.....");
+            return ResponseEntity.ok(this.userService.findUserByUsernameOrId(user_username_or_id_or_email));
+        } catch (Exception e) {
+            log.error("Error in findUserByUsernameOrId: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/can-access")
+    public ResponseEntity<Boolean> canAccessPage(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email){
+        try {
+            log.info("canAccessPage() - Successful.....");
+            return ResponseEntity.ok(this.userService.canAccessPage(user_username_or_id_or_email));
+        } catch (Exception e) {
+            log.error("Error in canAccessPage: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

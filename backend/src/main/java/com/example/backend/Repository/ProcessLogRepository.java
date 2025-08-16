@@ -4,8 +4,11 @@ import com.example.backend.Model.Class.ProcessLog;
 import com.example.backend.Model.Dto.MachineFiltersDTO;
 import com.example.backend.Model.Dto.MachineUsedFiltersDTO;
 import com.example.backend.Model.Dto.ProcessLogsFilterDTO;
+import com.example.backend.Model.Enum.MachineStatus;
+import com.example.backend.Model.Enum.ProcessLogStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -33,4 +36,14 @@ public interface ProcessLogRepository extends JpaRepository<ProcessLog, String> 
 
 	@Query("SELECT count(p)" + ProcessLog.QUERY_MACHINE + MachineFiltersDTO.QUERY)
 	Long countByMachineNameOrIdAndMachineFilters(@Param("machine_name_or_id") final String machine_name_or_id, @Param("employee_id_user_id_username") final String employee_id_user_id_username, @Param("employee_id_user_id_role") final String employee_id_user_id_role, @Param("process_id_name") final String process_id_name, @Param("employee_id_department") final String employee_id_department, @Param("start_time") final LocalDate start_time, @Param("end_time") final LocalDate end_time, @Param("status") final String status);
+
+	@Query("SELECT p FROM ProcessLog p WHERE LOWER(p.id) = :process_name_or_id OR LOWER(p.process_id.name) = :process_name_or_id")
+	ProcessLog findProcessByNameOrId(@Param("process_name_or_id") final String process_name_or_id);
+
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("UPDATE ProcessLog pl SET pl.status = :status WHERE LOWER(pl.process_id) = LOWER(:process_name_or_id) OR LOWER(pl.id) = LOWER(:process_name_or_id)")
+	Integer updateProcessLogStatus(@Param("process_name_or_id") String process_name_or_id, @Param("status") ProcessLogStatus status);
+
+	@Query("SELECT Count(pl.id) FROM ProcessLog pl WHERE (LOWER(pl.id) = LOWER(:process_name_or_id) OR LOWER(pl.process_id.name) = LOWER(:process_name_or_id)) AND pl.employee_id.user_id.username = :username")
+	Long canAccessPage(@Param("process_name_or_id") final String process_name_or_id, @Param("username") final String username);
 }
