@@ -11,6 +11,8 @@ export const Urls = {
   //CARS
   CARS_VIN: { url: 'dashboard/car', code: 'vin' },
   CARS_ID: { url: 'dashboard/car', code: 'id' },
+  CARS_NAME: { url: 'dashboard/car', code: 'model_id.name' },
+  CARS_ID_NAME: { url: 'dashboard/car', code: 'car_id.model_id.name' },
 
   //USER
   USER_ID: { url: 'dashboard/user', code: 'employee_id.user_id.id' },

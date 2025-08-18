@@ -70,4 +70,16 @@ export class QualityChecksService {
       requestBody
     );
   }
+
+  canAccessPage(quality_id: string, username: string): Observable<boolean> {
+    return this._http.get<boolean>(
+      `${this.authUrl}/can-access?quality_id=${quality_id}&username=${username}`
+    );
+  }
+
+  findQualityChecksById(quality_id: string): Observable<QualityChecks> {
+    return this._http.get<QualityChecks>(
+      `${this.authUrl}/find/by?quality_id=${quality_id}`
+    );
+  }
 }

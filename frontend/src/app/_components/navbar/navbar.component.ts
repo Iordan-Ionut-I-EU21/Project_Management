@@ -56,7 +56,7 @@ export class NavbarComponent {
     private _jwtService: JwtService,
     private _router: Router,
     private _dialogService: DialogService,
-    private _roleLogically: RolesLogicallyService
+    public _roleLogically: RolesLogicallyService
   ) {
     this.name = this._jwtService.getUserInfo()?.name!;
   }

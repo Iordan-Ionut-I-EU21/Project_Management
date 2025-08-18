@@ -21,7 +21,7 @@
       </a>
     </li>
 
-    <li class="flex items-center flex-0">
+    <li class="flex items-center flex-0" *ngIf="_roleLogically.onIsAdmin()">
       <button
         mat-button
         class="flex items-center gap-2 text-white hover:text-blue-400 transition"
@@ -32,7 +32,10 @@
       </button>
     </li>
 
-    <li class="flex items-center flex-0">
+    <li
+      class="flex items-center flex-0"
+      *ngIf="_roleLogically.onIsAdminOrManager()"
+    >
       <button
         mat-button
         class="flex items-center gap-2 text-white hover:text-blue-400 transition"

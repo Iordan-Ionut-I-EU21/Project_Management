@@ -73,10 +73,10 @@ public class CarsController {
     }
 
     @GetMapping("/find/by")
-    public ResponseEntity<Cars> findCarsByVinOrId(@RequestParam("car_vin_or_id") final String car_vin_or_id) {
+    public ResponseEntity<Cars> findCarsByVinOrIdOrName(@RequestParam("car_vin_or_id_or_name") final String car_vin_or_id_or_name) {
         try {
             log.info("findCarsByVinOrId() - Successful.....");
-            return ResponseEntity.ok(this.carsService.findCarsByVinOrId(car_vin_or_id));
+            return ResponseEntity.ok(this.carsService.findCarsByVinOrIdOrName(car_vin_or_id_or_name));
         } catch (Exception e) {
             log.error("Error in findCarsByVinOrId: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -95,10 +95,10 @@ public class CarsController {
     }
 
     @GetMapping("/can-access")
-    public ResponseEntity<Boolean> canAccessPage(@RequestParam("car_vin_or_id") final String car_vin_or_id, @RequestParam("username") final String username) {
+    public ResponseEntity<Boolean> canAccessPage(@RequestParam("car_vin_or_id_or_name") final String car_vin_or_id_or_name, @RequestParam("username") final String username) {
         try {
             log.info("canAccessPage() - Successful.....");
-            return ResponseEntity.ok(this.carsService.canAccessPage(car_vin_or_id, username));
+            return ResponseEntity.ok(this.carsService.canAccessPage(car_vin_or_id_or_name, username));
         } catch (Exception e) {
             log.error("Error in canAccessPage: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

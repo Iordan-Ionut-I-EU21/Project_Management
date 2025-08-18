@@ -16,10 +16,13 @@ import { MachineService } from '../../_service/_model/machine.service';
 import { CarsPartsService } from '../../_service/_model/cars-parts.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { ProcessLog } from '../../_model/_interface/process-log';
-import { Cars } from '../../_model/_interface/car';
-import { QualityChecks } from '../../_model/_interface/quality-checks';
-import { CarsParts } from '../../_model/_interface/cars-parts';
+import { isProcessLog, ProcessLog } from '../../_model/_interface/process-log';
+import { Cars, isCars } from '../../_model/_interface/car';
+import {
+  isQualityCheck,
+  QualityChecks,
+} from '../../_model/_interface/quality-checks';
+import { CarsParts, isCarsParts } from '../../_model/_interface/cars-parts';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Card } from '../../_model/_common/card';
 import { ICONS } from '../../_shared/icons';
@@ -42,12 +45,16 @@ import { ViewType } from '../../_dialog/view-type';
 import { CarsStatus } from '../../_model/_enum/cars-status';
 import { PartCategory } from '../../_model/_enum/part-category';
 import { PartProductionService } from '../../_service/_model/part-production.service';
-import { ActivatedRoute } from '@angular/router';
-import { PartProduction } from '../../_model/_interface/part-production';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  isPartProduction,
+  PartProduction,
+} from '../../_model/_interface/part-production';
 import { PartProductionFiltersDTO } from '../../_model/_dto/part_production-filter-dto';
 import { Urls } from '../../_shared/urls';
 import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
 import { UserRole } from '../../_model/_enum/user-role';
+import { isMachine } from '../../_model/_interface/machine';
 
 @Component({
   selector: 'app-generate-table',
@@ -81,12 +88,7 @@ export class GenerateTableComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  data!:
-    | ProcessLog[]
-    | Cars[]
-    | QualityChecks[]
-    | CarsParts[]
-    | PartProduction[];
+  data!: TYPES[];
   count!: number;
   card!: Card;
   form!: { [key: string]: FormGroup };
@@ -250,7 +252,8 @@ export class GenerateTableComponent {
         key: 'model_id.name',
         code: 'c.model_id.name',
         label: 'Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.CARS_NAME,
         config: {
           type: 'text',
           placeholder: 'Name',
@@ -328,7 +331,8 @@ export class GenerateTableComponent {
         key: 'car_id.model_id.name',
         code: 'qc.car_id.model_id.name',
         label: 'Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.CARS_ID_NAME,
         config: {
           type: 'text',
           placeholder: 'Name',
@@ -411,7 +415,8 @@ export class GenerateTableComponent {
         key: 'car_id.model_id.name',
         code: 'cp.car_id.model_id.name',
         label: 'Car Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.CARS_ID_NAME,
         config: {
           type: 'text',
           placeholder: 'Car Name',
@@ -506,7 +511,8 @@ export class GenerateTableComponent {
         key: 'car_id.model_id.name',
         code: 'pl.car_id.model_id.name',
         label: 'Car Name',
-        type: 'text',
+        type: 'link',
+        link: Urls.CARS_NAME,
         config: {
           type: 'text',
           placeholder: 'Car Name',
@@ -807,7 +813,8 @@ export class GenerateTableComponent {
     private _partProductionService: PartProductionService,
     private _dialogService: DialogService,
     private route: ActivatedRoute,
-    private _fb: FormBuilder
+    private _fb: FormBuilder,
+    private _router: Router
   ) {
     this.onDefaultForms();
     this._userService
@@ -1185,17 +1192,57 @@ export class GenerateTableComponent {
     return this.cardSettings[this.card.name].changePage.pageIndex;
   }
 
-  onDblClickRow() {
-    if (this.keys[0] === this.card.name) {
-      console.log(this.card.name);
-    } else if (GenerateTableKeys.PROCESS_LOG === this.card.name) {
-      console.log(this.card.name);
-    } else if (GenerateTableKeys.CARS === this.card.name) {
-      console.log(this.card.name);
-    } else if (GenerateTableKeys.QUALITY_CHECKS === this.card.name) {
-      console.log(this.card.name);
-    } else if (GenerateTableKeys.MACHINE_USED === this.card.name) {
-      console.log(this.card.name);
+  onDblClickRow(event: TYPES) {
+    switch (this.card.name) {
+      case GenerateTableKeys.PROCESS_LOG: {
+        if (isProcessLog(event)) {
+          this._router.navigateByUrl('dashboard/process/' + event.id);
+        }
+        break;
+      }
+      case GenerateTableKeys.CARS: {
+        if (isCars(event)) {
+          this._router.navigateByUrl('dashboard/car/' + event.vin);
+        }
+        break;
+      }
+      case GenerateTableKeys.QUALITY_CHECKS: {
+        if (isQualityCheck(event)) {
+          this._router.navigateByUrl('dashboard/quality/' + event.id);
+        }
+        break;
+      }
+      case GenerateTableKeys.MACHINE_USED: {
+        if (isMachine(event)) {
+          this._router.navigateByUrl('dashboard/machine/' + event.name);
+        }
+        break;
+      }
+      case GenerateTableKeys.ASSIGNED_PARTS: {
+        if (isCarsParts(event)) {
+          this._router.navigateByUrl('dashboard/car/' + event.car_id.vin);
+        }
+        break;
+      }
+      case GenerateTableKeys.PART_PRODUCTION_BY_MACHINE: {
+        if (isPartProduction(event)) {
+          this._router.navigateByUrl(
+            'dashboard/machine/' + event.machine_id.name
+          );
+        }
+        break;
+      }
+      case GenerateTableKeys.MACHINE_PAGE: {
+        if (isProcessLog(event)) {
+          this._router.navigateByUrl(
+            'dashboard/machine/' + event.machine_id.name
+          );
+        }
+        break;
+      }
+      default: {
+        console.error('not found onDblClickRow' + this.card.name);
+      }
     }
   }
 
@@ -1518,3 +1565,5 @@ export class GenerateTableComponent {
     );
   }
 }
+
+type TYPES = ProcessLog | Cars | QualityChecks | CarsParts | PartProduction;

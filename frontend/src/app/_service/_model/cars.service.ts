@@ -84,17 +84,16 @@ export class CarsService {
     );
   }
 
-  findCarsByVinOrId(
-    car_vin_or_id: string
-  ): Observable<Cars> {
+  findCarsByVinOrIdOrName(car_vin_or_id_or_name: string): Observable<Cars> {
     return this._http.get<Cars>(
-      `${this.authUrl}/find/by?car_vin_or_id=${car_vin_or_id}`
+      `${this.authUrl}/find/by?car_vin_or_id_or_name=${car_vin_or_id_or_name}`
     );
   }
 
   updateCarsStatus(
     car_vin_or_id: string,
-  status: CarsStatus): Observable<number> {
+    status: CarsStatus
+  ): Observable<number> {
     return this._http.put<number>(
       `${this.authUrl}/put/status?car_vin_or_id=${car_vin_or_id}&status=${status}`,
       null
@@ -102,12 +101,14 @@ export class CarsService {
   }
 
   canAccessPage(
-    car_vin_or_id: string,
+    car_vin_or_id_or_name: string,
     username: string
   ): Observable<Boolean> {
     const params = new URLSearchParams();
-    params.append('car_vin_or_id', car_vin_or_id);
+    params.append('car_vin_or_id_or_name', car_vin_or_id_or_name);
     params.append('username', username);
-    return this._http.get<Boolean>(`${this.authUrl}/can-access?${params.toString()}`);
+    return this._http.get<Boolean>(
+      `${this.authUrl}/can-access?${params.toString()}`
+    );
   }
 }

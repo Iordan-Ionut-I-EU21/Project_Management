@@ -55,4 +55,16 @@ public class QualityChecksService {
 		query.setParameter("car_id_status", qualityChecksFiltersDTO.getCar_id_status());
         return BackendApplication.generateDateWithStartTimeAndEndTIme(query.getResultList(), columns);
     }
+
+    @Cacheable(cacheNames = CACHEABLE + "canAccessPage", key = "#quality_id +'_'+ #username")
+    public Boolean canAccessPage(final String quality_id, final String username) {
+        Integer c1 = this.qualityCheckRepository.canAccessPageQualityChecks(quality_id, username);
+        Integer c2 = this.qualityCheckRepository.canAccessPageProcessLog(quality_id, username);
+        return c1 == 0 && c2 == 0;
+    }
+
+    @Cacheable(cacheNames = CACHEABLE + "findQualityChecksById", key = "#quality_id")
+    public QualityChecks findQualityChecksById(final String quality_id){
+        return this.qualityCheckRepository.findQualityChecksById(quality_id);
+    }
 }

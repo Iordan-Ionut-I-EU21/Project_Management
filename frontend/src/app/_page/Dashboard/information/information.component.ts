@@ -1,14 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import {
-  isProcessLog,
-  ProcessLog,
-} from '../../../_model/_interface/process-log';
+import { isProcessLog } from '../../../_model/_interface/process-log';
 import { NamePage } from '../../../_components/name-page/name-page';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { InformationLeftRight } from '../../../_components/information/information-left-right';
 import { GenInput } from '../../../_components/input/input';
 import { GenerateTableKeys } from '../../../_components/generate-table/generate-table-key';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
 import { ProcessLogService } from '../../../_service/_model/process-log.service';
@@ -30,12 +27,12 @@ import { MachineStatus } from '../../../_model/_enum/machine-status';
 import { InformationComponent as ComInformationComponent } from '../../../_components/information/information.component';
 import { ProcessLogStatus } from '../../../_model/_enum/process-log-status';
 import { CarsService } from '../../../_service/_model/cars.service';
-import { Cars, isCars } from '../../../_model/_interface/car';
+import { isCars } from '../../../_model/_interface/car';
 import { CarsStatus } from '../../../_model/_enum/cars-status';
 import { UserService } from '../../../_service/_model/user.service';
-import { User } from '../../../_model/_interface/user';
 import { ViewData } from '../../../_dialog/view-data';
-import { filter } from 'rxjs';
+import { QualityChecksService } from '../../../_service/_model/quality-checks.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-information',
@@ -58,6 +55,7 @@ import { filter } from 'rxjs';
     DatePipe,
     JwtService,
     UserService,
+    QualityChecksService,
   ],
   templateUrl: './information.component.html',
   styleUrl: './information.component.scss',
@@ -86,14 +84,34 @@ export class InformationComponent {
     private _machineService: MachineService,
     private _carsService: CarsService,
     private _userService: UserService,
+    private _qualityChecksService: QualityChecksService,
     private datePipe: DatePipe,
     private _fb: FormBuilder,
     private _rolesLogicallyService: RolesLogicallyService,
-    private _dialogService: DialogService,
-    private _cdf: ChangeDetectorRef
+    private _dialogService: DialogService
   ) {
     this.form = this._fb.group({
       status: ['NONE'],
+    });
+  }
+
+  ngOnInit(): void {
+    this._activeRoute.paramMap.subscribe((params) => {
+      const segments = this._router.url.split('/');
+      const processSegment = segments[2];
+
+      const foundEntry = Object.entries(Segment).find(
+        ([key, value]) => value === processSegment
+      );
+      this.key = params.get('key')!;
+
+      if (foundEntry) {
+        this.segment = foundEntry[1] as Segment;
+        this.onDataPage();
+        this.onPageDescription();
+      } else {
+        this._alertService.show('Page not found', AlertEnum.ERROR);
+      }
     });
 
     if (this._rolesLogicallyService.onIsWorker()) {
@@ -183,27 +201,33 @@ export class InformationComponent {
             });
           break;
         }
+        case Segment.QUALITY: {
+          this._qualityChecksService
+            .canAccessPage(
+              this.route.snapshot.paramMap.get('key')!,
+              this._jwtService.getUserInfo()?.name!
+            )
+            .subscribe({
+              next: (response) => {
+                if (response) {
+                  this._alertService.show(
+                    "Don't have access on this information.",
+                    AlertEnum.ERROR
+                  );
+                  this._router.navigateByUrl('dashboard/feed');
+                }
+              },
+              error: (error) => {
+                console.error(error);
+              },
+            });
+          break;
+        }
+        default: {
+          console.error('not find ngOnInit ' + this.segment);
+        }
       }
     }
-  }
-
-  ngOnInit(): void {
-    this._activeRoute.paramMap.subscribe((params) => {
-      const segments = this._router.url.split('/');
-      const processSegment = segments[2];
-      const foundEntry = Object.entries(Segment).find(
-        ([key, value]) => value === processSegment
-      );
-      this.key = params.get('key')!;
-
-      if (foundEntry) {
-        this.segment = foundEntry[1] as Segment;
-        this.onDataPage();
-        this.onPageDescription();
-      } else {
-        this._alertService.show('Page not found', AlertEnum.ERROR);
-      }
-    });
   }
 
   onSelectChange($event: any) {
@@ -377,7 +401,7 @@ export class InformationComponent {
         break;
       }
       case Segment.CAR: {
-        this._carsService.findCarsByVinOrId(this.key).subscribe({
+        this._carsService.findCarsByVinOrIdOrName(this.key).subscribe({
           next: (response) => {
             this.data = response;
             this.form.get('status')?.setValue(response.status);
@@ -461,8 +485,52 @@ export class InformationComponent {
         });
         break;
       }
+      case Segment.QUALITY: {
+        this._qualityChecksService.findQualityChecksById(this.key).subscribe({
+          next: (response) => {
+            this.information = {
+              left: [
+                {
+                  name: 'Car Name',
+                  icon: ICONS.CAR,
+                  answer: response.car_id.model_id.name,
+                },
+                {
+                  name: 'Car Vin',
+                  icon: ICONS.CAR_VIN,
+                  answer: response.car_id.vin,
+                },
+                {
+                  name: 'Car Status',
+                  icon: ICONS.CAR_STATUS,
+                  answer: response.car_id.status,
+                },
+              ],
+              right: [
+                {
+                  name: 'Check Date',
+                  icon: ICONS.MACHINE_LAST,
+                  answer: this.datePipe.transform(
+                    response.check_date,
+                    'dd/MM/yyyy'
+                  )!,
+                },
+                {
+                  name: 'Passed',
+                  icon: response.passed ? ICONS.CHECK : ICONS.UN_CHECK,
+                  answer: '',
+                },
+              ],
+            };
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
+        break;
+      }
       default: {
-        console.error('not find ');
+        console.error('not find onDataPage() ' + this.segment);
       }
     }
   }
@@ -508,8 +576,16 @@ export class InformationComponent {
         this.isHidden = false;
         break;
       }
+      case Segment.QUALITY: {
+        this.page = {
+          name: 'Quality',
+          content: [this.key],
+          icon: ICONS.QUALITY_CHECKS,
+        };
+        break;
+      }
       default: {
-        console.error('not find ');
+        console.error('not find onPageDescription() ' + this.segment);
       }
     }
   }

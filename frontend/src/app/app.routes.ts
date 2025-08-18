@@ -44,6 +44,10 @@ export const routes: Routes = [
         path: 'user/:key', //the same like CAR on Segment enum
         component: InformationComponent,
       },
+      {
+        path: 'quality/:key', //the same like QUALITY on Segment enum
+        component: InformationComponent,
+      }
     ],
   },
   {

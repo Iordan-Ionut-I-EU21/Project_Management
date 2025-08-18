@@ -14,6 +14,10 @@ export class RolesLogicallyService {
     return this._jtw.getUserInfo()?.role! === UserRole.WORKER;
   }
 
+  onIsAdmin(): boolean {
+    return this._jtw.getUserInfo()?.role! === UserRole.ADMIN;
+  }
+
   onIsAdminOrManager(): boolean {
     return (
       this._jtw.getUserInfo()?.role! === UserRole.ADMIN ||

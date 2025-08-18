@@ -1,5 +1,7 @@
 package com.example.backend.Controller;
 
+import com.example.backend.Model.Class.Cars;
+import com.example.backend.Model.Class.QualityChecks;
 import com.example.backend.Model.Dto.FindByRequestDTO;
 import com.example.backend.Model.Dto.QualityChecksFiltersDTO;
 import com.example.backend.Service.QualityChecksService;
@@ -53,6 +55,28 @@ public class QualityChecksController {
                     request.getQualityChecksFiltersDTO()));
         } catch (Exception e) {
             log.error("Error in postExcelByUserNameAndQualityChecksFilters: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/can-access")
+    public ResponseEntity<Boolean> canAccessPage(@RequestParam("quality_id") final String quality_id, @RequestParam("username") final String username) {
+        try {
+            log.info("canAccessPage() - Successful.....");
+            return ResponseEntity.ok(this.qualityChecksService.canAccessPage(quality_id, username));
+        } catch (Exception e) {
+            log.error("Error in canAccessPage: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/find/by")
+    public ResponseEntity<QualityChecks> findQualityChecksById(@RequestParam("quality_id") final String quality_id) {
+        try {
+            log.info("findQualityChecksById() - Successful.....");
+            return ResponseEntity.ok(this.qualityChecksService.findQualityChecksById(quality_id));
+        } catch (Exception e) {
+            log.error("Error in findQualityChecksById: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

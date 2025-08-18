@@ -76,9 +76,9 @@ public class CarsService {
         return BackendApplication.generateObjectByStatus(this.carsRepository.countStatusByCarModelId(carModelId), CarsStatus.class);
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "findCarsByVinOrId", key = "#car_vin_or_id")
-    public Cars findCarsByVinOrId(final String car_vin_or_id) {
-        return this.carsRepository.findCarsByVinOrId(car_vin_or_id);
+    @Cacheable(cacheNames = CACHEABLE + "findCarsByVinOrIdOrName", key = "#car_vin_or_id_or_name")
+    public Cars findCarsByVinOrIdOrName(final String car_vin_or_id_or_name) {
+        return this.carsRepository.findCarsByVinOrIdOrName(car_vin_or_id_or_name).get(0);
     }
 
     @Transactional
@@ -87,11 +87,11 @@ public class CarsService {
         return this.carsRepository.updateCarsStatus(car_vin_or_id, status);
     }
 
-    @Cacheable(cacheNames = CACHEABLE + "canAccessPage", key = "#car_vin_or_id +'_'+#username")
-    public Boolean canAccessPage(final String car_vin_or_id, final String username) {
-        Integer c1 = this.carsRepository.canAccessPageProcessLog(car_vin_or_id, username);
-        Integer c2 = this.carsRepository.canAccessPageCarParts(car_vin_or_id, username);
-        Integer c3 = this.carsRepository.canAccessPageQualityChecks(car_vin_or_id, username);
+    @Cacheable(cacheNames = CACHEABLE + "canAccessPage", key = "#car_vin_or_id_or_name +'_'+#username")
+    public Boolean canAccessPage(final String car_vin_or_id_or_name, final String username) {
+        Integer c1 = this.carsRepository.canAccessPageProcessLog(car_vin_or_id_or_name, username);
+        Integer c2 = this.carsRepository.canAccessPageCarParts(car_vin_or_id_or_name, username);
+        Integer c3 = this.carsRepository.canAccessPageQualityChecks(car_vin_or_id_or_name, username);
         return c1 == 0 && c2 == 0 && c3 == 0;
     }
 }

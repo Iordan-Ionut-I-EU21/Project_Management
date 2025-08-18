@@ -11,9 +11,11 @@ export const ICONS = {
   LABEL: 'label',
   ADD: 'add',
   PASSWORD: 'lock',
+  CHECK: 'check_circle',
+  UN_CHECK: 'radio_button_unchecked',
   ///CAR
   CAR_VIN: 'directions_car',
-  CAR_STATUS: 'on_hub_device',
+  CAR_STATUS: 'signal_wifi_statusbar_null',
   CAR_GENERATION: 'qr_code_2_add',
   CAR_RELEASE_YEAR: 'deployed_code',
   ///PART PRODUCTION

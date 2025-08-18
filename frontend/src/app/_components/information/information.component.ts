@@ -16,8 +16,7 @@ import { InputComponent } from '../input/input.component';
 import { GenInput } from '../input/input';
 import { FormGroup } from '@angular/forms';
 import { isProcessLog, ProcessLog } from '../../_model/_interface/process-log';
-import { Cars, isCars } from '../../_model/_interface/car';
-import { User } from '../../_model/_interface/user';
+import { isCars } from '../../_model/_interface/car';
 import { ViewData } from '../../_dialog/view-data';
 
 @Component({
