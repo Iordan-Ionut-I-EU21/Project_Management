@@ -66,7 +66,7 @@ export class ViewChartComponent {
   ngAfterViewInit(): void {
     if (isProcessLog(this.data.data)) {
       this._machineService
-        .countStatusByMachineId(this.data.data.machine_id.id)
+        .countStatusByMachineId(this.data.data.machine_id.id!)
         .subscribe({
           next: (response) => {
             this.generateChartPie(response, CHART_COLORS.STATUS_BY_MACHINE_ID);
@@ -90,14 +90,16 @@ export class ViewChartComponent {
           },
         });
     } else if (isMachine(this.data.data)) {
-      this._machineService.countStatusByMachineId(this.data.data.id).subscribe({
-        next: (response) => {
-          this.generateChartPie(response, CHART_COLORS.STATUS_BY_MACHINE_ID);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
+      this._machineService
+        .countStatusByMachineId(this.data.data!.id!)
+        .subscribe({
+          next: (response) => {
+            this.generateChartPie(response, CHART_COLORS.STATUS_BY_MACHINE_ID);
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
     }
   }
 

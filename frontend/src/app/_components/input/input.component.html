@@ -1,17 +1,25 @@
-<div class="mb-6" [formGroup]="formGroup" *ngIf="config">
+<div
+  [ngClass]="
+    isTable
+      ? ''
+      : 'flex flex-row items-center justify-self-center w-8/12 justify-between'
+  "
+  [formGroup]="formGroup"
+  *ngIf="config"
+>
   <label
     *ngIf="config.label"
     class="block text-lg font-semibold text-gray-700 mb-2"
+    [ngClass]="{ 'flex items-center': config.icon && !isTable }"
   >
+    <mat-icon *ngIf="config.icon && !isTable" class="mr-2">{{
+      config.icon
+    }}</mat-icon>
     {{ config.label }}
   </label>
   <div
-    [ngClass]="
-      isTable === null
-        ? 'flex items-center border border-gray-300 rounded-md p-2 focus-within:border-blue-500'
-        : ''
-    "
     [ngClass]="{
+      'flex flex-col items-center not-table': !isTable,
       'border-red-300':
         formGroup.get(config.formControlName)?.hasError('required') &&
         formGroup.get(config.formControlName)?.touched &&
@@ -22,11 +30,12 @@
         !isTable
     }"
   >
-    <mat-icon *ngIf="config.icon">{{ config.icon }}</mat-icon>
+    <!-- <mat-icon *ngIf="config.icon">{{ config.icon }}</mat-icon> -->
     <select
       *ngIf="config.type === 'select'; else textInput"
       [formControlName]="config.formControlName"
-      class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+      class="p-2 ml-2 text-gray-700 focus:outline-none"
+      [ngClass]="{ 'not-table': !isTable }"
       (change)="onSelectChange($event)"
     >
       <option *ngFor="let option of config.options" [ngValue]="option">
@@ -38,6 +47,7 @@
         [type]="config.type"
         [formControlName]="config.formControlName"
         class="w-full p-2 ml-2 text-gray-700 focus:outline-none"
+        [ngClass]="{ 'not-table': !isTable }"
         [placeholder]="config.placeholder"
         (change)="config.type === 'date' ? onSelectChange($event) : null"
         (keyup.enter)="onSelectChange($event)"

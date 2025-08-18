@@ -10,6 +10,7 @@ import { ViewType } from '../../_dialog/view-type';
 import { ViewData } from '../../_dialog/view-data';
 import { validateType } from '../../_dialog/validate-change/validate-type';
 import { VALIDATE_STATUS } from '../../_dialog/validate-change/validate-status';
+import { SearchComponent } from '../../_dialog/search/search.component';
 
 @Injectable({
   providedIn: 'root',
@@ -65,6 +66,13 @@ export class DialogService {
         newStatus: newStatus,
         oldStatus: oldStatus,
       },
+      restoreFocus: false,
+    });
+    return dialogRef.afterClosed();
+  }
+
+  openDialogSearch() {
+    const dialogRef = this.dialog.open(SearchComponent, {
       restoreFocus: false,
     });
     return dialogRef.afterClosed();

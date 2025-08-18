@@ -1,12 +1,17 @@
 package com.example.backend.Service;
 
+import com.example.backend.BackendApplication;
+import com.example.backend.Model.Class.Employees;
 import com.example.backend.Model.Class.User;
 import com.example.backend.Model.Dto.*;
 import com.example.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +32,10 @@ public class UserService {
 	private CarsPartsService carsPartsService;
 	@Autowired
 	private PartProductionService partProductionService;
+	@Autowired
+	private EmployeesService employeesService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public void saveAll(List<User> users) {
 		this.userRepository.saveAll(users);
@@ -59,5 +68,22 @@ public class UserService {
 		return this.userRepository.canAccessQualityCheck(user_username_or_id_or_email) == 0 &&
 				this.userRepository.canAccessProcessLog(user_username_or_id_or_email) == 0 &&
 				this.userRepository.canAccessCarParts(user_username_or_id_or_email) == 0;
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "findUsersByUsername", key = "#user_username")
+	public List<User> findUsersByUsername(final String user_username){
+		return this.userRepository.findUsersByUsername(user_username, BackendApplication.generatePaginateOfSearch());
+	}
+
+	public void save(User user){
+		user.setId(BackendApplication.generateId());
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+		Employees emp = user.getEmployees_id();
+		emp.setId(BackendApplication.generateId());
+		emp.setUser_id(user);
+
+		employeesService.save(emp);
+		userRepository.save(user);
 	}
 }

@@ -1,7 +1,7 @@
 import { MachineStatus } from '../_enum/machine-status';
 
 export interface Machines {
-  id: string;
+  id: string | null;
   name: string;
   type: string;
   status: MachineStatus;

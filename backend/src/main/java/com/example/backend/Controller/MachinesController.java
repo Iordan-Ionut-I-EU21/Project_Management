@@ -65,4 +65,27 @@ public class MachinesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/find-search/by")
+    public ResponseEntity<List<Machines>> findMachinesByName(@RequestParam("machine_name") final String machine_name){
+        try {
+            log.info("findMachinesByName() - Successful.....");
+            return ResponseEntity.ok(this.machinesService.findMachinesByName(machine_name));
+        } catch (Exception e) {
+            log.error("Error in findMachinesByName: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Void> save(@RequestBody Machines machines){
+        try {
+            log.info("save() - Successful.....");
+            this.machinesService.save(machines);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error in save: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class NamePageComponent {
   @Input() page!: NamePage;
   @Input() type!: boolean;
+  @Input() isHidden!: boolean;
   @Output() onType: EventEmitter<boolean> = new EventEmitter<boolean>();
   constructor() {}
 

@@ -60,4 +60,14 @@ public class MachinesService {
 	public Integer updateMachineStatus(final String machine_name_or_id, final MachineStatus status) {
 		return this.machinesRepository.updateMachineStatus(machine_name_or_id, status);
 	}
+
+	@Cacheable(cacheNames = CACHEABLE +"findMachinesByName" , key = "#machine_name")
+	public List<Machines> findMachinesByName(final String machine_name){
+		return this.machinesRepository.findMachinesByName(machine_name, BackendApplication.generatePaginateOfSearch());
+	}
+
+	public void save(Machines machine){
+		machine.setId(BackendApplication.generateId());
+		this.machinesRepository.save(machine);
+	}
 }

@@ -21,66 +21,38 @@
       </a>
     </li>
 
-    <!-- <li *ngIf="showSearchFeature" class="flex-1 flex justify-center">
-      <div class="relative w-80">
-        <mat-form-field
-          appearance="outline"
-          class="w-full bg-white rounded-lg shadow-sm"
-        >
-          <mat-label>
-            <span class="flex items-center gap-2">
-              <mat-icon class="text-gray-400">search</mat-icon>
-              <span>Search</span>
-            </span>
-          </mat-label>
-          <input
-            type="text"
-            matInput
-            [formControl]="searchControl"
-            [matAutocomplete]="auto"
-            placeholder="Search project..."
-            class="pl-10"
-            (keydown.enter)="onSelect(searchControl.value)"
-          />
-          <mat-autocomplete
-            #auto="matAutocomplete"
-            (optionSelected)="onSelect($event.option.value)"
-            class="custom-autocomplete"
-          >
-            <mat-option
-              *ngFor="let option of filteredOptions | async"
-              [value]="option.name"
-            >
-              <span class="flex items-center gap-2">
-                <mat-icon class="text-blue-500">folder</mat-icon>
-                <span>{{ option.name }}</span>
-              </span>
-            </mat-option>
-          </mat-autocomplete>
-          <button
-            mat-icon-button
-            matSuffix
-            tabindex="-1"
-            class="absolute right-2 top-2 text-gray-400 hover:text-blue-600"
-            (click)="searchControl.setValue('')"
-            *ngIf="searchControl.value"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-    </li> -->
+    <li class="flex items-center flex-0">
+      <button
+        mat-button
+        class="flex items-center gap-2 text-white hover:text-blue-400 transition"
+        (click)="onAddPage()"
+      >
+        <mat-icon>{{ ICONS.ADD }}</mat-icon>
+        <label>Create</label>
+      </button>
+    </li>
 
-    <!-- <li class="flex items-center justify-center ml-auto">
+    <li class="flex items-center flex-0">
+      <button
+        mat-button
+        class="flex items-center gap-2 text-white hover:text-blue-400 transition"
+        (click)="onOpenSearchDialog()"
+      >
+        <mat-icon>{{ ICONS.SEARCH }}</mat-icon>
+        <label>Search</label>
+      </button>
+    </li>
+
+    <li class="flex items-center justify-center ml-auto">
       <button
         mat-button
         class="flex items-center gap-2 text-white hover:text-blue-400 transition"
         (click)="onViewUser()"
       >
-        <mat-icon>account_circle</mat-icon>
+        <mat-icon>{{ ICONS.EMPLOYEE }}</mat-icon>
         <span class="font-semibold">{{ name }}</span>
       </button>
-    </li> -->
+    </li>
 
     <li
       class="flex items-center justify-center cursor-pointer text-white hover:text-red-400 transition font-medium px-2 py-1 rounded"

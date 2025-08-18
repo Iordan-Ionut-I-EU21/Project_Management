@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
 export class InputComponent {
   @Input() config!: GenInput;
   @Input() formGroup!: FormGroup;
-  @Input() isTable!: boolean;
+  @Input() isTable: boolean = false;
   @Output() selectChange = new EventEmitter<any>();
   constructor() {}
 

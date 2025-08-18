@@ -62,7 +62,7 @@ export class ViewLineComponent {
   ngAfterViewInit(): void {
     if (isProcessLog(this.data.data)) {
       this._machineService
-        .countStatusByMachineId(this.data.data.machine_id.id)
+        .countStatusByMachineId(this.data.data.machine_id!.id!)
         .subscribe({
           next: (response) => {
             this.generateChartLine(response);
@@ -73,14 +73,16 @@ export class ViewLineComponent {
         });
     }
     if (isMachine(this.data.data)) {
-      this._machineService.countStatusByMachineId(this.data.data.id).subscribe({
-        next: (response) => {
-          this.generateChartLine(response);
-        },
-        error: (error) => {
-          console.error('Line chart data error:', error);
-        },
-      });
+      this._machineService
+        .countStatusByMachineId(this.data.data!.id!)
+        .subscribe({
+          next: (response) => {
+            this.generateChartLine(response);
+          },
+          error: (error) => {
+            console.error('Line chart data error:', error);
+          },
+        });
     }
   }
 

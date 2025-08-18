@@ -60,7 +60,7 @@ export class ViewPolarComponent {
   ngAfterViewInit(): void {
     if (isProcessLog(this.data.data)) {
       this._machineService
-        .countStatusByMachineId(this.data.data.machine_id.id)
+        .countStatusByMachineId(this.data.data.machine_id!.id!)
         .subscribe({
           next: (response) => {
             this.generateChartPolar(

@@ -7,6 +7,10 @@ export const ICONS = {
   FEET: 'folder_open',
   PARTS: 'pie_chart',
   DESCRIPTION: 'description',
+  SEARCH: 'search',
+  LABEL: 'label',
+  ADD: 'add',
+  PASSWORD: 'lock',
   ///CAR
   CAR_VIN: 'directions_car',
   CAR_STATUS: 'on_hub_device',

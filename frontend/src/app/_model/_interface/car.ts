@@ -1,12 +1,12 @@
 import { CarsStatus } from '../_enum/cars-status';
-import { Model } from './model';
+import { CarModel } from './car-model';
 
 export interface Cars {
   id: string;
   vin: string;
   assembly_date: string;
   status: CarsStatus;
-  model_id: Model;
+  model_id: CarModel;
 }
 export function isCars(obj: any): obj is Cars {
   return (

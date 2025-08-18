@@ -46,4 +46,5 @@ public interface ProcessLogRepository extends JpaRepository<ProcessLog, String> 
 
 	@Query("SELECT Count(pl.id) FROM ProcessLog pl WHERE (LOWER(pl.id) = LOWER(:process_name_or_id) OR LOWER(pl.process_id.name) = LOWER(:process_name_or_id)) AND pl.employee_id.user_id.username = :username")
 	Long canAccessPage(@Param("process_name_or_id") final String process_name_or_id, @Param("username") final String username);
+	
 }

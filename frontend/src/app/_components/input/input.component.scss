@@ -1,0 +1,12 @@
+
+.cdk-overlay-pane{
+  width: max-content !important;
+}
+
+.not-table {
+  input,
+  textarea,
+  select {
+    width: 350px !important;
+  }
+}

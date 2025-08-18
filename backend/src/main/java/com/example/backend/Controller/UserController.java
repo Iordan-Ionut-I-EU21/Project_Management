@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api/user")
@@ -46,6 +49,40 @@ public class UserController {
             return ResponseEntity.ok(this.userService.canAccessPage(user_username_or_id_or_email));
         } catch (Exception e) {
             log.error("Error in canAccessPage: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/find-search/by")
+    public ResponseEntity<List<User>> findUsersByUsername(@RequestParam("user_username") final String user_username) {
+        try {
+            log.info("findUsersByUsername() - Successful.....");
+            return ResponseEntity.ok(this.userService.findUsersByUsername(user_username));
+        } catch (Exception e) {
+            log.error("Error in findUsersByUsername: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/find-email/by")
+    public ResponseEntity<Optional<User>> findByEmail(@RequestParam("email") final String email) {
+        try {
+            log.info("findByEmail() - Successful.....");
+            return ResponseEntity.ok(this.userService.findByEmail(email));
+        } catch (Exception e) {
+            log.error("Error in findByEmail: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Void> save(@RequestBody User user) {
+        try {
+            log.info("save() - Successful.....");
+            this.userService.save(user);
+            return  ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error in save: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

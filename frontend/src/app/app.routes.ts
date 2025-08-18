@@ -4,6 +4,7 @@ import { OtpComponent } from './_page/Authentication/otp/otp.component';
 import { ChangePasswordComponent } from './_page/Authentication/change-password/change-password.component';
 import { DashboardComponent } from './_page/Dashboard/dashboard/dashboard.component';
 import { InformationComponent } from './_page/Dashboard/information/information.component';
+import { CreateComponent } from './_page/Create/create/create.component';
 
 export const routes: Routes = [
   {
@@ -44,5 +45,9 @@ export const routes: Routes = [
         component: InformationComponent,
       },
     ],
+  },
+  {
+    path: 'create',
+    component: CreateComponent,
   },
 ];

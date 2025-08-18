@@ -1,0 +1,54 @@
+<mat-dialog-content class="w-full h-full p-6 bg-gray-50 rounded-xl">
+  <!-- Title -->
+  <h2 class="text-2xl font-semibold text-center text-blue-600 mb-6">
+    🔍 Search by {{ searchSelect.name }}
+  </h2>
+
+  <!-- Toggle Buttons -->
+  <div class="flex justify-center mb-6">
+    <mat-button-toggle-group
+      appearance="standard"
+      class="custom-toggle-group shadow-md rounded-lg"
+      (change)="onSelectSearch($event.value)"
+    >
+      <mat-button-toggle
+        *ngFor="let item of searchOptions"
+        [checked]="searchSelect === item"
+        [value]="item"
+        class="px-4 py-2 flex items-center"
+      >
+        <mat-icon class="mr-2 text-blue-500">{{ item.icon }}</mat-icon>
+        <span class="font-medium">{{ item.name }}</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Search Input -->
+  <form [formGroup]="form" class="w-full flex justify-center">
+    <mat-form-field class="w-full max-w-md">
+      <mat-label>Type to search</mat-label>
+      <input
+        type="text"
+        matInput
+        formControlName="search"
+        [matAutocomplete]="auto"
+        [value]="getTextSearch(form.value.search)"
+      />
+      <mat-icon matSuffix class="text-blue-500">{{ ICONS.SEARCH }}</mat-icon>
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onOptionSelected($event)"
+      >
+        <mat-option
+          *ngFor="let option of options"
+          [value]="option"
+          class="flex items-center"
+        >
+          <mat-icon class="mr-2 text-gray-500">{{ ICONS.LABEL }}</mat-icon>
+          {{ getTextSearch(option) }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>

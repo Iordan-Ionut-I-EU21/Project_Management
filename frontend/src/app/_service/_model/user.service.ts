@@ -42,4 +42,19 @@ export class UserService {
     );
     return this._http.get<Boolean>(`${this.authUrl}/can-access?${params}`);
   }
+
+  findUsersByUsername(user_username: string): Observable<User[]> {
+    return this._http.get<User[]>(
+      `${this.authUrl}/find-search/by?user_username=${user_username}`
+    );
+  }
+
+  findByEmail(email: string): Observable<User> {
+    const params = new HttpParams().append('email', email);
+    return this._http.get<User>(`${this.authUrl}/find-email/by?${params}`);
+  }
+
+  save(user: User): Observable<User> {
+    return this._http.post<User>(`${this.authUrl}/save`, user);
+  }
 }

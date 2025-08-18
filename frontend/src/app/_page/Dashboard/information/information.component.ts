@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import {
   isProcessLog,
   ProcessLog,
@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { InformationLeftRight } from '../../../_components/information/information-left-right';
 import { GenInput } from '../../../_components/input/input';
 import { GenerateTableKeys } from '../../../_components/generate-table/generate-table-key';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AlertService } from '../../../_service/_alert/alert.service';
 import { JwtService } from '../../../_service/_http/jwt.service';
 import { ProcessLogService } from '../../../_service/_model/process-log.service';
@@ -35,6 +35,7 @@ import { CarsStatus } from '../../../_model/_enum/cars-status';
 import { UserService } from '../../../_service/_model/user.service';
 import { User } from '../../../_model/_interface/user';
 import { ViewData } from '../../../_dialog/view-data';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-information',
@@ -64,6 +65,7 @@ import { ViewData } from '../../../_dialog/view-data';
 export class InformationComponent {
   key!: string;
   type: boolean = true;
+  isHidden!: boolean;
   page!: NamePage;
   data!: ViewData;
   form!: FormGroup;
@@ -77,6 +79,7 @@ export class InformationComponent {
   constructor(
     private route: ActivatedRoute,
     private _router: Router,
+    private _activeRoute: ActivatedRoute,
     private _alertService: AlertService,
     private _jwtService: JwtService,
     private _processLogService: ProcessLogService,
@@ -86,20 +89,9 @@ export class InformationComponent {
     private datePipe: DatePipe,
     private _fb: FormBuilder,
     private _rolesLogicallyService: RolesLogicallyService,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
+    private _cdf: ChangeDetectorRef
   ) {
-    const segments = this._router.url.split('/');
-    const processSegment = segments[2];
-    const foundEntry = Object.entries(Segment).find(
-      ([key, value]) => value === processSegment
-    );
-
-    if (foundEntry) {
-      this.segment = foundEntry[1] as Segment;
-    } else {
-      this._alertService.show('Page not fount', AlertEnum.ERROR);
-    }
-
     this.form = this._fb.group({
       status: ['NONE'],
     });
@@ -196,49 +188,22 @@ export class InformationComponent {
   }
 
   ngOnInit(): void {
-    this.key = this.route.snapshot.paramMap.get('key')!;
-    switch (this.segment) {
-      case Segment.PROCESS: {
-        this.page = {
-          name: 'Process',
-          content: [this.key],
-          icon: ICONS.PROCESS,
-        };
-        break;
+    this._activeRoute.paramMap.subscribe((params) => {
+      const segments = this._router.url.split('/');
+      const processSegment = segments[2];
+      const foundEntry = Object.entries(Segment).find(
+        ([key, value]) => value === processSegment
+      );
+      this.key = params.get('key')!;
+
+      if (foundEntry) {
+        this.segment = foundEntry[1] as Segment;
+        this.onDataPage();
+        this.onPageDescription();
+      } else {
+        this._alertService.show('Page not found', AlertEnum.ERROR);
       }
-      case Segment.MACHINE: {
-        this.page = {
-          name: 'Machine',
-          content: [this.key],
-          icon: ICONS.MACHINE,
-        };
-        this.keys = [
-          GenerateTableKeys.PART_PRODUCTION_BY_MACHINE,
-          GenerateTableKeys.MACHINE_PAGE,
-        ];
-        break;
-      }
-      case Segment.CAR: {
-        this.page = {
-          name: 'Car',
-          content: [this.key],
-          icon: ICONS.CAR,
-        };
-        break;
-      }
-      case Segment.USER: {
-        this.page = {
-          name: 'User',
-          content: [this.key],
-          icon: ICONS.EMPLOYEE,
-        };
-        break;
-      }
-      default: {
-        console.error('not find ');
-      }
-    }
-    this.onDataPage();
+    });
   }
 
   onSelectChange($event: any) {
@@ -338,7 +303,7 @@ export class InformationComponent {
             };
             if (
               this._jwtService.getUserInfo()?.name !==
-                response.employee_id.user_id.name ||
+                response.employee_id.user_id!.username ||
               !this._rolesLogicallyService.onIsAdminOrManager()
             ) {
               this.config = {
@@ -494,6 +459,53 @@ export class InformationComponent {
             console.error(error);
           },
         });
+        break;
+      }
+      default: {
+        console.error('not find ');
+      }
+    }
+  }
+
+  private onPageDescription() {
+    switch (this.segment) {
+      case Segment.PROCESS: {
+        this.page = {
+          name: 'Process',
+          content: [this.key],
+          icon: ICONS.PROCESS,
+        };
+        this.isHidden = true;
+        break;
+      }
+      case Segment.MACHINE: {
+        this.page = {
+          name: 'Machine',
+          content: [this.key],
+          icon: ICONS.MACHINE,
+        };
+        this.keys = [
+          GenerateTableKeys.PART_PRODUCTION_BY_MACHINE,
+          GenerateTableKeys.MACHINE_PAGE,
+        ];
+        break;
+      }
+      case Segment.CAR: {
+        this.page = {
+          name: 'Car',
+          content: [this.key],
+          icon: ICONS.CAR,
+        };
+        this.isHidden = true;
+        break;
+      }
+      case Segment.USER: {
+        this.page = {
+          name: 'User',
+          content: [this.key],
+          icon: ICONS.EMPLOYEE,
+        };
+        this.isHidden = false;
         break;
       }
       default: {

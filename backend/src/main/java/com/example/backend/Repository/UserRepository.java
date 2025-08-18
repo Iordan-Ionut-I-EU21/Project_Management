@@ -1,6 +1,7 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 	@Query("SELECT COUNT(cp.id) FROM CarParts cp WHERE LOWER(cp.installed_by.user_id.id) = :user_username_or_id_or_email OR LOWER(cp.installed_by.user_id.username) = :user_username_or_id_or_email OR LOWER(cp.installed_by.user_id.email) = :user_username_or_id_or_email")
 	Integer canAccessCarParts(@Param("user_username_or_id_or_email") final String user_username_or_id_or_email);
 
+	@Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%',:user_username,'%'))")
+	List<User> findUsersByUsername(@Param("user_username") final String user_username, Pageable pageable);
 }

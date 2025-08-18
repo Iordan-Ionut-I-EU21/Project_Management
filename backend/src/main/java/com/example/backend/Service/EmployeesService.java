@@ -1,6 +1,7 @@
 package com.example.backend.Service;
 
 import com.example.backend.Model.Class.Employees;
+import com.example.backend.Model.Class.User;
 import com.example.backend.Repository.EmployeesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class EmployeesService {
         this.employeesRepository.saveAll(employees);
     }
 
+    public void save(Employees employee) {
+        this.employeesRepository.save(employee);
+    }
     public List<Employees> findAll(){
         return this.employeesRepository.findAll();
     }

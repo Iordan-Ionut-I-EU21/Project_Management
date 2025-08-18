@@ -3,6 +3,7 @@ package com.example.backend.Repository;
 import com.example.backend.Model.Class.Machines;
 import com.example.backend.Model.Enum.MachineStatus;
 import com.example.backend.Model.View.CountView;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,7 @@ public interface MachinesRepository extends JpaRepository<Machines, String> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Machines m SET m.status = :status WHERE LOWER(m.name) = LOWER(:machine_name_or_id) OR LOWER(m.id) = LOWER(:machine_name_or_id)")
     Integer updateMachineStatus(@Param("machine_name_or_id") String machine_name_or_id, @Param("status") MachineStatus status);
+
+    @Query("SELECT m FROM Machines m WHERE LOWER(m.name) LIKE LOWER(CONCAT('%',:machine_name,'%'))")
+    List<Machines> findMachinesByName(@Param("machine_name") final String machine_name, Pageable pageable);
 }

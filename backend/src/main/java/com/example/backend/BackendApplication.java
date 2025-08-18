@@ -47,6 +47,10 @@ public class BackendApplication {
         return PageRequest.of((int) Math.max(0, changePage.getPageIndex()), Math.toIntExact(changePage.getPageSize()), sort);
     }
 
+    public static PageRequest generatePaginateOfSearch(){
+        return PageRequest.of(0, 10);
+    }
+
     public static List<Object[]> generateDateWithStartTimeAndEndTIme(List<Object[]> results, String columns) {
         List<String> cols = List.of(columns.split(","));
         OptionalInt indexEnd = IntStream.range(0, cols.size()).filter(i -> cols.get(i).contains("end_time")).findFirst();

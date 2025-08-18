@@ -45,4 +45,14 @@ export class MachineService {
       null
     );
   }
+
+  findMachinesByName(machine_name: string): Observable<Machines[]> {
+    return this._http.get<Machines[]>(
+      `${this.authUrl}/find-search/by?machine_name=${machine_name}`
+    );
+  }
+
+  save(machine: Machines): Observable<Machines> {
+    return this._http.post<Machines>(`${this.authUrl}/save`, machine);
+  }
 }

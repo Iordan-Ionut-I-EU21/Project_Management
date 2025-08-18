@@ -14,6 +14,7 @@ import { RolesLogicallyService } from '../../_shared/roles-logically.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { ICONS } from '../../_shared/icons';
+import { DialogService } from '../../_service/_dialog/dialog.service';
 
 @Component({
   selector: 'app-navbar',
@@ -30,7 +31,7 @@ import { ICONS } from '../../_shared/icons';
     MatSidenavModule,
     MatListModule,
   ],
-  providers: [UserService, RolesLogicallyService],
+  providers: [UserService, RolesLogicallyService, DialogService],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -48,38 +49,21 @@ export class NavbarComponent {
 
   feet: NavItem = this.routes[0];
   name!: string;
-
-  searchControl = new FormControl('');
-  // options!: Projects[];
-  // filteredOptions!: Observable<Projects[]>;
+  ICONS: typeof ICONS = ICONS;
 
   showSearchFeature!: boolean;
   constructor(
     private _jwtService: JwtService,
     private _router: Router,
-    private _userService: UserService,
-    // private _projectsService: ProjectsService,
+    private _dialogService: DialogService,
     private _roleLogically: RolesLogicallyService
   ) {
     this.name = this._jwtService.getUserInfo()?.name!;
-    // this.showSearchFeature = this._roleLogically.isSearchPossibility();
   }
 
   ngAfterViewInit(): void {}
 
-  ngOnInit(): void {
-    // this.filteredOptions = this.searchControl.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   distinctUntilChanged(),
-    //   switchMap((value) => this._filter(value || ''))
-    // );
-  }
-
-  // private _filter(value: string): Observable<Projects[]> {
-  //   const filterValue = value.toLowerCase();
-  //   return this._projectsService.getDataForSuggestion(filterValue);
-  // }
+  ngOnInit(): void {}
 
   onSelect(value: string | null) {
     if (this._router.url === '/dashboard/projects/' + value) {
@@ -91,21 +75,19 @@ export class NavbarComponent {
     }
   }
 
-  // onViewUser() {
-  //   this._userService
-  //     .getUserByNameAndEmail(
-  //       this._jwtService.getUserInfo()?.name!,
-  //       this._jwtService.getEmail()!
-  //     )
-  //     .subscribe({
-  //       next: (response) => {
-  //         this._router.navigateByUrl('/dashboard/user/' + response.id);
-  //       },
-  //       error: (error) => {
-  //         console.log(error);
-  //       },
-  //     });
-  // }
+  onViewUser() {
+    this._router.navigateByUrl(
+      '/dashboard/user/' + this._jwtService.getUserInfo()?.name
+    );
+  }
+
+  onAddPage() {
+    this._router.navigateByUrl('/create');
+  }
+
+  onOpenSearchDialog() {
+    this._dialogService.openDialogSearch();
+  }
 
   onLogout() {
     this._jwtService.logout(Environment.jwtToken);

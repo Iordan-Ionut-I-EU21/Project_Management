@@ -11,6 +11,7 @@ import { GenerateTableKeys } from '../../../_components/generate-table/generate-
 import { GenerateTableComponent } from '../../../_components/generate-table/generate-table.component';
 import { ProcessLogService } from '../../../_service/_model/process-log.service';
 import { MatCardModule } from '@angular/material/card';
+import { DialogService } from '../../../_service/_dialog/dialog.service';
 
 @Component({
   selector: 'app-dashboard',
