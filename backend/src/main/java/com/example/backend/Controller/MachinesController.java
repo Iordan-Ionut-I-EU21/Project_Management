@@ -2,8 +2,10 @@ package com.example.backend.Controller;
 
 import com.example.backend.Model.Class.Machines;
 import com.example.backend.Model.Dto.CountViewDTO;
+import com.example.backend.Model.Dto.FindByRequestDTO;
 import com.example.backend.Model.Enum.MachineStatus;
 import com.example.backend.Service.MachinesService;
+import com.example.backend.Utility.GroupedResult;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,6 +87,17 @@ public class MachinesController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Error in save: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/find-all/by")
+    public ResponseEntity<GroupedResult> findAllBy(@RequestBody FindByRequestDTO requestDTO){
+        try {
+            log.info("findAllBy() - Successful.....");
+            return ResponseEntity.ok(new GroupedResult(this.machinesService.findAllBy(requestDTO.getTableRequest()),this.machinesService.countAllBy() ));
+        } catch (Exception e) {
+            log.error("Error in findAllBy: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

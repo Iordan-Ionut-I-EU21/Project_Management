@@ -4,6 +4,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from '../../_model/_interface/user';
 import { Observable } from 'rxjs';
 import { UserInformationDTO } from '../../_model/_dto/user-information-dto';
+import { ChangePage } from '../../_model/_common/change-page';
+import { SortPage } from '../../_model/_common/sort-page';
+import { FindByRequestDTO } from '../../_model/_dto/find-by-request-dto';
+import { GroupResult } from '../../_model/_common/group-result';
+import { UserAllFiltersDTO } from '../../_model/_dto/user-all-filters-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -56,5 +61,28 @@ export class UserService {
 
   save(user: User): Observable<User> {
     return this._http.post<User>(`${this.authUrl}/save`, user);
+  }
+
+  findAllByUserAllFilters(
+    changePage: ChangePage,
+    sortPage: SortPage,
+    userAllFiltersDTO: UserAllFiltersDTO
+  ): Observable<GroupResult<User>> {
+    const tableRequest = { changePage, sortPage };
+
+    return this._http.post<GroupResult<User>>(`${this.authUrl}/find-all/by`, {
+      tableRequest: tableRequest,
+      userAllFiltersDTO: userAllFiltersDTO,
+    } as FindByRequestDTO);
+  }
+
+  excelAllByUserAllFilters(
+    columns: string,
+    userAllFiltersDTO: UserAllFiltersDTO
+  ): Observable<any[]> {
+    return this._http.post<any[]>(
+      `${this.authUrl}/excel-all/by?columns=${columns}`,
+      { userAllFiltersDTO: userAllFiltersDTO } as FindByRequestDTO
+    );
   }
 }

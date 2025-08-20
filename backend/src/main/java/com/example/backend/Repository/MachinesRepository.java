@@ -39,4 +39,10 @@ public interface MachinesRepository extends JpaRepository<Machines, String> {
 
     @Query("SELECT m FROM Machines m WHERE LOWER(m.name) LIKE LOWER(CONCAT('%',:machine_name,'%'))")
     List<Machines> findMachinesByName(@Param("machine_name") final String machine_name, Pageable pageable);
+
+    @Query("SELECT m FROM Machines m WHERE 1 = 1")
+    List<Machines> findAllBy(Pageable pageable);
+
+    @Query("SELECT COUNT(m.id) FROM Machines m WHERE 1 = 1")
+    Long countAllBy();
 }

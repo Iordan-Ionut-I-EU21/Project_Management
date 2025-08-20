@@ -5,5 +5,10 @@ export interface UserInformationDTO {
   countAssignedParts: number;
   countMachineUsed: number;
   countByPartProduction: number;
+  //Page
   countByMachine: number;
+
+  //All
+  countAllUsers: number;
+  countAllMachine: number;
 }

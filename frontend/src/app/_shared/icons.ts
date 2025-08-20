@@ -13,6 +13,11 @@ export const ICONS = {
   PASSWORD: 'lock',
   CHECK: 'check_circle',
   UN_CHECK: 'radio_button_unchecked',
+  VISIBILITY: 'visibility',
+  VISIBILITY_OFF: 'visibility_off',
+  EDIT: 'edit',
+  REMOVE: 'delete',
+  
   ///CAR
   CAR_VIN: 'directions_car',
   CAR_STATUS: 'signal_wifi_statusbar_null',

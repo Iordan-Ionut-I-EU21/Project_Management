@@ -5,6 +5,13 @@ import { Observable } from 'rxjs';
 import { CountViewDTO } from '../../_model/_dto/count-view-dto';
 import { Machines } from '../../_model/_interface/machine';
 import { MachineStatus } from '../../_model/_enum/machine-status';
+import { GroupResult } from '../../_model/_common/group-result';
+import { ChangePage } from '../../_model/_common/change-page';
+import { SortPage } from '../../_model/_common/sort-page';
+import {
+  FindByRequestDTO,
+  TableRequest,
+} from '../../_model/_dto/find-by-request-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -54,5 +61,17 @@ export class MachineService {
 
   save(machine: Machines): Observable<Machines> {
     return this._http.post<Machines>(`${this.authUrl}/save`, machine);
+  }
+
+  findAllMachine(
+    changePage: ChangePage,
+    sortPage: SortPage
+  ): Observable<GroupResult<Machines>> {
+    const tableRequest: TableRequest = { changePage, sortPage };
+
+    return this._http.post<GroupResult<Machines>>(
+      `${this.authUrl}/find-all/by`,
+      { tableRequest: tableRequest } as FindByRequestDTO
+    );
   }
 }

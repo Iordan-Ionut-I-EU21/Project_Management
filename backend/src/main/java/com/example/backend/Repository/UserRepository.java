@@ -1,6 +1,7 @@
 package com.example.backend.Repository;
 
 import com.example.backend.Model.Class.User;
+import com.example.backend.Model.Dto.UserAllFiltersDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,10 @@ public interface UserRepository extends JpaRepository<User, String> {
 
 	@Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%',:user_username,'%'))")
 	List<User> findUsersByUsername(@Param("user_username") final String user_username, Pageable pageable);
+
+	@Query("SELECT u FROM User u WHERE 1 = 1 " + UserAllFiltersDTO.QUERY)
+	List<User> findAllByUserAllFilters(Pageable pageable, @Param("username") final String username, @Param("email") final String email, @Param("role") final String role , @Param("employees_id_name")final String employees_id_name);
+
+	@Query("SELECT COUNT(u.id) FROM User u WHERE 1 = 1" + UserAllFiltersDTO.QUERY)
+	Long countAllByUserAllFilters(@Param("username") final String username, @Param("email") final String email, @Param("role") final String role , @Param("employees_id_name")final String employees_id_name);
 }

@@ -15,7 +15,14 @@ export const Urls = {
   CARS_ID_NAME: { url: 'dashboard/car', code: 'car_id.model_id.name' },
 
   //USER
-  USER_ID: { url: 'dashboard/user', code: 'employee_id.user_id.id' },
-  USER_NAME: { url: 'dashboard/user', code: 'employee_id.user_id.username' },
-  USER_EMAIL: { url: 'dashboard/user', code: 'employee_id.user_id.email' },
+  USER_EMPLOYEE_ID: { url: 'dashboard/user', code: 'employee_id.user_id.id' },
+  USER_EMPLOYEE_NAME: {
+    url: 'dashboard/user',
+    code: 'employee_id.user_id.username',
+  },
+  USER_EMPLOYEE_EMAIL: {
+    url: 'dashboard/user',
+    code: 'employee_id.user_id.email',
+  },
+  USER_NAME: { url: 'dashboard/user', code: 'username' },
 };

@@ -63,7 +63,7 @@ import { error } from 'console';
 export class InformationComponent {
   key!: string;
   type: boolean = true;
-  isHidden!: boolean;
+  isHiddenInformation!: boolean;
   page!: NamePage;
   data!: ViewData;
   form!: FormGroup;
@@ -543,7 +543,7 @@ export class InformationComponent {
           content: [this.key],
           icon: ICONS.PROCESS,
         };
-        this.isHidden = true;
+        this.isHiddenInformation = true;
         break;
       }
       case Segment.MACHINE: {
@@ -564,7 +564,7 @@ export class InformationComponent {
           content: [this.key],
           icon: ICONS.CAR,
         };
-        this.isHidden = true;
+        this.isHiddenInformation = true;
         break;
       }
       case Segment.USER: {
@@ -573,7 +573,7 @@ export class InformationComponent {
           content: [this.key],
           icon: ICONS.EMPLOYEE,
         };
-        this.isHidden = false;
+        this.isHiddenInformation = false;
         break;
       }
       case Segment.QUALITY: {

@@ -6,10 +6,12 @@ import com.example.backend.Model.Dto.CountViewDTO;
 import com.example.backend.Model.Enum.MachineStatus;
 import com.example.backend.Model.Enum.ProcessLogStatus;
 import com.example.backend.Repository.MachinesRepository;
+import com.example.backend.Utility.TableRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,5 +71,16 @@ public class MachinesService {
 	public void save(Machines machine){
 		machine.setId(BackendApplication.generateId());
 		this.machinesRepository.save(machine);
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "findAllBy", key = "@tableRequestCacheKeyHelper.buildProcessLogKey(#tableRequest) ")
+	public List<Machines> findAllBy(TableRequest tableRequest){
+		PageRequest pageRequest = BackendApplication.generateTablePage(tableRequest);
+		return this.machinesRepository.findAllBy(pageRequest);
+	}
+
+	@Cacheable(cacheNames = CACHEABLE + "countAllBy")
+	public Long countAllBy(){
+		return this.machinesRepository.countAllBy();
 	}
 }

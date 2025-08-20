@@ -54,7 +54,9 @@ import { PartProductionFiltersDTO } from '../../_model/_dto/part_production-filt
 import { Urls } from '../../_shared/urls';
 import { MachineFiltersDTO } from '../../_model/_dto/machine-filters-dto';
 import { UserRole } from '../../_model/_enum/user-role';
-import { isMachine } from '../../_model/_interface/machine';
+import { isMachine, Machines } from '../../_model/_interface/machine';
+import { User } from '../../_model/_interface/user';
+import { UserAllFiltersDTO } from '../../_model/_dto/user-all-filters-dto';
 
 @Component({
   selector: 'app-generate-table',
@@ -63,10 +65,8 @@ import { isMachine } from '../../_model/_interface/machine';
     HttpClientModule,
     CardComponent,
     CommonModule,
-    NamePageComponent,
     MatCardModule,
     TableComponent,
-    SpinnerComponent,
   ],
   providers: [
     JwtService,
@@ -135,6 +135,18 @@ export class GenerateTableComponent {
       count: 0,
       icon: ICONS.MACHINE,
       color: 'blue',
+    },
+    [GenerateTableKeys.USER_ALL]: {
+      name: GenerateTableKeys.USER_ALL,
+      count: 0,
+      icon: ICONS.EMPLOYEE,
+      color: 'blue',
+    },
+    [GenerateTableKeys.MACHINE_ALL]: {
+      name: GenerateTableKeys.MACHINE_ALL,
+      count: 0,
+      icon: ICONS.MACHINE,
+      color: 'red',
     },
   };
 
@@ -548,7 +560,7 @@ export class GenerateTableComponent {
         code: 'pl.employee_id.user_id.username',
         label: 'User Name',
         type: 'link',
-        link: Urls.USER_NAME,
+        link: Urls.USER_EMPLOYEE_NAME,
         config: {
           type: 'text',
           placeholder: 'User Name',
@@ -662,7 +674,7 @@ export class GenerateTableComponent {
         code: 'p.employee_id.user_id.username',
         label: 'Username',
         type: 'link',
-        link: Urls.USER_NAME,
+        link: Urls.USER_EMPLOYEE_NAME,
         config: {
           type: 'text',
           placeholder: 'Username',
@@ -741,6 +753,61 @@ export class GenerateTableComponent {
         },
       },
     ],
+    [GenerateTableKeys.USER_ALL]: [
+      {
+        key: 'username',
+        code: 'u.username',
+        label: 'Username',
+        type: 'link',
+        link: Urls.USER_NAME,
+        config: {
+          type: 'text',
+          placeholder: 'Username',
+          formControlName: 'username',
+        },
+      },
+      {
+        key: 'email',
+        code: 'u.email',
+        label: 'Email',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Email',
+          formControlName: 'email',
+        },
+      },
+      {
+        key: 'role',
+        code: 'u.role',
+        label: 'Role',
+        type: 'text',
+        config: {
+          type: 'select',
+          options: ['NONE', ...Object.values(UserRole)],
+          placeholder: 'Role',
+          formControlName: 'role',
+        },
+      },
+      {
+        key: 'employees_id.name',
+        code: 'u.employees_id.name',
+        label: 'Employee Name',
+        type: 'text',
+        config: {
+          type: 'text',
+          placeholder: 'Employee Name',
+          formControlName: 'employees_id_name',
+        },
+      },
+    ],
+    [GenerateTableKeys.MACHINE_ALL]: [
+      {
+        key: 'username',
+        code: 'p.employee_id.user_id.username',
+        label: 'Username',
+      },
+    ],
   };
 
   cardSettings: {
@@ -800,6 +867,20 @@ export class GenerateTableComponent {
       },
       changePage: { pageIndex: 0, pageSize: Environment.pageSize },
     },
+    [GenerateTableKeys.USER_ALL]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.USER_ALL][0].key,
+        direction: 'asc',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
+    [GenerateTableKeys.MACHINE_ALL]: {
+      sortPage: {
+        column: this.columnsSettings[GenerateTableKeys.MACHINE_ALL][0].key,
+        direction: 'asc',
+      },
+      changePage: { pageIndex: 0, pageSize: Environment.pageSize },
+    },
   };
 
   constructor(
@@ -811,6 +892,7 @@ export class GenerateTableComponent {
     private _userService: UserService,
     private _carsPartsService: CarsPartsService,
     private _partProductionService: PartProductionService,
+    private _machineService: MachineService,
     private _dialogService: DialogService,
     private route: ActivatedRoute,
     private _fb: FormBuilder,
@@ -837,6 +919,9 @@ export class GenerateTableComponent {
             response.countByPartProduction;
           this.cards[GenerateTableKeys.MACHINE_PAGE].count =
             response.countByMachine;
+          this.cards[GenerateTableKeys.USER_ALL].count = response.countAllUsers;
+          this.cards[GenerateTableKeys.MACHINE_ALL].count =
+            response.countAllMachine;
         },
         error: (error: Error) => {
           console.error(error);
@@ -1011,7 +1096,28 @@ export class GenerateTableComponent {
           });
         break;
       }
+      case GenerateTableKeys.USER_ALL: {
+        this._userService
+          .excelAllByUserAllFilters(
+            columns.join(', '),
+            this.onGiveFilters()! as UserAllFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this._excelService.exportToExcel(
+                tables,
+                response,
+                'Users_' + new Date().toLocaleDateString()
+              );
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
       default: {
+        console.error('not find onExport() ' + this.card.name);
         break;
       }
     }
@@ -1154,10 +1260,46 @@ export class GenerateTableComponent {
               this.data = [...response.items];
               this.count = response.count;
             },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.USER_ALL: {
+        this._userService
+          .findAllByUserAllFilters(
+            settings.changePage,
+            settings.sortPage,
+            this.onGiveFilters() as UserAllFiltersDTO
+          )
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
+          });
+        break;
+      }
+      case GenerateTableKeys.MACHINE_ALL: {
+        this._machineService
+          .findAllMachine(settings.changePage, settings.sortPage)
+          .subscribe({
+            next: (response) => {
+              this.data = [...response.items];
+              this.count = response.count;
+            },
+            error: (error) => {
+              console.error(error);
+            },
           });
         break;
       }
       default: {
+        console.error('not find onCardClick() ' + this.card.name);
         break;
       }
     }
@@ -1240,8 +1382,14 @@ export class GenerateTableComponent {
         }
         break;
       }
+      case GenerateTableKeys.USER_ALL: {
+        break;
+      }
+      case GenerateTableKeys.MACHINE_ALL: {
+        break;
+      }
       default: {
-        console.error('not found onDblClickRow' + this.card.name);
+        console.error('not found onDblClickRow()' + this.card.name);
       }
     }
   }
@@ -1254,247 +1402,284 @@ export class GenerateTableComponent {
     | MachineUsedFiltersDTO
     | PartProductionFiltersDTO
     | MachineFiltersDTO
+    | UserAllFiltersDTO
     | null {
-    if (this.card.name === GenerateTableKeys.PROCESS_LOG) {
-      return {
-        status:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.status === '' ||
-          this.form[GenerateTableKeys.PROCESS_LOG].value.status === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.status,
-        process_id_name:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name,
-        machine_id_name:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name,
-        start_date:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.start_time === ''
-            ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.start_time,
-        end_date:
-          this.form[GenerateTableKeys.PROCESS_LOG].value.end_time === ''
-            ? null
-            : this.form[GenerateTableKeys.PROCESS_LOG].value.end_time,
-      };
-    } else if (this.card.name === GenerateTableKeys.CARS) {
-      return {
-        model_id_release_year:
-          this.form[GenerateTableKeys.CARS].value.model_id_release_year === ''
-            ? null
-            : this.form[GenerateTableKeys.CARS].value.model_id_release_year,
-        status:
-          this.form[GenerateTableKeys.CARS].value.status === '' ||
-          this.form[GenerateTableKeys.CARS].value.status === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.CARS].value.status,
-        vin:
-          this.form[GenerateTableKeys.CARS].value.vin === ''
-            ? null
-            : this.form[GenerateTableKeys.CARS].value.vin,
-        model_id_generation:
-          this.form[GenerateTableKeys.CARS].value.model_id_generation === ''
-            ? null
-            : this.form[GenerateTableKeys.CARS].value.model_id_generation,
-        model_id_name:
-          this.form[GenerateTableKeys.CARS].value.model_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.CARS].value.model_id_name,
-      };
-    } else if (this.card.name === GenerateTableKeys.QUALITY_CHECKS) {
-      return {
-        car_id_model_id_name:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value
-            .car_id_model_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
-                .car_id_model_id_name,
-        car_id_model_id_generation:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value
-            .car_id_model_id_generation === ''
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
-                .car_id_model_id_generation,
-        car_id_model_id_release_year:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value
-            .car_id_model_id_release_year === ''
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
-                .car_id_model_id_release_year,
-        inspector_id_name:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value
-            .inspector_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value
-                .inspector_id_name,
-        check_date:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date === ''
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date,
-        passed:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === '' ||
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed,
-        car_id_status:
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
-            '' ||
-          this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
-            'NONE'
-            ? null
-            : this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status,
-      };
-    } else if (this.card.name === GenerateTableKeys.ASSIGNED_PARTS) {
-      return {
-        part_id_unit_cost:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-            .part_id_unit_cost === ''
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-                .part_id_unit_cost,
-        quantity:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity === ''
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity,
-        installed_by_name:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-            .installed_by_name === ''
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-                .installed_by_name,
-        part_id_category:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_category ===
-            '' ||
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_category ===
-            'NONE'
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-                .part_id_category,
-        part_id_name:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name,
-        car_id_model_id_name:
-          this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-            .car_id_model_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
-                .car_id_model_id_name,
-      };
-    } else if (this.card.name === GenerateTableKeys.MACHINE_USED) {
-      return {
-        machine_id_name:
-          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name,
-        machine_id_status:
-          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status ===
-            '' ||
-          this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status ===
-            'NONE'
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_status,
-        car_id_model_id_name:
-          this.form[GenerateTableKeys.MACHINE_USED].value
-            .car_id_model_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value
-                .car_id_model_id_name,
-        status:
-          this.form[GenerateTableKeys.MACHINE_USED].value.status === '' ||
-          this.form[GenerateTableKeys.MACHINE_USED].value.status === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value.status,
-        process_id_name:
-          this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name,
-        employee_id_user_id_username:
-          this.form[GenerateTableKeys.MACHINE_USED].value
-            .employee_id_user_id_username === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_USED].value
-                .employee_id_user_id_username,
-      };
-    } else if (
-      this.card.name === GenerateTableKeys.PART_PRODUCTION_BY_MACHINE
-    ) {
-      return {
-        part_id_name:
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .part_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-                .part_id_name,
-        part_id_category:
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .part_id_category === '' ||
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .part_id_category === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-                .part_id_category,
-        produced_date:
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .produced_date === ''
-            ? null
-            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-                .produced_date,
-        quantity:
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .quantity === ''
-            ? null
-            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-                .quantity,
-        part_id_unit_cost:
-          this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-            .part_id_unit_cost === ''
-            ? null
-            : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
-                .part_id_unit_cost,
-      };
-    } else if (this.card.name === GenerateTableKeys.MACHINE_PAGE) {
-      return {
-        employee_id_user_id_username:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value
-            .employee_id_user_id_username === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value
-                .employee_id_user_id_username,
-        employee_id_user_id_role:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value
-            .employee_id_user_id_role === '' ||
-          this.form[GenerateTableKeys.MACHINE_PAGE].value
-            .employee_id_user_id_role === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value
-                .employee_id_user_id_role,
-        process_id_name:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name,
-        employee_id_department:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value
-            .employee_id_department === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value
-                .employee_id_department,
-        start_time:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time,
-        end_time:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time === ''
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time,
-        status:
-          this.form[GenerateTableKeys.MACHINE_PAGE].value.status === '' ||
-          this.form[GenerateTableKeys.MACHINE_PAGE].value.status === 'NONE'
-            ? null
-            : this.form[GenerateTableKeys.MACHINE_PAGE].value.status,
-      };
+    switch (this.card.name) {
+      case GenerateTableKeys.PROCESS_LOG: {
+        return {
+          status:
+            this.form[GenerateTableKeys.PROCESS_LOG].value.status === '' ||
+            this.form[GenerateTableKeys.PROCESS_LOG].value.status === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.PROCESS_LOG].value.status,
+          process_id_name:
+            this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.PROCESS_LOG].value.process_id_name,
+          machine_id_name:
+            this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.PROCESS_LOG].value.machine_id_name,
+          start_date:
+            this.form[GenerateTableKeys.PROCESS_LOG].value.start_time === ''
+              ? null
+              : this.form[GenerateTableKeys.PROCESS_LOG].value.start_time,
+          end_date:
+            this.form[GenerateTableKeys.PROCESS_LOG].value.end_time === ''
+              ? null
+              : this.form[GenerateTableKeys.PROCESS_LOG].value.end_time,
+        };
+      }
+      case GenerateTableKeys.CARS: {
+        return {
+          model_id_release_year:
+            this.form[GenerateTableKeys.CARS].value.model_id_release_year === ''
+              ? null
+              : this.form[GenerateTableKeys.CARS].value.model_id_release_year,
+          status:
+            this.form[GenerateTableKeys.CARS].value.status === '' ||
+            this.form[GenerateTableKeys.CARS].value.status === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.CARS].value.status,
+          vin:
+            this.form[GenerateTableKeys.CARS].value.vin === ''
+              ? null
+              : this.form[GenerateTableKeys.CARS].value.vin,
+          model_id_generation:
+            this.form[GenerateTableKeys.CARS].value.model_id_generation === ''
+              ? null
+              : this.form[GenerateTableKeys.CARS].value.model_id_generation,
+          model_id_name:
+            this.form[GenerateTableKeys.CARS].value.model_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.CARS].value.model_id_name,
+        };
+      }
+      case GenerateTableKeys.QUALITY_CHECKS: {
+        return {
+          car_id_model_id_name:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value
+              .car_id_model_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                  .car_id_model_id_name,
+          car_id_model_id_generation:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value
+              .car_id_model_id_generation === ''
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                  .car_id_model_id_generation,
+          car_id_model_id_release_year:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value
+              .car_id_model_id_release_year === ''
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                  .car_id_model_id_release_year,
+          inspector_id_name:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value
+              .inspector_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value
+                  .inspector_id_name,
+          check_date:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date === ''
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value.check_date,
+          passed:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === '' ||
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value.passed,
+          car_id_status:
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
+              '' ||
+            this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status ===
+              'NONE'
+              ? null
+              : this.form[GenerateTableKeys.QUALITY_CHECKS].value.car_id_status,
+        };
+      }
+      case GenerateTableKeys.ASSIGNED_PARTS: {
+        return {
+          part_id_unit_cost:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+              .part_id_unit_cost === ''
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                  .part_id_unit_cost,
+          quantity:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity === ''
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.quantity,
+          installed_by_name:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+              .installed_by_name === ''
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                  .installed_by_name,
+          part_id_category:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+              .part_id_category === '' ||
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+              .part_id_category === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                  .part_id_category,
+          part_id_name:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value.part_id_name,
+          car_id_model_id_name:
+            this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+              .car_id_model_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.ASSIGNED_PARTS].value
+                  .car_id_model_id_name,
+        };
+      }
+      case GenerateTableKeys.MACHINE_USED: {
+        return {
+          machine_id_name:
+            this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value.machine_id_name,
+          machine_id_status:
+            this.form[GenerateTableKeys.MACHINE_USED].value
+              .machine_id_status === '' ||
+            this.form[GenerateTableKeys.MACHINE_USED].value
+              .machine_id_status === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value
+                  .machine_id_status,
+          car_id_model_id_name:
+            this.form[GenerateTableKeys.MACHINE_USED].value
+              .car_id_model_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value
+                  .car_id_model_id_name,
+          status:
+            this.form[GenerateTableKeys.MACHINE_USED].value.status === '' ||
+            this.form[GenerateTableKeys.MACHINE_USED].value.status === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value.status,
+          process_id_name:
+            this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value.process_id_name,
+          employee_id_user_id_username:
+            this.form[GenerateTableKeys.MACHINE_USED].value
+              .employee_id_user_id_username === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_USED].value
+                  .employee_id_user_id_username,
+        };
+      }
+      case GenerateTableKeys.PART_PRODUCTION_BY_MACHINE: {
+        return {
+          part_id_name:
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .part_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                  .part_id_name,
+          part_id_category:
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .part_id_category === '' ||
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .part_id_category === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                  .part_id_category,
+          produced_date:
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .produced_date === ''
+              ? null
+              : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                  .produced_date,
+          quantity:
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .quantity === ''
+              ? null
+              : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                  .quantity,
+          part_id_unit_cost:
+            this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+              .part_id_unit_cost === ''
+              ? null
+              : this.form[GenerateTableKeys.PART_PRODUCTION_BY_MACHINE].value
+                  .part_id_unit_cost,
+        };
+      }
+      case GenerateTableKeys.MACHINE_PAGE: {
+        return {
+          employee_id_user_id_username:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value
+              .employee_id_user_id_username === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                  .employee_id_user_id_username,
+          employee_id_user_id_role:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value
+              .employee_id_user_id_role === '' ||
+            this.form[GenerateTableKeys.MACHINE_PAGE].value
+              .employee_id_user_id_role === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                  .employee_id_user_id_role,
+          process_id_name:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name ===
+            ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value.process_id_name,
+          employee_id_department:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value
+              .employee_id_department === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value
+                  .employee_id_department,
+          start_time:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value.start_time,
+          end_time:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time === ''
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value.end_time,
+          status:
+            this.form[GenerateTableKeys.MACHINE_PAGE].value.status === '' ||
+            this.form[GenerateTableKeys.MACHINE_PAGE].value.status === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.MACHINE_PAGE].value.status,
+        };
+      }
+      case GenerateTableKeys.USER_ALL: {
+        return {
+          username:
+            this.form[GenerateTableKeys.USER_ALL].value.username === ''
+              ? null
+              : this.form[GenerateTableKeys.USER_ALL].value.username,
+          email:
+            this.form[GenerateTableKeys.USER_ALL].value.email === ''
+              ? null
+              : this.form[GenerateTableKeys.USER_ALL].value.email,
+          role:
+            this.form[GenerateTableKeys.USER_ALL].value.role === '' ||
+            this.form[GenerateTableKeys.USER_ALL].value.role === 'NONE'
+              ? null
+              : this.form[GenerateTableKeys.USER_ALL].value.role,
+          employees_id_name:
+            this.form[GenerateTableKeys.USER_ALL].value.employees_id_name === ''
+              ? null
+              : this.form[GenerateTableKeys.USER_ALL].value.employees_id_name,
+        };
+      }
+      case GenerateTableKeys.MACHINE_ALL: {
+      }
     }
     return null;
   }
@@ -1556,6 +1741,12 @@ export class GenerateTableComponent {
         end_time: [null],
         status: ['NONE'],
       }),
+      [GenerateTableKeys.USER_ALL]: this._fb.group({
+        username: [null],
+        email: [null],
+        role: ['NONE'],
+        employees_id_name: [null],
+      }),
     };
   }
 
@@ -1566,4 +1757,11 @@ export class GenerateTableComponent {
   }
 }
 
-type TYPES = ProcessLog | Cars | QualityChecks | CarsParts | PartProduction;
+type TYPES =
+  | ProcessLog
+  | Cars
+  | QualityChecks
+  | CarsParts
+  | PartProduction
+  | Machines
+  | User;

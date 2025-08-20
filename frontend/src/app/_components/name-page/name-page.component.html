@@ -6,15 +6,35 @@
       <span class="text-blue-600 font-semibold mx-1">→</span> {{ item }}
     </div>
   </div>
-  <div *ngIf="isHidden">
-    <button
-      class="flex items-center gap-2 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-      (click)="onChangeVisibility()"
-    >
-      <mat-icon class="text-lg">{{
-        type ? "visibility" : "visibility_off"
-      }}</mat-icon>
-      <span>Home</span>
-    </button>
+  <div class="flex flex-row gap-4">
+    <div *ngIf="isHiddenInformation">
+      <button id="view" class="button-page" (click)="onChangeVisibility()">
+        <mat-icon class="text-lg">{{
+          type ? ICONS.VISIBILITY : ICONS.VISIBILITY_OFF
+        }}</mat-icon>
+        <span>View</span>
+      </button>
+    </div>
+
+    <div *ngIf="isEditHidden">
+      <button id="edit" class="button-page" (click)="onEditEvent()">
+        <mat-icon class="text-lg">{{ ICONS.EDIT }}</mat-icon>
+        <span>Edit</span>
+      </button>
+    </div>
+
+    <div *ngIf="isDeleteHidden">
+      <button id="delete" class="button-page" (click)="onDeleteEvent()">
+        <mat-icon class="text-lg">{{ ICONS.REMOVE }}</mat-icon>
+        <span>Delete</span>
+      </button>
+    </div>
+
+    <div *ngIf="isAddHidden">
+      <button id="save" class="button-page" (click)="onAddEvent()">
+        <mat-icon class="text-lg">{{ ICONS.ADD }}</mat-icon>
+        <span>Create</span>
+      </button>
+    </div>
   </div>
 </div>

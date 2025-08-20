@@ -7,6 +7,7 @@ import { MachineUsedFiltersDTO } from './machine-used-filters-dto';
 import { PartProductionFiltersDTO } from './part_production-filter-dto';
 import { ProcessLogsFilterDTO } from './process-log-filter-dto';
 import { QualityChecksFiltersDTO } from './quality-check-filter-dto';
+import { UserAllFiltersDTO } from './user-all-filters-dto';
 
 export interface FindByRequestDTO {
   tableRequest?: TableRequest;
@@ -16,7 +17,8 @@ export interface FindByRequestDTO {
   carsPartsFiltersDTO?: CarsPartsFilterDTO;
   machineUsedFiltersDTO?: MachineUsedFiltersDTO;
   partProductionFiltersDTO?: PartProductionFiltersDTO;
-  machineFiltersDTO?: MachineFiltersDTO,
+  machineFiltersDTO?: MachineFiltersDTO;
+  userAllFiltersDTO?: UserAllFiltersDTO;
 }
 
 export interface TableRequest {

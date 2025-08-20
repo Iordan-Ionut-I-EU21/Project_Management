@@ -13,7 +13,8 @@ export class ExcelExportService {
     fileName: string
   ): Promise<void> {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(fileName);
+    const safeSheetName = fileName.replace(/[*?:\\/[\]]/g, '-');
+    const worksheet = workbook.addWorksheet(safeSheetName);
 
     const headerRow = worksheet.addRow(column);
     headerRow.height = 24;

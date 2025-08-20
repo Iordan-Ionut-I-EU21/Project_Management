@@ -25,6 +25,8 @@ import { UserService } from '../../../_service/_model/user.service';
 import { MachineService } from '../../../_service/_model/machine.service';
 import { AlertEnum } from '../../../_model/_common/alert';
 import { firstValueFrom } from 'rxjs';
+import { GenerateTableKeys } from '../../../_components/generate-table/generate-table-key';
+import { GenerateTableComponent } from '../../../_components/generate-table/generate-table.component';
 
 @Component({
   selector: 'app-create',
@@ -37,6 +39,7 @@ import { firstValueFrom } from 'rxjs';
     InputComponent,
     ReactiveFormsModule,
     HttpClientModule,
+    GenerateTableComponent,
   ],
   providers: [UserService, MachineService],
   templateUrl: './create.component.html',
@@ -65,12 +68,17 @@ export class CreateComponent {
   cardSelected!: Card;
   form!: FormGroup;
 
+  keys!: GenerateTableKeys[];
+  isHiddenInformation: boolean = false;
+  typeMode!: 'edit' | 'add' | 'delete';
+
   constructor(
     private _fb: FormBuilder,
     private _alertService: AlertService,
     private _userService: UserService,
     private _machineService: MachineService
   ) {
+    this.typeMode = 'edit';
     this.onCardClick(this.cards[0]);
   }
 
@@ -78,101 +86,130 @@ export class CreateComponent {
     this.type = event;
   }
 
+  onEdit() {
+    this.page = {
+      name: 'Edit Instance',
+      icon: ICONS.EDIT,
+      content: [],
+    };
+    this.typeMode = 'edit';
+  }
+
+  onDelete() {
+    this.page = {
+      name: 'Delete Instance',
+      icon: ICONS.REMOVE,
+      content: [],
+    };
+    this.typeMode = 'delete';
+  }
+
+  onAdd() {
+    this.page = {
+      name: 'Add Instance',
+      icon: ICONS.ADD,
+      content: [],
+    };
+    this.typeMode = 'add';
+    this.setFormDefaults();
+  }
+
   onCardClick(card: Card) {
     this.cardSelected = card;
-    this.page = {
-      name: 'Create New Instance',
-      icon: ICONS.ADD,
-      content: [card.name],
-    };
+    this.page.content = [card.name];
+    if (this.typeMode === 'add' || this.typeMode === 'edit') {
+      this.keys = [GenerateTableKeys.USER_ALL, GenerateTableKeys.MACHINE_ALL];
+    }
 
-    this.setFormDefaults();
-    switch (card.name) {
-      case TYPES.User: {
-        this.configs = [
-          {
-            label: 'Username',
-            icon: ICONS.EMPLOYEE,
-            formControlName: 'username',
-            type: 'text',
-            placeholder: 'Enter username',
-          },
-          {
-            label: 'Password',
-            icon: ICONS.PASSWORD,
-            formControlName: 'password',
-            type: 'password',
-            placeholder: 'Enter password',
-          },
-          {
-            label: 'Email',
-            icon: ICONS.EMAIL,
-            formControlName: 'email',
-            type: 'email',
-            placeholder: 'Enter email',
-          },
-          {
-            label: 'Role',
-            icon: ICONS.ROLE,
-            formControlName: 'role',
-            type: 'select',
-            options: ['NONE', ...Object.keys(UserRole)],
-            placeholder: 'Enter role',
-          },
-          {
-            label: 'Employee Name',
-            icon: ICONS.EMPLOYEE,
-            formControlName: 'employee_name',
-            type: 'text',
-            placeholder: 'Enter employee name',
-          },
-          {
-            label: 'Department',
-            icon: ICONS.DEPARTMENT,
-            formControlName: 'department',
-            type: 'text',
-            placeholder: 'Enter department',
-          },
-          {
-            label: 'Employee Role',
-            icon: ICONS.ROLE,
-            formControlName: 'employee_role',
-            type: 'select',
-            options: ['NONE', ...Object.keys(EmployeeRole)],
-            placeholder: 'Enter employee role',
-          },
-        ];
-        break;
-      }
-      case TYPES.Machine: {
-        this.configs = [
-          {
-            label: 'Name',
-            icon: ICONS.ROLE,
-            formControlName: 'name',
-            type: 'text',
-            placeholder: 'Enter name',
-          },
-          {
-            label: 'Type',
-            icon: ICONS.ROLE,
-            formControlName: 'type',
-            type: 'text',
-            placeholder: 'Enter type',
-          },
-          {
-            label: 'Status',
-            icon: ICONS.ROLE,
-            formControlName: 'status',
-            type: 'select',
-            options: ['NONE', ...Object.keys(MachineStatus)],
-            placeholder: 'Enter status',
-          },
-        ];
-        break;
-      }
-      default: {
-        console.error('Unknown card type');
+    if (this.typeMode === 'add') {
+      this.setFormDefaults();
+      switch (card.name) {
+        case TYPES.User: {
+          this.configs = [
+            {
+              label: 'Username',
+              icon: ICONS.EMPLOYEE,
+              formControlName: 'username',
+              type: 'text',
+              placeholder: 'Enter username',
+            },
+            {
+              label: 'Password',
+              icon: ICONS.PASSWORD,
+              formControlName: 'password',
+              type: 'password',
+              placeholder: 'Enter password',
+            },
+            {
+              label: 'Email',
+              icon: ICONS.EMAIL,
+              formControlName: 'email',
+              type: 'email',
+              placeholder: 'Enter email',
+            },
+            {
+              label: 'Role',
+              icon: ICONS.ROLE,
+              formControlName: 'role',
+              type: 'select',
+              options: ['NONE', ...Object.keys(UserRole)],
+              placeholder: 'Enter role',
+            },
+            {
+              label: 'Employee Name',
+              icon: ICONS.EMPLOYEE,
+              formControlName: 'employee_name',
+              type: 'text',
+              placeholder: 'Enter employee name',
+            },
+            {
+              label: 'Department',
+              icon: ICONS.DEPARTMENT,
+              formControlName: 'department',
+              type: 'text',
+              placeholder: 'Enter department',
+            },
+            {
+              label: 'Employee Role',
+              icon: ICONS.ROLE,
+              formControlName: 'employee_role',
+              type: 'select',
+              options: ['NONE', ...Object.keys(EmployeeRole)],
+              placeholder: 'Enter employee role',
+            },
+          ];
+          break;
+        }
+        case TYPES.Machine: {
+          this.configs = [
+            {
+              label: 'Name',
+              icon: ICONS.ROLE,
+              formControlName: 'name',
+              type: 'text',
+              placeholder: 'Enter name',
+            },
+            {
+              label: 'Type',
+              icon: ICONS.ROLE,
+              formControlName: 'type',
+              type: 'text',
+              placeholder: 'Enter type',
+            },
+            {
+              label: 'Status',
+              icon: ICONS.ROLE,
+              formControlName: 'status',
+              type: 'select',
+              options: ['NONE', ...Object.keys(MachineStatus)],
+              placeholder: 'Enter status',
+            },
+          ];
+          break;
+        }
+        default: {
+          console.error('Unknown card type');
+        }
       }
     }
   }

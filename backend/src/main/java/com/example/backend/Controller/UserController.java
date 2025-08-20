@@ -1,8 +1,11 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Model.Class.User;
+import com.example.backend.Model.Dto.FindByRequestDTO;
 import com.example.backend.Model.Dto.UserInformationDTO;
 import com.example.backend.Service.UserService;
+import com.example.backend.Utility.GroupedResult;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import lombok.extern.jbosslog.JBossLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/find/by")
-    public ResponseEntity<User> findUserByUsernameOrId(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email){
+    public ResponseEntity<User> findUserByUsernameOrId(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email) {
         try {
             log.info("findUserByUsernameOrId() - Successful.....");
             return ResponseEntity.ok(this.userService.findUserByUsernameOrId(user_username_or_id_or_email));
@@ -43,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping("/can-access")
-    public ResponseEntity<Boolean> canAccessPage(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email){
+    public ResponseEntity<Boolean> canAccessPage(@RequestParam("user_username_or_id_or_email") final String user_username_or_id_or_email) {
         try {
             log.info("canAccessPage() - Successful.....");
             return ResponseEntity.ok(this.userService.canAccessPage(user_username_or_id_or_email));
@@ -80,10 +83,33 @@ public class UserController {
         try {
             log.info("save() - Successful.....");
             this.userService.save(user);
-            return  ResponseEntity.ok().build();
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             log.error("Error in save: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/find-all/by")
+    public ResponseEntity<GroupedResult> findAllByUserAllFilters(@RequestBody FindByRequestDTO requestDTO) {
+        try {
+            log.info("findAllByUserAllFilters() - Successful.....");
+            return ResponseEntity.ok(new GroupedResult(this.userService.findAllByUserAllFilters(requestDTO.getTableRequest(), requestDTO.getUserAllFiltersDTO()), this.userService.countAllByUserAllFilters(requestDTO.getUserAllFiltersDTO())));
+        } catch (Exception e) {
+            log.error("Error in findAllByUserAllFilters: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/excel-all/by")
+    public ResponseEntity<List<Object[]>> excelAllByUserAllFilters(@RequestParam("columns") final String columns, @RequestBody FindByRequestDTO requestDTO) {
+        try {
+            log.info("excelAllByUserAllFilters() - Successful.....");
+            return ResponseEntity.ok(this.userService.excelAllByUserAllFilters(columns,requestDTO.getUserAllFiltersDTO()));
+        } catch (Exception e) {
+            log.error("Error in excelAllByUserAllFilters: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

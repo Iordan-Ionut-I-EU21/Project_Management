@@ -19,4 +19,5 @@ public class FindByRequestDTO {
 	private MachineUsedFiltersDTO machineUsedFiltersDTO;
 	private PartProductionFiltersDTO partProductionFiltersDTO;
 	private MachineFiltersDTO machineFiltersDTO;
+	private UserAllFiltersDTO userAllFiltersDTO;
 }

@@ -8,4 +8,8 @@ export enum GenerateTableKeys {
 
   //PAGE
   MACHINE_PAGE = 'Users Used',
+
+  //ALL
+  USER_ALL = 'All Users',
+  MACHINE_ALL = 'All Machine',
 }
