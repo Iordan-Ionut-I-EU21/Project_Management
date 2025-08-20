@@ -1100,6 +1100,7 @@ export class GenerateTableComponent {
         this._userService
           .excelAllByUserAllFilters(
             columns.join(', '),
+            
             this.onGiveFilters()! as UserAllFiltersDTO
           )
           .subscribe({
